@@ -1,4 +1,4 @@
-package com.beancontainer.domain.cafe;
+package com.beancontainer.domain.post.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -6,9 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Cafe {
+public class PostEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long id;    // 아이디
 }
