@@ -7,4 +7,6 @@ import jakarta.persistence.Id;
 public class Member {
     @Id
     private Long id; //주석
+
+    private String name;
 }
