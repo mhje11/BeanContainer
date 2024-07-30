@@ -7,4 +7,5 @@ import jakarta.persistence.Id;
 public class ChatRoom {
     @Id
     private Long id;
+    private String title;
 }
