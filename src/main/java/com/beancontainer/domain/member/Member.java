@@ -9,4 +9,6 @@ public class Member {
     private Long id; //주석
 
     private String name; //이름
+
+    private String email;
 }
