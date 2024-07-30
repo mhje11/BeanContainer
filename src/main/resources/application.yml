@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: beancontainer
+
+  datasource:
+    url: jdbc:mysql://localhost:3308/beancontainer
+    username: minjin
+    password: 1024
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
