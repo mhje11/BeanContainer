@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 @Entity
 public class PostEntity {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    // 아이디
+
 }
