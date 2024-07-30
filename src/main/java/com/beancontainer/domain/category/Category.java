@@ -1,4 +1,5 @@
 package com.beancontainer.domain.category;
 
-public enum Category {
+public interface Category {
+    String getCategoryName();
 }
