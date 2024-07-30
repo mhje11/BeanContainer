@@ -40,3 +40,6 @@ out/
 src/main/resources/application.yml
 *.yml
 *.application
+
+# setting gradle
+settings.gradle
