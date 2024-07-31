@@ -18,7 +18,4 @@ public class Map {
     @Column(nullable = false)
     private String username;
 
-    @OneToMany
-    @JoinColumn(name = "map_id", nullable = false)
-    private List<Cafe> cafes;
 }

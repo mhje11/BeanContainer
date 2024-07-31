@@ -1,9 +1,11 @@
 package com.beancontainer.domain.cafe.entity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Entity
 @Table(name = "cafes")
+@AllArgsConstructor
 @Getter
 public class Cafe {
     @Id

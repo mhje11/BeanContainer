@@ -14,7 +14,7 @@ public class CafeSaveDto {
     private String district;
     private String neighborhood;
 
-    public CafeSaveDto(String kakaoId, String name, double latitude, double longitude, String address, String city, String district, String neighborhood) {
+    public CafeSaveDto(String kakaoId, String name, String address, double latitude, double longitude, String city, String district, String neighborhood) {
         this.kakaoId = kakaoId;
         this.name = name;
         this.address = address;
