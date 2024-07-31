@@ -1,9 +1,11 @@
 package com.beancontainer.domain.cafe.dto;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@Getter
 public class CafeSaveDto {
     private String kakaoId;
     private String name;
