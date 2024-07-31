@@ -2,7 +2,7 @@ package com.beancontainer.domain.review;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.category.Category;
-import com.beancontainer.domain.member.Member;
+import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 
 import java.util.List;

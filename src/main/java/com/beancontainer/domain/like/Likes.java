@@ -1,6 +1,6 @@
 package com.beancontainer.domain.like;
 
-import com.beancontainer.domain.member.Member;
+import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.post.entity.Post;
 import jakarta.persistence.*;
 

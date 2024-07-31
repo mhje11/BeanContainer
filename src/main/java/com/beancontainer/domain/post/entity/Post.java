@@ -1,6 +1,6 @@
 package com.beancontainer.domain.post.entity;
 
-import com.beancontainer.domain.member.Member;
+import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
