@@ -1,6 +1,6 @@
-package com.beancontainer.domain.map;
+package com.beancontainer.domain.map.entity;
 
-import com.beancontainer.domain.cafe.Cafe;
+import com.beancontainer.domain.cafe.entity.Cafe;
 import jakarta.persistence.*;
 
 import java.util.List;
