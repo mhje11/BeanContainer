@@ -14,22 +14,22 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member member;  // 작성자
 
     @Column(nullable = false)
-    private String title;
+    private String title;   // 제목
 
     @Column(nullable = false)
-    private String content;
+    private String content; // 내용
 
-    private int views = 0;
+    private int views = 0;  // 조회수
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();  // 작성일
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;    // 수정일
 
-    private String uuid;
+    private String uuid;    // 이미지
 
 }
