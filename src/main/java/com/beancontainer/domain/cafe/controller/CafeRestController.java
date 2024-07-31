@@ -16,14 +16,16 @@ public class CafeRestController {
     private final CafeService cafeService;
 
     @PostMapping("/api/save/cafe")
-    public ResponseEntity<Long> saveCafe(@RequestBody CafeSaveDto cafeSaveDto) {
+    public ResponseEntity<String> saveCafe(@RequestBody CafeSaveDto cafeSaveDto) {
         Long cafeId = cafeService.saveCafe(cafeSaveDto);
-        return new ResponseEntity<>(cafeId, HttpStatus.CREATED);
+        return new ResponseEntity<>("카페 저장완료 " + cafeId, HttpStatus.CREATED);
     }
 
     @GetMapping("/api/cafelist")
-    public ResponseEntity<List<CafeResponseDto>> savedCafeList(@RequestParam String district) {
+    public ResponseEntity<List<CafeResponseDto>> savedCafeListByDistrict(@RequestParam String district) {
         List<CafeResponseDto> cafes = cafeService.getCafesByDistrict(district);
         return ResponseEntity.ok(cafes);
     }
+
+
 }
