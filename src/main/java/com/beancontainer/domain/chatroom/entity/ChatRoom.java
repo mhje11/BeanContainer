@@ -1,4 +1,4 @@
-package com.beancontainer.domain.chatroom;
+package com.beancontainer.domain.chatroom.entity;
 
 import jakarta.persistence.*;
 
