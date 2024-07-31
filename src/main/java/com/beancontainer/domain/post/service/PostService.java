@@ -27,7 +27,6 @@ public class PostService {
         );
 
         Post savedPost = postRepository.save(post);
-        log.info("Saved post: {}", savedPost.getUsername());
 
         return new PostResponseDto(
                 savedPost.getId(),
