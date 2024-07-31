@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -43,11 +45,21 @@ class CafeServiceTest {
 
     }
 
-    @Test
-    void findByKakaoId() {
-    }
 
     @Test
     void getCafesByDistrict() {
+        Cafe cafe = new Cafe("kakaoId123", "ExampleCafe", "ExAddress", 37.5665, 126.9780, "Seoul", "관악구", "사당동");
+        Cafe cafe2 = new Cafe("kakaoId1232", "ExampleCafe2", "ExAddress2", 36.5665, 128.9780, "Seoul", "관악구", "사당동");
+        Cafe cafe3 = new Cafe("kakaoId125", "ExampleCafe3", "ExAddress3", 35.5665, 127.9780, "Seoul", "강남구", "삼성동");
+
+        cafeRepository.save(cafe);
+        cafeRepository.save(cafe2);
+        cafeRepository.save(cafe3);
+
+        List<Cafe> cafes = cafeRepository.findAllByDistrict("관악구");
+
+        assertThat(cafes).hasSize(2);
+        assertThat(cafes).extracting("name")
+                .containsExactlyInAnyOrder("ExampleCafe", "ExampleCafe2");
     }
 }
