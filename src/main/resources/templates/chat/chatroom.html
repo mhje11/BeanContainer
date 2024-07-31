@@ -1,10 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>채팅방</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
 </head>
 <body>
+<div class="container">
+    <h1>채팅방</h1>
+    <div id="chat" class="card">
+        <div class="card-header">Chat Room</div>
+        <div class="card-body" id="chat-body" style="height: 300px; overflow-y: scroll;">
+            <ul id="messages" class="list-group"></ul>
+        </div>
+        <div class="card-footer">
+            <div class="input-group">
+                <input type="text" id="message" class="form-control" placeholder="Type a message..."/>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    var socket = null;
+    var chatRoomId = 1; // Replace with dynamic chat room ID
+    var page = 0;
+    var size = 10;
+    var loading = false;
 
+    function connect() {
+        socket = new WebSocket('ws://localhost:8080/ws');
+        socket.onmessage = function (event) {
+            showMessage(event.data);
+        };
+        socket.onopen = function (event) {
+            console.log('WebSocket 연결 성공');
+        };
+        socket.onclose = function (event) {
+            console.log('WebSocket 연결 종료');
+        };
+    }
+
+    function sendMessage() {
+        var messageContent = $('#message').val();
+        if (messageContent && socket) {
+            socket.send(messageContent);
+            $('#message').val('');
+        }
+    }
+
+    function showMessage(message) {
+        $('#messages').append('<li class="list-group-item">' + message + '</li>');
+    }
+
+    function loadMessages() {
+        if (loading) return;
+        loading = true;
+        $.get(`/api/chat/${chatRoomId}/messages`, { page: page, size: size }, function (data) {
+            data.reverse().forEach(function (message) {
+                $('#messages').prepend('<li class="list-group-item">' + message.sender + ': ' + message.content + '</li>');
+            });
+            loading = false;
+            page++;
+        });
+    }
+
+    $('#chat-body').scroll(function () {
+        if ($(this).scrollTop() === 0 && !loading) {
+            loadMessages();
+        }
+    });
+
+    $(document).ready(function () {
+        connect();
+        loadMessages();
+    });
+</script>
 </body>
 </html>
