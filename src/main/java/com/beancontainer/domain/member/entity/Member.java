@@ -1,4 +1,4 @@
-package com.beancontainer.domain.member;
+package com.beancontainer.domain.member.entity;
 
 import jakarta.persistence.*;
 
