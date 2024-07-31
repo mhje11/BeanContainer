@@ -2,7 +2,6 @@ package com.beancontainer.domain.cafe.controller;
 
 import com.beancontainer.domain.cafe.dto.CafeResponseDto;
 import com.beancontainer.domain.cafe.dto.CafeSaveDto;
-import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.cafe.service.CafeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
