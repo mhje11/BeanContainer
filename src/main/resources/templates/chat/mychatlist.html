@@ -1,10 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>내 채팅방 목록</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
 </head>
 <body>
-
+<div class="container">
+    <h1>내 채팅방 목록</h1>
+    <ul id="myChatList" class="list-group"></ul>
+    <button onclick="location.href='/chatlist'" class="btn btn-primary">채팅방 목록</button>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const userId = 1; // 실제 사용자 ID로 대체
+        $.get('/api/mychatlist/' + userId, function(data) {
+            data.forEach(function(chatRoom) {
+                $('#myChatList').append('<li class="list-group-item">' + chatRoom.title + '</li>');
+            });
+        });
+    });
+</script>
 </body>
 </html>

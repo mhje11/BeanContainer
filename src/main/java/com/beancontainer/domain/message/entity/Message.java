@@ -2,11 +2,13 @@ package com.beancontainer.domain.message.entity;
 
 import com.beancontainer.domain.chatroom.entity.ChatRoom;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messages")
+@Getter
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

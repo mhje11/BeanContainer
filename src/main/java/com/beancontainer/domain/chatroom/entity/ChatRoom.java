@@ -1,8 +1,10 @@
 package com.beancontainer.domain.chatroom.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "chat_rooms")
 public class ChatRoom {
     @Id
