@@ -1,6 +1,6 @@
-package com.beancontainer.domain.message;
+package com.beancontainer.domain.message.entity;
 
-import com.beancontainer.domain.chatroom.ChatRoom;
+import com.beancontainer.domain.chatroom.entity.ChatRoom;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
