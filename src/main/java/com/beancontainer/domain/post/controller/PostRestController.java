@@ -5,6 +5,7 @@ import com.beancontainer.domain.post.dto.PostResponseDto;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,14 +17,19 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class PostRestController {
     private final PostService postService;
 
     @PostMapping("/post/create")
-    public ResponseEntity createPost(@RequestBody PostRequestDto postRequestDto, Principal principal) {
-        String username = principal.getName();
-        PostResponseDto post = postService.createPost(postRequestDto, "test");
+    public ResponseEntity<String> createPost(@RequestBody PostRequestDto postRequestDto, Principal principal) {
+        String username = "test";
+        log.info(postRequestDto.getTitle());
+        log.info(postRequestDto.getContent());
+        log.info(postRequestDto.getUuid());
+        Long postId = postService.createPost(postRequestDto, username);
+        log.info("postId {}", postId);
 
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok("게시글생성 완료");
     }
 }

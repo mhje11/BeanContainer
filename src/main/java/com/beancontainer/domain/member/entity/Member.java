@@ -33,7 +33,7 @@ public class Member {
 
     private String uuid;
 
-    private Member(String name, String username, String userId, String password, Role role, String uuid) {
+    public Member(String name, String username, String userId, String password, Role role, String uuid) {
         this.name = name;
         this.username = username;
         this.userId = userId;
