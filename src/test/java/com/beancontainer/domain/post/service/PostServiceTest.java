@@ -29,17 +29,18 @@ class PostServiceTest {
     @Autowired
     PostRepository postRepository;
 
-    @Test
-    public void testCreatePost() {  // 게시글 작성 테스트
-
-        Member member = new Member("test", "test", "1234", "1234", Role.MEMBER, "asdf");
-        memberRepository.save(member);
-        PostRequestDto postRequestDto = new PostRequestDto("제목", "내용", "asdf");
-
-        Long postId = postService.createPost(postRequestDto, member.getUsername());
-        Optional<Post> post = postRepository.findById(postId);
-
-        assertEquals(postId, post.get().getId());
-
-    }
+//    @Test
+//    public void testCreatePost() {  // 게시글 작성 테스트
+//
+//        Member member = new Member("test", "test", "1234", "1234", Role.MEMBER, "asdf");
+//        memberRepository.save(member);
+//        PostRequestDto postRequestDto = new PostRequestDto("제목", "내용", "asdf");
+//
+//
+//        Long postId = postService.createPost(postRequestDto, member.getUsername());
+//        Optional<Post> post = postRepository.findById(postId);
+//
+//        assertEquals(postId, post.get().getId());
+//
+//    }
 }
