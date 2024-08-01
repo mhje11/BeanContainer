@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor //생성자 자동 주입
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder; //패스워드 암호화를 위함
+    private final PasswordEncoder passwordEncoder; //패스워드 암호화
 
 
     @Transactional
