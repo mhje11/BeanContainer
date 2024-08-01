@@ -13,13 +13,13 @@ import java.util.UUID;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; //주석
+    private Long id;
 
     @Column(nullable = false)
-    private String name; //이름
+    private String name; //회원 이름
 
     @Column(nullable = false, unique = true)
-    private String username; //닉네임
+    private String nickname; //닉네임
 
     @Column(nullable = false, unique = true)
     private String userId; //로그인 아이디
@@ -33,9 +33,9 @@ public class Member {
 
     private String uuid;
 
-    public Member(String name, String username, String userId, String password, Role role, String uuid) {
+    public Member(String name, String nickname, String userId, String password, Role role, String uuid) {
         this.name = name;
-        this.username = username;
+        this.nickname = nickname;
         this.userId = userId;
         this.password = password;
         this.role = role;
@@ -43,7 +43,7 @@ public class Member {
     }
 
     //setter 를 사용하여 엔티티에 추가하는 방법 대신 별도의 메소드를 만들어서 추가
-    public static Member createMember(String name, String username, String userId, String password) {
-        return new Member(name, username, userId, password, Role.MEMBER, UUID.randomUUID().toString());
+    public static Member createMember(String name, String nickname, String userId, String password) {
+        return new Member(name, nickname, userId, password, Role.MEMBER, UUID.randomUUID().toString());
     }
 }

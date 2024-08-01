@@ -9,9 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -33,36 +31,28 @@ public class MemberController {
     }
 
     //로그인 페이지
-    @GetMapping("/loginform")
+    @GetMapping("/login")
     public String showLoginForm() {
         return "loginForm";
     }
 
     //회원가입 페이지
-    @GetMapping("/signupform")
+    @GetMapping("/signup")
     public String showSignUpForm(Model model) {
         model.addAttribute("memberSignUpDto", new MemberSignUpDto());
-        return "signUpForm";
+        return "signupForm";
     }
 
-    @PostMapping("/signupform")
-    public String signUp(@Valid @ModelAttribute MemberSignUpDto signUpDto,
-                         BindingResult bindingResult,
-                         RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "signUpForm";
-        } //유효성 검사 오류가 있으면 회원가입 폼으로
-
+    @PostMapping("/signup")
+    @ResponseBody
+    public ResponseEntity<?> signUp(@Valid @RequestBody MemberSignUpDto signUpDto) {
         try {
             Member newMember = memberService.signUp(signUpDto);
-            redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다. 회원 ID: " + newMember.getId());
-            return "redirect:/login"; // 로그인 페이지로 리다이렉트
+            return ResponseEntity.ok().body("회원가입이 완료되었습니다. 회원 ID: " + newMember.getId());
         } catch (IllegalStateException e) {
-            bindingResult.rejectValue("userId", "error.userId", e.getMessage());
-            return "signUpForm"; //중복시 에러 출력 후 회원가입 폼으로
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            bindingResult.reject("error.signUp", "회원가입 중 오류가 발생했습니다.");
-            return "signUpForm"; //기타 예외 발생 시 에러 처리
+            return ResponseEntity.internalServerError().body("회원가입 중 오류가 발생했습니다.");
         }
     }
 

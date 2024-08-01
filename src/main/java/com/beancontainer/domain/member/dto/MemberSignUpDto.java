@@ -17,6 +17,7 @@ public class MemberSignUpDto {
     @Size(min = 8, max = 20, message = "비밀번호는 8~20자.") //비밀번호 길이 설정
     private String password;
 
+    private String nickname;
 
     private String name;
     private String role;

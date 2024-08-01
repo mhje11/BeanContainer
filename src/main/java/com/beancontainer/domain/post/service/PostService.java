@@ -20,7 +20,7 @@ public class PostService {
 
     @Transactional
     public Long createPost(PostRequestDto postRequestDto, String username) {
-        Member member = memberRepository.findByUsername(username);
+        Member member = memberRepository.findByNickname(username);
         log.info(member.getName());
 
         Post post = new Post(

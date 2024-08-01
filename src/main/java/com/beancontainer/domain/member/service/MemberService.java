@@ -24,8 +24,8 @@ public class MemberService {
 
         Member member = Member.createMember(
                 signUp.getName(),
+                signUp.getNickname(),
                 signUp.getUserId(),
-                signUp.getPassword(),
                 passwordEncoder.encode(signUp.getPassword()) //DTO의 password 암호화
         );
         return memberRepository.save(member);
