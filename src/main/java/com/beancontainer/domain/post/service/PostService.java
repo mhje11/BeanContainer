@@ -19,8 +19,9 @@ public class PostService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public PostResponseDto createPost(PostRequestDto postRequestDto, String username) {
+    public Long createPost(PostRequestDto postRequestDto, String username) {
         Member member = memberRepository.findByUsername(username);
+        log.info(member.getName());
 
         Post post = new Post(
                 member,
@@ -30,18 +31,6 @@ public class PostService {
         );
 
         Post savedPost = postRepository.save(post);
-
-        log.info(savedPost.toString());
-
-        return new PostResponseDto(
-                savedPost.getId(),
-                savedPost.getMember().getUsername(),
-                savedPost.getTitle(),
-                savedPost.getContent(),
-                savedPost.getViews(),
-                savedPost.getCreatedAt(),
-                savedPost.getUpdatedAt(),
-                savedPost.getUuid()
-        );
+        return savedPost.getId();
     }
 }
