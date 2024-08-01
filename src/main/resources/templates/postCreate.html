@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>PostCreateForm</title>
+</head>
+<body>
+    <form th:action="@{/api/post/create}" method="post">
+        <div>
+            <label for="title">제목</label>
+            <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
+        </div>
+        <div>
+            <label for="content">내용</label>
+            <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
+        </div>
+        <button type="submit">게시글 작성</button>
+    </form>
+</body>
+</html>

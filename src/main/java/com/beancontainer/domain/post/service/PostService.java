@@ -1,5 +1,7 @@
 package com.beancontainer.domain.post.service;
 
+import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostResponseDto;
 import com.beancontainer.domain.post.entity.Post;
@@ -14,13 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class PostService {
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public PostResponseDto createPost(PostRequestDto postRequestDto) {
-//        Member testMember = new Member(1L, "test", "nick", "test", "1234", null, null);
+    public PostResponseDto createPost(PostRequestDto postRequestDto, String username) {
+        Member member = memberRepository.findByUsername(username);
 
         Post post = new Post(
-                postRequestDto.getUsername(),
+                member,
                 postRequestDto.getTitle(),
                 postRequestDto.getContent(),
                 postRequestDto.getUuid()
@@ -28,14 +31,16 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
+        log.info(savedPost.toString());
+
         return new PostResponseDto(
                 savedPost.getId(),
-                savedPost.getUsername(),
+                savedPost.getMember().getUsername(),
                 savedPost.getTitle(),
                 savedPost.getContent(),
-//                savedPost.getViews(),
-//                savedPost.getCreatedAt(),
-//                savedPost.getUpdatedAt(),
+                savedPost.getViews(),
+                savedPost.getCreatedAt(),
+                savedPost.getUpdatedAt(),
                 savedPost.getUuid()
         );
     }
