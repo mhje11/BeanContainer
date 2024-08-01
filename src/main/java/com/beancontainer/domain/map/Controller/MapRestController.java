@@ -1,9 +1,9 @@
 package com.beancontainer.domain.map.Controller;
 
-import com.beancontainer.domain.cafe.dto.CafeSaveDto;
 import com.beancontainer.domain.map.dto.MapCreateDto;
 import com.beancontainer.domain.map.dto.MapDetailResponseDto;
 import com.beancontainer.domain.map.dto.MapListResponseDto;
+import com.beancontainer.domain.map.dto.MapUpdateDto;
 import com.beancontainer.domain.map.service.MapService;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MapRestController {
     private final MapService mapService;
-    private final MapCafeRepository mapCafeRepository;
 
     @PostMapping("/api/mymap")
     public ResponseEntity<String> createMap(@RequestBody MapCreateDto mapCreateDto) {
@@ -24,6 +23,8 @@ public class MapRestController {
         return ResponseEntity.ok("지도 생성 성공 : ID : " + mapId);
     }
 
+
+    //추후에 자신의 map만 뜨도록
     @GetMapping("/api/mymap")
     public ResponseEntity<List<MapListResponseDto>> myMapList() {
         List<MapListResponseDto> mapList = mapService.getMapList();
@@ -34,5 +35,18 @@ public class MapRestController {
     public ResponseEntity<MapDetailResponseDto> myMapDetail(@PathVariable("mapId") Long mapId) {
         MapDetailResponseDto mapDetail = mapService.getMapDetail(mapId);
         return ResponseEntity.ok(mapDetail);
+    }
+
+    @PutMapping("/api/mymap/update/{mapId}")
+    public ResponseEntity<String> updateMap(@PathVariable("mapId") Long mapId, @RequestBody MapUpdateDto mapUpdateDto) {
+        mapUpdateDto.setMapId(mapId);
+        mapService.updateMap(mapUpdateDto);
+        return ResponseEntity.ok("지도 업데이트 성공 ID : " + mapId);
+    }
+
+    @DeleteMapping("/api/mymap/delete/{mapId}")
+    public ResponseEntity<String> deleteMap(@PathVariable("mapId") Long mapId) {
+        mapService.deleteMap(mapId);
+        return ResponseEntity.ok("지도 삭제 성공 ID : " + mapId);
     }
 }

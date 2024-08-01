@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 public class MapListResponseDto {
     private String mapName;
     private String username;
+    private Long mapId;
 
-    public MapListResponseDto(String mapName, String username) {
+    public MapListResponseDto(String mapName, String username, Long mapId) {
         this.mapName = mapName;
         this.username = username;
+        this.mapId = mapId;
     }
 }

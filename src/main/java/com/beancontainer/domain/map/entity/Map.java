@@ -2,13 +2,16 @@ package com.beancontainer.domain.map.entity;
 
 import com.beancontainer.domain.mapcafe.entity.MapCafe;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "maps")
 @Getter
+@AllArgsConstructor
 public class Map {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,11 +25,21 @@ public class Map {
 
     @OneToMany
     @JoinColumn(name = "map_id")
-    private List<MapCafe> mapCafes;
+    private List<MapCafe> mapCafes = new ArrayList<>();
 
     public Map(String mapName, String username) {
         this.mapName = mapName;
         this.username = username;
+    }
+
+    public void updateMap(String mapName, List<MapCafe> mapCafes) {
+        if (mapName != null) {
+            this.mapName = mapName;
+        }
+        if (mapCafes != null) {
+            this.mapCafes.clear();
+            this.mapCafes.addAll(mapCafes);
+        }
     }
 
     protected Map() {}
