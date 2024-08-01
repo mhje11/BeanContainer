@@ -12,7 +12,7 @@ public class PostController {
     // 게시글 작성 폼
     @GetMapping("/post/create")
     public String postCreateForm() {
-        return "postCreate";
+        return "post/postCreate";
     }
 
     // 게시글 수정 폼
