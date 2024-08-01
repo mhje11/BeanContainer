@@ -15,7 +15,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/", "/loginform", "/signupform").permitAll() // 모든 사용자에게 허용
+                        .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**").permitAll() // 모든 사용자에게 허용
                         .requestMatchers("/post/create").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/mypage/{userId}").authenticated() // 인증된 사용자만 접근 가능
