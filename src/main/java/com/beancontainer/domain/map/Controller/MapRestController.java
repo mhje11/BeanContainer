@@ -8,10 +8,7 @@ import com.beancontainer.domain.map.service.MapService;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,18 +18,21 @@ public class MapRestController {
     private final MapService mapService;
     private final MapCafeRepository mapCafeRepository;
 
-//    @PostMapping("/api/mymap")
-//    public ResponseEntity<String> createMap(@RequestBody MapCreateDto mapCreateDto, @RequestBody List<CafeSaveDto> cafeSaveDtos) {
-//        mapService.createMap(mapCreateDto, cafeSaveDtos);
-//    }
-//
-//    @GetMapping("/api/mymap")
-//    public ResponseEntity<MapListResponseDto> myMapList() {
-//
-//    }
-//
-//    @GetMapping("/api/mymap/{mapId}")
-//    public ResponseEntity<MapDetailResponseDto> myMapDetail() {
-//
-//    }
+    @PostMapping("/api/mymap")
+    public ResponseEntity<String> createMap(@RequestBody MapCreateDto mapCreateDto) {
+        Long mapId = mapService.createMap(mapCreateDto);
+        return ResponseEntity.ok("지도 생성 성공 : ID : " + mapId);
+    }
+
+    @GetMapping("/api/mymap")
+    public ResponseEntity<List<MapListResponseDto>> myMapList() {
+        List<MapListResponseDto> mapList = mapService.getMapList();
+        return ResponseEntity.ok(mapList);
+    }
+
+    @GetMapping("/api/mymap/{mapId}")
+    public ResponseEntity<MapDetailResponseDto> myMapDetail(@PathVariable("mapId") Long mapId) {
+        MapDetailResponseDto mapDetail = mapService.getMapDetail(mapId);
+        return ResponseEntity.ok(mapDetail);
+    }
 }
