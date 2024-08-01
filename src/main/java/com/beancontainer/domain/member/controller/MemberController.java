@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class MemberController {
         return "loginForm";
     }
 
+
     //회원가입 페이지
     @GetMapping("/signup")
     public String showSignUpForm(Model model) {
@@ -48,7 +51,8 @@ public class MemberController {
     public ResponseEntity<?> signUp(@Valid @RequestBody MemberSignUpDto signUpDto) {
         try {
             Member newMember = memberService.signUp(signUpDto);
-            return ResponseEntity.ok().body("회원가입이 완료되었습니다. 회원 ID: " + newMember.getId());
+            return ResponseEntity.ok().body(Map.of("message", "회원가입이 완료되었습니다. 회원 ID: " + newMember.getId(),
+                    "redirectUrl", "/login"));
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

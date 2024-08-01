@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/signUpForm.css">
 </head>
 <body>
-<form id="signUpForm">
+<form id="signUpForm" method="post">
     <h2>회원가입</h2>
 
     <label for="userId">아이디:</label>
@@ -67,6 +67,7 @@
                 if (error.nickname) document.getElementById('nicknameError').textContent = error.nickname;
                 if (error.name) document.getElementById('nameError').textContent = error.name;
             });
+        //console.log("sending data : ", JSON.stringify(data));
     });
 </script>
 </body>
