@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "posts")
@@ -16,11 +17,11 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;  // 작성자*/
+    private Member member;  // 작성자
 
-    private String username;    // 멤버 생기기 전 테스트 목적으로 사용
+//    private String username;    // 멤버 생기기 전 테스트 목적으로 사용
 
     @Column(nullable = false)
     private String title;   // 제목
@@ -38,10 +39,11 @@ public class Post {
 
     private String uuid;    // 이미지
 
-    public Post(String username, String title, String content, String uuid) {
-        this.username = username;
+    public Post(Member member, String title, String content, String uuid) {
+//        this.username = username;
+        this.member = member;
         this.title = title;
         this.content = content;
-        this.uuid = uuid;
+        this.uuid = UUID.randomUUID().toString();
     }
 }

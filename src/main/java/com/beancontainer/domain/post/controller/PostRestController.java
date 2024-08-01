@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -18,8 +20,10 @@ public class PostRestController {
     private final PostService postService;
 
     @PostMapping("/post/create")
-    public ResponseEntity createPost(@RequestBody PostRequestDto postRequestDto) {
-        PostResponseDto post = postService.createPost(postRequestDto);
+    public ResponseEntity createPost(@RequestBody PostRequestDto postRequestDto, Principal principal) {
+        String username = principal.getName();
+        PostResponseDto post = postService.createPost(postRequestDto, "test");
+
         return ResponseEntity.ok(post);
     }
 }

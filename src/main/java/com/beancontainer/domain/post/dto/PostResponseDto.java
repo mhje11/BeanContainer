@@ -14,8 +14,8 @@ public class PostResponseDto {
     private String username;
     private String title;
     private String content;
-//    private int views = 0;
-//    private LocalDateTime createdAt;
-//    private LocalDateTime updatedAt;
+    private int views;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String uuid;
 }
