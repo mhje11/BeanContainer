@@ -2,6 +2,9 @@ package com.beancontainer.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,8 +26,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
                 )
                 .formLogin(form -> form
-                        .loginPage("/loginform") //loginPage 지정
-                        .defaultSuccessUrl("/") // 성공 시 / 로 리다이렉트
+                        .loginPage("/login") //loginPage 지정
+                        .loginProcessingUrl("/login") //로그인 처리 URL
+                        .defaultSuccessUrl("/", true) // 성공 시 / 로 리다이렉트
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -38,6 +42,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
 }
