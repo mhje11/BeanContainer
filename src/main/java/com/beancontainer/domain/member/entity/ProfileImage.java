@@ -3,6 +3,7 @@ package com.beancontainer.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.UUID;
 
@@ -14,8 +15,10 @@ public class ProfileImage {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID fileName; //파일명 UUID 지정
 
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID filePath; //파일경로도 UUID 지정
 
     private String fileType;
@@ -31,7 +34,7 @@ public class ProfileImage {
         this.member = member;
     }
 
-    //이미지 등록
+    //이미지 인스턴스 생성
     public static ProfileImage createProfileImage(UUID fileName, UUID filePath, String fileType, Member member) {
         return new ProfileImage(fileName, filePath, fileType, member);
     }
