@@ -9,7 +9,7 @@ import lombok.Setter;
 //회원가입에 대한 DTO
 @Getter @Setter
 @NoArgsConstructor
-public class MemberSignUpDto {
+public class SignUpDto {
     @NotBlank(message = "아이디를 입력하세요.") //공백 불가능
     private String userId;
 

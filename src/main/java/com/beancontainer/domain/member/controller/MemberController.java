@@ -1,21 +1,24 @@
 package com.beancontainer.domain.member.controller;
 
-import com.beancontainer.domain.member.dto.MemberSignUpDto;
+import com.beancontainer.domain.member.dto.LoginDto;
+import com.beancontainer.domain.member.dto.SignUpDto;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
-import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Map;
+import java.util.Optional;
 
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
@@ -39,26 +42,29 @@ public class MemberController {
     }
 
 
+
+    @PostMapping("/signup")
+    public String signUp(@ModelAttribute SignUpDto signUpDto, RedirectAttributes redirectAttributes) {
+        try {
+            memberService.signUp(signUpDto);
+            redirectAttributes.addFlashAttribute("signupSuccess", true);
+            return "redirect:/login";
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/signup";
+        }
+    }
+
+
+
+
     //회원가입 페이지
     @GetMapping("/signup")
     public String showSignUpForm(Model model) {
-        model.addAttribute("memberSignUpDto", new MemberSignUpDto());
+        model.addAttribute("memberSignUpDto", new SignUpDto());
         return "signupForm";
     }
 
-    @PostMapping("/signup")
-    @ResponseBody
-    public ResponseEntity<?> signUp(@Valid @RequestBody MemberSignUpDto signUpDto) {
-        try {
-            Member newMember = memberService.signUp(signUpDto);
-            return ResponseEntity.ok().body(Map.of("message", "회원가입이 완료되었습니다. 회원 ID: " + newMember.getId(),
-                    "redirectUrl", "/login"));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("회원가입 중 오류가 발생했습니다.");
-        }
-    }
 
     //마이페이지
     @GetMapping("/mypage/{userId}")

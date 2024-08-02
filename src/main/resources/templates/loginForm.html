@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/loginForm.css">
+</head>
+<body>
+<h2>Login</h2>
+    <form th:action="@{/login}" method="post">
+        <div>
+            <label for="userId">아이디 :</label>
+            <input type="text" id="userId" name="userId" required>
+        </div>
+
+        <div>
+            <label for="password">비밀번호 :</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <div>
+            <button type="submit">로그인</button>
+        </div>
+
+    </form>
+    <div th:if="${param.error}">
+        Invalid username and password.
+    </div>
+    <div th:if="${param.logout}">
+        You have been logged out.
+    </div>
+    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
+    <a th:href="@{/signup}">회원가입</a>
+
+</body>
+</html>
