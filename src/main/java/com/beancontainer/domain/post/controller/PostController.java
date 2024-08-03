@@ -18,12 +18,12 @@ public class PostController {
     // 게시글 수정 폼
     @GetMapping("/postlist/update/{postId}")
     public String postUpdateForm(@PathVariable Long postId, Model model) {
-        return "postUpdate";
+        return "post/postUpdate";
     }
 
     // 게시글 상세보기 폼
     @GetMapping("/postlist/{postId}")
     public String postDetailsForm(@PathVariable Long postId, Model model) {
-        return "postDetails";
+        return "post/postDetails";
     }
 }

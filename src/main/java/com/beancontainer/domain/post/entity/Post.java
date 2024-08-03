@@ -1,17 +1,22 @@
 package com.beancontainer.domain.post.entity;
 
 import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.postimg.entity.PostImg;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "posts")
 @Getter
 @NoArgsConstructor
+@ToString
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +25,6 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;  // 작성자
-
-//    private String username;    // 멤버 생기기 전 테스트 목적으로 사용
 
     @Column(nullable = false)
     private String title;   // 제목
@@ -37,13 +40,13 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;    // 수정일
 
-    private String uuid;    // 이미지
+    @OneToMany
+    @JoinColumn(name = "post_id")
+    private List<PostImg> images = new ArrayList<>();
 
-    public Post(Member member, String title, String content, String uuid) {
-//        this.username = username;
+    public Post(Member member, String title, String content) {
         this.member = member;
         this.title = title;
         this.content = content;
-        this.uuid = UUID.randomUUID().toString();
     }
 }
