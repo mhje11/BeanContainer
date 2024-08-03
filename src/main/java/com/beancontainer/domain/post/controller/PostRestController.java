@@ -26,7 +26,7 @@ public class PostRestController {
         String nickname = "test";
         log.info(postRequestDto.getTitle());
         log.info(postRequestDto.getContent());
-        log.info(postRequestDto.getUuid());
+//        log.info(postRequestDto.getUuid());
         Long postId = postService.createPost(postRequestDto, nickname);
         log.info("postId {}", postId);
 

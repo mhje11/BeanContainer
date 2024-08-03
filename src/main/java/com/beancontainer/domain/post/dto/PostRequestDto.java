@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class PostRequestDto {
     private String title;
     private String content;
-    private String uuid;
+//    private String uuid;
 }
