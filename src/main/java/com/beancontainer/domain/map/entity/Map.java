@@ -29,7 +29,7 @@ public class Map {
         this.username = username;
     }
 
-    public void updateMap(String mapName, List<MapCafe> mapCafes) {
+    public void updateMap(String mapName) {
         if (mapName != null) {
             this.mapName = mapName;
         }
