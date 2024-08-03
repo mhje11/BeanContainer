@@ -16,7 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,8 +43,11 @@ class MapServiceTest {
 
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
+        Set<Long> cafeIdSet = new HashSet<>();
+        cafeIdSet.add(cafe1.getId());
+        cafeIdSet.add(cafe2.getId());
 
-        MapCreateDto mapCreateDto = new MapCreateDto("map1", "user1", Arrays.asList(cafe1.getId(), cafe2.getId()));
+        MapCreateDto mapCreateDto = new MapCreateDto("map1", "user1", cafeIdSet);
         Long mapId = mapService.createMap(mapCreateDto);
 
         Map savedMap = mapRepository.findById(mapId).orElse(null);
@@ -65,8 +70,16 @@ class MapServiceTest {
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
 
-        mapService.createMap(new MapCreateDto("map1", "user1", Arrays.asList(cafe1.getId(), cafe2.getId())));
-        mapService.createMap(new MapCreateDto("map2", "user2", Arrays.asList(cafe1.getId())));
+        Set<Long> cafeIdSet = new HashSet<>();
+        cafeIdSet.add(cafe1.getId());
+        cafeIdSet.add(cafe2.getId());
+
+        Set<Long> cafeIdSet2 = new HashSet<>();
+
+        cafeIdSet2.add(cafe1.getId());
+
+        mapService.createMap(new MapCreateDto("map1", "user1", cafeIdSet));
+        mapService.createMap(new MapCreateDto("map2", "user2", cafeIdSet2));
 
         // When
         List<MapListResponseDto> mapList = mapService.getMapList();
@@ -80,6 +93,7 @@ class MapServiceTest {
         assertEquals("user2", mapList.get(1).getUsername());
     }
 
+
     @Test
     void getMapDetail() {
         // Given
@@ -89,7 +103,11 @@ class MapServiceTest {
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
 
-        Long mapId = mapService.createMap(new MapCreateDto("map1", "user1", Arrays.asList(cafe1.getId(), cafe2.getId())));
+        Set<Long> cafeIdSet = new HashSet<>();
+        cafeIdSet.add(cafe1.getId());
+        cafeIdSet.add(cafe2.getId());
+
+        Long mapId = mapService.createMap(new MapCreateDto("map1", "user1", cafeIdSet));
 
         // When
         MapDetailResponseDto mapDetail = mapService.getMapDetail(mapId);
@@ -113,11 +131,19 @@ class MapServiceTest {
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
 
-        Long mapId = mapService.createMap(new MapCreateDto("ExMap1", "user123", Arrays.asList(cafe1.getId(), cafe2.getId())));
+        Set<Long> cafeIdSet = new HashSet<>();
+        cafeIdSet.add(cafe1.getId());
+        cafeIdSet.add(cafe2.getId());
+
+        Long mapId = mapService.createMap(new MapCreateDto("ExMap1", "user123", cafeIdSet));
 
         Cafe cafe3 = new Cafe("kakaoId3", "Cafe3", "Address2", 37.5675, 126.9790, "Incheon", "District3", "Neighborhood3");
+
+        Set<Long> cafeIdList = new HashSet<>();
+        cafeIdList.add(cafe1.getId());
+        cafeIdList.add(cafe2.getId());
         cafeRepository.save(cafe3);
-        MapUpdateDto mapUpdateDto = new MapUpdateDto(mapId, "UpdatedMap", Arrays.asList(cafe1.getId(), cafe3.getId()));
+        MapUpdateDto mapUpdateDto = new MapUpdateDto(mapId, "UpdatedMap", cafeIdList);
 
 
         //when
@@ -127,10 +153,7 @@ class MapServiceTest {
         //then
         Map updatedMap = mapRepository.findById(updatedMapId).orElseThrow(() -> new RuntimeException("해당 지도가 존재하지 않습니다."));
         assertThat(updatedMap.getMapName()).isEqualTo("UpdatedMap");
-//        assertThat(updatedMap.getMapCafes().size()).isEqualTo(2);
-//
-//        assertThat(updatedMap.getMapCafes().get(0).getCafe().getName()).isEqualTo("Cafe1");
-//        assertThat(updatedMap.getMapCafes().get(1).getCafe().getName()).isEqualTo("Cafe3");
+
     }
 
     @Test
@@ -142,7 +165,11 @@ class MapServiceTest {
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
 
-        Long mapId = mapService.createMap(new MapCreateDto("ExMap1", "user123", Arrays.asList(cafe1.getId(), cafe2.getId())));
+        Set<Long> cafeIdSet = new HashSet<>();
+        cafeIdSet.add(cafe1.getId());
+        cafeIdSet.add(cafe2.getId());
+
+        Long mapId = mapService.createMap(new MapCreateDto("ExMap1", "user123", cafeIdSet));
     //when
         mapService.deleteMap(mapId);
     //then

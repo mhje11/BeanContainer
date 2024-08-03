@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,19 +66,36 @@ public class MapService {
         Map map = mapRepository.findById(mapUpdateDto.getMapId()).orElseThrow(() -> new RuntimeException("해당 지도가 존재하지 않습니다."));
 
         List<MapCafe> existingMapCafes = mapCafeRepository.findByMapId(map.getId());
-        mapCafeRepository.deleteAll(existingMapCafes);
 
-        List<MapCafe> updateMapCafes = mapUpdateDto.getCafeIds().stream()
-                .map(cafeId -> {
-                    Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
-                    MapCafe mapCafe = new MapCafe(map, cafe);
-                    mapCafeRepository.save(mapCafe);
-                    return mapCafe;
-                })
-                .collect(Collectors.toList());
+        //업데이트 할 카페목록
+        Set<Long> newCafeIds = mapUpdateDto.getCafeIds();
 
-        map.updateMap(mapUpdateDto.getMapName(), updateMapCafes);
+        //기존 카페 목록
+        Set<Long> existingCafeIds = existingMapCafes.stream()
+                .map(mapCafe -> mapCafe.getCafe().getId())
+                .collect(Collectors.toSet());
 
+
+        //새로추가할 카페목록
+        Set<Long> addCafe = new HashSet<>(newCafeIds);
+        addCafe.removeAll(existingCafeIds);
+
+        //삭제할 카페 목록
+        Set<Long> removeCafe = new HashSet<>(existingCafeIds);
+        removeCafe.removeAll(newCafeIds);
+
+        existingMapCafes.stream()
+                .filter(mapCafe -> removeCafe.contains(mapCafe.getCafe().getId()))
+                .forEach(mapCafeRepository::delete);
+
+        addCafe.forEach(cafeId -> {
+            Cafe cafe = cafeRepository.findById(cafeId)
+                    .orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
+            MapCafe mapCafe = new MapCafe(map, cafe);
+            mapCafeRepository.save(mapCafe);
+        });
+
+        map.updateMap(mapUpdateDto.getMapName());
         mapRepository.save(map);
 
         return map.getId();

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -12,9 +13,9 @@ import java.util.List;
 public class MapUpdateDto {
     private Long mapId;
     private String mapName;
-    private List<Long> cafeIds;
+    private Set<Long> cafeIds;
 
-    public MapUpdateDto(Long mapId, String mapName, List<Long> cafeIds) {
+    public MapUpdateDto(Long mapId, String mapName, Set<Long> cafeIds) {
         this.mapId = mapId;
         this.mapName = mapName;
         this.cafeIds = cafeIds;

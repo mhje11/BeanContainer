@@ -1,4 +1,4 @@
 package com.beancontainer.global.service;
 
-public class CustomUserDetailsService {
+public interface UserDetailsService {
 }
