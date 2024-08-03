@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+</head>
+<body>
+<script>
+    async function fetchPosts() {
+        try {
+            const response = await fetch('/api/postList'); // API 호출
+            if (!response.ok) {
+                throw new Error('게시글을 가져오는 데 실패했습니다.');
+            }
+            const posts = await response.json(); // JSON 형식으로 변환
+
+            const postListDiv = document.getElementById('post-list');
+            postListDiv.innerHTML = ''; // 기존 게시글 초기화
+
+            posts.forEach(post => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${post.id}</td>
+                <td><a href="/post/view/${post.id}">${post.title}</a></td>
+                <td>${post.nickname}</td>
+                <td>${new Date(post.createdAt).toLocaleString()}}</td>
+                <td>${post.views}</td>
+            `;
+                postListDiv.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+            const postListDiv = document.getElementById('post-list');
+            postListDiv.innerHTML = '<tr><td colspan="5">게시글을 불러오는 중 오류가 발생했습니다.</td></tr>';
+        }
+    }
+
+</script>
+
+</body>
+</html>
