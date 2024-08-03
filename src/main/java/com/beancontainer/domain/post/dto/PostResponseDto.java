@@ -17,5 +17,5 @@ public class PostResponseDto {
     private int views;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String uuid;
+//    private String uuid;
 }

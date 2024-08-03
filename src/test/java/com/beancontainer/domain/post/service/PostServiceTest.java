@@ -34,7 +34,7 @@ class PostServiceTest {
 
         Member member = new Member("name", "nickname", "id", "1234", Role.MEMBER);
         memberRepository.save(member);
-        PostRequestDto postRequestDto = new PostRequestDto("제목", "내용", "asdf");
+        PostRequestDto postRequestDto = new PostRequestDto("제목", "내용");
 
 
         Long postId = postService.createPost(postRequestDto, member.getNickname());

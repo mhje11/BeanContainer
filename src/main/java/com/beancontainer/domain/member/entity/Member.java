@@ -19,7 +19,7 @@ public class Member {
     @Column(nullable = false)
     private String name; //회원 이름
 
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String nickname; //닉네임
 
     @Column(nullable = false, unique = true)
