@@ -23,11 +23,11 @@ public class PostRestController {
 
     @PostMapping("/post/create")
     public ResponseEntity<String> createPost(@RequestBody PostRequestDto postRequestDto, Principal principal) {
-        String username = "test";
+        String nickname = "test";
         log.info(postRequestDto.getTitle());
         log.info(postRequestDto.getContent());
         log.info(postRequestDto.getUuid());
-        Long postId = postService.createPost(postRequestDto, username);
+        Long postId = postService.createPost(postRequestDto, nickname);
         log.info("postId {}", postId);
 
         return ResponseEntity.ok("게시글생성 완료");

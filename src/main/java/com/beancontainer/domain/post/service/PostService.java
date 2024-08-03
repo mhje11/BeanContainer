@@ -19,16 +19,19 @@ public class PostService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long createPost(PostRequestDto postRequestDto, String username) {
-        Member member = memberRepository.findByNickname(username);
-        log.info(member.getName());
+    public Long createPost(PostRequestDto postRequestDto, String nickname) {
+        Member member = memberRepository.findByNickname(nickname);
+        log.info(member.getNickname());
 
         Post post = new Post(
                 member,
                 postRequestDto.getTitle(),
-                postRequestDto.getContent(),
-                postRequestDto.getUuid()
+                postRequestDto.getContent()
         );
+
+        // 이미지..
+
+        log.info(post.toString());
 
         Post savedPost = postRepository.save(post);
         return savedPost.getId();
