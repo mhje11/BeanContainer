@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .loginPage("/login") //loginPage 지정
                         .loginProcessingUrl("/login") //로그인 처리 URL
                         .defaultSuccessUrl("/", true) // 성공 시 / 로 리다이렉트
+                        .usernameParameter("userId") //기본적으로 username 을 파라미터로 받음 -> 현재 userId를 받고 있으니 명시해줌
                         .permitAll()
                 )
                 .logout(logout -> logout

@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor //생성자 자동 주입
@@ -58,10 +57,6 @@ public class MemberService implements UserDetailsService {
     }
 
 
-
-    public Optional<Member> findByUserId(String userId) {
-        return memberRepository.findByUserId(userId);
-    }
 
 
 }
