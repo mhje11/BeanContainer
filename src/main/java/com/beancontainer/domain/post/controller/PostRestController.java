@@ -43,4 +43,15 @@ public class PostRestController {
         PostDetailsResponseDto post = postService.postDetails(postId);
         return ResponseEntity.ok(post);
     }
+
+    @DeleteMapping("/post/delete/{postId}") // 게시글 삭제
+    public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+        if (!postService.existsById(postId)) {
+            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
+        }
+
+        postService.deletePost(postId);
+        return ResponseEntity.ok("글 삭제가 완료되었습니다");
+    }
+
 }
