@@ -70,4 +70,15 @@ public class PostService {
         );
     }
 
+    // 게시글 존재 여부 확인
+    public boolean existsById(Long postId) {
+        return postRepository.existsById(postId);
+    }
+
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(Long postId) {
+        postRepository.deleteById(postId);
+    }
+
 }
