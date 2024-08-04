@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 @RequiredArgsConstructor
 public class PostController {
+    // 게시글 전체 조회
+    @GetMapping("/post/postList")
+    public String postList() {
+        return "post/postList";
+    }
+
     // 게시글 작성 폼
     @GetMapping("/post/create")
     public String postCreateForm() {
