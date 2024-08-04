@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세보기</title>
+    <style>
+
+        strong {
+            font-size: 17px;
+            font-weight: bold;
+            padding-bottom: 8px;
+        }
+
+        a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div id="post-box">
+    <h1 id="title"></h1>
+    <strong>작성자: </strong><span id="nickname"></span><br>
+    <strong>작성일: </strong><span id="createdAt"></span><br>
+    <strong>수정일: </strong><span id="updatedAt"></span><br>
+    <strong>내용: </strong><span id="content"></span><br>
+    <strong>조회수: </strong><span id="views"></span><br>
+</div>
+<p id="btn-list">
+
+</p>
+<script>
+    async function fetchPost() {
+        try {
+            const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
+            const response = await fetch(`/api/postList/${postId}`);
+            if (!response.ok) {
+                throw new Error('게시글을 가져오는 데 실패하였습니다.');
+            }
+            const post = await response.json();
+
+            console.log('Fetched Post:', post); // 실제로 가져온 게시글 데이터 출력
+
+            // HTML 요소에 값 설정
+            document.getElementById('title').innerText = post.title;
+            document.getElementById('nickname').innerText = post.nickname;
+            document.getElementById('createdAt').innerText = new Date(post.createdAt).toLocaleString();
+            document.getElementById('updatedAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() : new Date(post.createdAt).toLocaleString();
+            document.getElementById('content').innerText = post.content;
+            document.getElementById('views').innerText = post.views;
+
+            const btnList = document.getElementById('btn-list');
+            btnList.innerHTML = `
+                <a href="/post/postList">목록</a>
+                <a href="/post/updateForm/${postId}">수정</a>
+                <a href="/api/post/delete/${postId}">삭제</a>
+            `;
+
+        } catch (error) {
+            console.error('Error fetching post', error);
+            const postDiv = document.getElementById('post-box');
+            postDiv.innerHTML = '<h3>게시글을 불러오는 중 오류가 발생하였습니다.</h3>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchPost);  // 페이지 로드 후 함수 호출
+</script>
+</body>
+</html>

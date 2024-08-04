@@ -2,6 +2,7 @@ package com.beancontainer.domain.post.service;
 
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.entity.Post;
@@ -54,4 +55,19 @@ public class PostService {
                         post.getViews()
                         )).collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public PostDetailsResponseDto postDetails(Long postId) {
+        Post post = postRepository.findById(postId).get();
+        return new PostDetailsResponseDto(
+                post.getId(),
+                post.getTitle(),
+                post.getMember().getNickname(),
+                post.getCreatedAt(),
+                post.getUpdatedAt(),
+                post.getViews(),
+                post.getContent()
+        );
+    }
+
 }

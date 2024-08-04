@@ -2,6 +2,7 @@ package com.beancontainer.domain.post.controller;
 
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
+import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +37,10 @@ public class PostRestController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/postList/{postId}")
-    public ResponseEntity<Long> getPostById(@PathVariable Long postId, Principal principal) {
-        return ResponseEntity.ok(postId);
+    @GetMapping("/postList/{postId}")   // 게시글 상세 정보
+    public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, Principal principal) {
+        log.info("Details postId : ", postId);
+        PostDetailsResponseDto post = postService.postDetails(postId);
+        return ResponseEntity.ok(post);
     }
 }
