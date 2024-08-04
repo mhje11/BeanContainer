@@ -31,8 +31,13 @@ public class PostRestController {
     }
 
     @GetMapping("/postList")    // 게시글 전체 조회
-    public ResponseEntity<List<PostListResponseDto>> getAllPosts(Principal principal) {
+    public ResponseEntity<List<PostListResponseDto>> getAllPosts() {
         List<PostListResponseDto> posts = postService.getAllPosts();
         return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/postList/{postId}")
+    public ResponseEntity<Long> getPostById(@PathVariable Long postId, Principal principal) {
+        return ResponseEntity.ok(postId);
     }
 }
