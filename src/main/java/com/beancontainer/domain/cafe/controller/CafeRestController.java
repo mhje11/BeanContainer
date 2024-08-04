@@ -2,6 +2,7 @@ package com.beancontainer.domain.cafe.controller;
 
 import com.beancontainer.domain.cafe.dto.CafeResponseDto;
 import com.beancontainer.domain.cafe.dto.CafeSaveDto;
+import com.beancontainer.domain.cafe.repository.CafeRepository;
 import com.beancontainer.domain.cafe.service.CafeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 public class CafeRestController {
     private final CafeService cafeService;
+    private final CafeRepository cafeRepository;
 
     @PostMapping("/api/save/cafe")
     public ResponseEntity<String> saveCafe(@RequestBody CafeSaveDto cafeSaveDto) {

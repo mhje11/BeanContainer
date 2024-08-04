@@ -40,4 +40,20 @@ public class CafeService {
                 .map(CafeResponseDto::new)
                 .collect(Collectors.toList());
     }
+
+    //카페가 존재하지 않을경우 저장하고 리뷰페이지로 이동하는 로직
+    @Transactional
+    public CafeResponseDto getCafeByIdOrSave(Long cafeId, CafeSaveDto cafeSaveDto) {
+       return cafeRepository.findById(cafeId)
+                .map(CafeResponseDto::new)
+                .orElseGet(() -> {
+                    Long savedCafeId = saveCafe(cafeSaveDto);
+                    return new CafeResponseDto(cafeRepository.findById(savedCafeId).orElseThrow(
+                            () -> new RuntimeException("카페 저장 후 조회에 실패")
+                    ));
+                });
+    }
+
+
+
 }
