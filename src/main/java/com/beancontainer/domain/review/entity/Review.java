@@ -1,4 +1,4 @@
-package com.beancontainer.domain.review;
+package com.beancontainer.domain.review.entity;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.category.Category;
