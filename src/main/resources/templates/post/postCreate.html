@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>PostCreateForm</title>
+</head>
+<body>
+<form id="postForm">
+    <div>
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
+    </div>
+    <div>
+        <label for="content">내용</label>
+        <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
+    </div>
+    <button type="submit">게시글 작성</button>
+</form>
+<script>
+    document.getElementById('postForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = {
+            title: document.getElementById('title').value,
+            content: document.getElementById('content').value,
+            uuid: "testUUID" // 여기에서 적절한 UUID 생성 로직 추가 가능
+        };
+
+        fetch('/api/post/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>
