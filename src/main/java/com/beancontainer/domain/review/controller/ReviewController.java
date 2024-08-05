@@ -31,7 +31,6 @@ public class ReviewController {
             return ResponseEntity.status(500).body("{\"error\":\"" + e.getMessage() + "\"}");
 
         }
-
     }
 
     @GetMapping("review/{cafeId}")
