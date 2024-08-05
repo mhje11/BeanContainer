@@ -8,6 +8,8 @@ import com.beancontainer.domain.map.service.MapService;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +20,8 @@ public class MapRestController {
     private final MapService mapService;
 
     @PostMapping("/api/mymap")
-    public ResponseEntity<String> createMap(@RequestBody MapCreateDto mapCreateDto) {
+    public ResponseEntity<String> createMap(@RequestBody MapCreateDto mapCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
+//        mapCreateDto.setUsername(userDetails.getUsername());
         Long mapId = mapService.createMap(mapCreateDto);
         return ResponseEntity.ok("지도 생성 성공 : ID : " + mapId);
     }

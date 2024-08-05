@@ -1,10 +1,7 @@
 package com.beancontainer.domain.member.controller;
 
-import com.beancontainer.domain.member.dto.LoginDto;
 import com.beancontainer.domain.member.dto.SignUpDto;
-import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.Optional;
 
 
 @Controller
@@ -32,13 +27,13 @@ public class MemberController {
     //관리자 페이지
     @GetMapping("/admin")
     public String showAdminPage() {
-        return "admin";
+        return "member/admin";
     }
 
     //로그인 페이지
     @GetMapping("/login")
     public String showLoginForm() {
-        return "loginForm";
+        return "member/loginForm";
     }
 
 
