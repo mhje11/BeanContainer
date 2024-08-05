@@ -22,7 +22,7 @@ public class PostImg {
     @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID path;  // 이미지 경로
 
-    private UUID type;  // 이미지 타입 (jpg, png, ...)
+    private String type;  // 이미지 타입 (jpg, png, ...)
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;

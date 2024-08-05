@@ -32,7 +32,8 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_image_id")
     private ProfileImage profileImage;
 
     public Member(String name, String nickname, String userId, String password, Role role) {

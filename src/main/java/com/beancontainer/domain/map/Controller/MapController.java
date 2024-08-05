@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MapController {
 
-    @GetMapping("/mymap")
+    @GetMapping("/create/map")
     public String createMyMap() {
-        return "MyMap";
+        return "map/CreateMap";
     }
+
 }

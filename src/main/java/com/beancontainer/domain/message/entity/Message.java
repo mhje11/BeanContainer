@@ -18,6 +18,13 @@ public class Message {
     private LocalDateTime sentAt  = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_room_id")
+    @JoinColumn(name = "chat_room_id",nullable = false)
     private ChatRoom chatRoom;
+
+    public Message(String content, ChatRoom chatRoom) {
+        this.content = content;
+        this.chatRoom = chatRoom;
+    }
+
+
 }

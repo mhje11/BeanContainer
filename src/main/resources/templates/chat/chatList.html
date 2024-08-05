@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>채팅방 목록</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+</head>
+<body>
+<div class="container">
+    <h1>채팅방 목록</h1>
+    <ul id="chatList" class="list-group"></ul>
+    <button onclick="location.href='/mychatlist/1'" class="btn btn-primary">내 채팅방</button> <!-- User ID는 동적으로 설정 필요 -->
+    <button onclick="location.href='/chat/create'" class="btn btn-success">채팅방 생성</button>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    fetch('/api/chat/chatlist')
+        .then(response => response.json())
+        .then(data => {
+            const chatRoomList = document.getElementById('chatRoomList');
+            data.forEach(chatRoom => {
+                const div = document.createElement('div');
+                div.className = 'chat-room';
+                div.innerHTML = `
+                        <div class="chat-room-title">${chatRoom.title}</div>
+                        <div class="chat-room-actions">
+                            <div class="chat-room-participants">${chatRoom.maxParticipant} / ${chatRoom.participantCount}</div>
+                            <button onclick="joinChatRoom(${chatRoom.id})">참여</button>
+                        </div>
+                    `;
+                chatRoomList.appendChild(div);
+            });
+        });
+</script>
+</body>
+</html>
