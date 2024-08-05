@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CreateMap</title>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+        #added-cafes {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="added-cafes">
+    <h3>추가된 카페 리스트</h3>
+    <ul id="cafe-list"></ul>
+</div>
+<div>
+    <label for="map-name">지도 이름:</label>
+    <input type="text" id="map-name" placeholder="지도 이름을 입력하세요">
+</div>
+<button id="create-map-btn">지도 만들기</button>
+
+<script>
+    let map, ps, infowindow, markers = {}, addedCafes = [];
+
+    function initMap() {
+        var mapContainer = document.getElementById('map'),
+            mapOption = {
+                center: new kakao.maps.LatLng(37.5665, 126.9780),
+                level: 3
+            };
+
+        map = new kakao.maps.Map(mapContainer, mapOption);
+        ps = new kakao.maps.services.Places();
+        infowindow = new kakao.maps.InfoWindow({zIndex: 1});
+
+        searchPlacesByCenter(map.getCenter());
+
+        kakao.maps.event.addListener(map, 'dragend', function() {
+            searchPlacesByCenter(map.getCenter());
+        });
+
+        kakao.maps.event.addListener(map, 'zoom_changed', function() {
+            searchPlacesByCenter(map.getCenter());
+        });
+    }
+
+    function searchPlacesByCenter(center) {
+        const keyword = '카페';
+        ps.keywordSearch(keyword, function(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                for (var i = 0; i < data.length; i++) {
+                    if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
+                        displayMarker(data[i]);
+                    }
+                }
+                if (pagination.hasNextPage) {
+                    pagination.nextPage();
+                }
+            }
+        }, { location: center, radius: 2000 });
+    }
+
+    function isExcludedCategory(categoryName) {
+        const excludedCategories = ['보드게임카페', '룸카페', '방탈출카페', '테마카페', '고양이카페', '북카페', '레드버튼', '벌툰', '키즈'];
+        return excludedCategories.some(excluded => categoryName.includes(excluded));
+    }
+
+    function parseAddress(address) {
+        const parts = address.split(' ');
+        let city = parts[0], district = '';
+        for (let i = 1; i < parts.length; i++) {
+            if (parts[i].endsWith('구') || parts[i].endsWith('군')) {
+                district = parts[i];
+                break;
+            }
+        }
+        return { city, district };
+    }
+
+    function displayMarker(place) {
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: new kakao.maps.LatLng(place.y, place.x)
+        });
+        markers[place.id] = marker;
+
+        kakao.maps.event.addListener(marker, 'click', function() {
+            const parsedAddress = parseAddress(place.road_address_name || place.address_name);
+
+            var content = `
+                    <div style="padding:10px; font-size:14px;">
+                        <strong>${place.place_name}</strong><br>
+                        ${place.road_address_name || place.address_name}<br>
+                        <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+                    </div>
+                `;
+            infowindow.setContent(content);
+            infowindow.open(map, marker);
+        });
+    }
+
+    function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, district) {
+        const data = {
+            kakaoId: kakaoId,
+            name: name,
+            address: address,
+            latitude: latitude,
+            longitude: longitude,
+            city: city,
+            district: district
+        };
+
+        console.log("Sending data:", data);
+
+        fetch(`/review/${kakaoId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+            }
+            return response.json();
+        })
+            .then(data => {
+                addCafeToList(data, kakaoId);
+            }).catch(error => {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);
+        });
+    }
+
+    function addCafeToList(cafe, kakaoId) {
+        addedCafes.push({
+            kakaoId: kakaoId,
+            name: cafe.name,
+            address: cafe.address,
+            latitude: cafe.latitude,
+            longitude: cafe.longitude,
+            city: cafe.city,
+            district: cafe.district
+        });
+        const li = document.createElement('li');
+        li.textContent = cafe.name;
+        li.dataset.kakaoId = kakaoId; // li 요소에 kakaoId 데이터 속성 추가
+        const button = document.createElement('button');
+        button.textContent = '삭제';
+        button.onclick = () => removeCafe(kakaoId);
+        li.appendChild(button);
+        document.getElementById('cafe-list').appendChild(li);
+
+        console.log("Added cafes:", addedCafes); // 로그 추가
+    }
+
+    function removeCafe(kakaoId) {
+        addedCafes = addedCafes.filter(cafe => cafe.kakaoId !== kakaoId);
+        const cafeList = document.getElementById('cafe-list');
+        const items = cafeList.getElementsByTagName('li');
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].dataset.kakaoId === kakaoId) { // li 요소의 데이터 속성을 사용하여 비교
+                cafeList.removeChild(items[i]);
+                break;
+            }
+        }
+        console.log("After removal cafes:", addedCafes); // 로그 추가
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+
+        document.getElementById('create-map-btn').addEventListener('click', function() {
+            const mapName = document.getElementById('map-name').value;
+            if (!mapName) {
+                alert('지도 이름을 입력하세요.');
+                return;
+            }
+
+            const mapData = {
+                mapName: mapName,
+                kakaoIds: addedCafes.map(cafe => cafe.kakaoId)
+            };
+
+            console.log("Sending map data:", mapData); // 로그 추가
+
+            fetch('/api/mymap', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(mapData)
+            }).then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                alert('지도 생성 성공');
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            });
+        });
+    });
+</script>
+</body>
+</html>

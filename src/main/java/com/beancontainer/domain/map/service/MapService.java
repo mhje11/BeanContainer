@@ -12,6 +12,7 @@ import com.beancontainer.domain.map.repository.MapRepository;
 import com.beancontainer.domain.mapcafe.entity.MapCafe;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MapService {
     private final MapRepository mapRepository;
     private final MapCafeRepository mapCafeRepository;
@@ -32,10 +34,12 @@ public class MapService {
     @Transactional
     public Long createMap(MapCreateDto mapCreateDto) {
         Map map = new Map(mapCreateDto.getMapName(), mapCreateDto.getUsername());
+        log.info("kakaoIds {}", mapCreateDto.getKakaoIds());
         mapRepository.save(map);
+        Set<String> kakaoIds = mapCreateDto.getKakaoIds();
 
-        for (Long cafeId : mapCreateDto.getCafeIds()) {
-            Cafe cafe = cafeRepository.findById(cafeId)
+        for (String kakaoId : kakaoIds) {
+            Cafe cafe = cafeRepository.findByKakaoId(kakaoId)
                     .orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
             MapCafe mapCafe = new MapCafe(map, cafe);
             mapCafeRepository.save(mapCafe);
