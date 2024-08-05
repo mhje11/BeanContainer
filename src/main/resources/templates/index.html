@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Bean Container</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
     <script>
         let map, ps, infowindow, markers = {};
         let lastCenter = null; // 마지막 검색한 중심 좌표
 
         const districts = {
-            '관악구': { lat: 37.4789, lng: 126.9516 },
-            '서초구': { lat: 37.4837, lng: 127.0323 },
-            '구로구': { lat: 37.4955, lng: 126.8879 }
+            '관악구': {lat: 37.4789, lng: 126.9516},
+            '서초구': {lat: 37.4837, lng: 127.0323},
+            '구로구': {lat: 37.4955, lng: 126.8879}
             // 추가적인 구 좌표를 여기에 추가하세요
         };
 
@@ -33,10 +35,10 @@
             ps = new kakao.maps.services.Places();
 
             // 인포윈도우를 생성합니다
-            infowindow = new kakao.maps.InfoWindow({zIndex:1});
+            infowindow = new kakao.maps.InfoWindow({zIndex: 1});
 
             // 지도의 드래그가 끝날 때마다 카페를 다시 검색합니다
-            kakao.maps.event.addListener(map, 'dragend', function() {
+            kakao.maps.event.addListener(map, 'dragend', function () {
                 const center = map.getCenter();
                 if (lastCenter && center.equals(lastCenter)) {
                     return; // 중심이 변경되지 않은 경우 검색하지 않음
@@ -46,7 +48,7 @@
             });
 
             // 지도의 줌 변경이 끝날 때마다 카페를 다시 검색합니다
-            kakao.maps.event.addListener(map, 'zoom_changed', function() {
+            kakao.maps.event.addListener(map, 'zoom_changed', function () {
                 const center = map.getCenter();
                 if (lastCenter && center.equals(lastCenter)) {
                     return; // 중심이 변경되지 않은 경우 검색하지 않음
@@ -54,15 +56,22 @@
                 lastCenter = center; // 마지막 검색한 중심 좌표 업데이트
                 searchPlacesByCenter(center);
             });
+
+            // 초기 지도 위치에서 카페 검색
+            searchPlacesByCenter(map.getCenter());
         }
 
         function searchPlacesByCenter(center) {
             const keyword = '카페';
 
-            ps.keywordSearch(keyword, function(data, status, pagination) {
+            ps.keywordSearch(keyword, function (data, status, pagination) {
                 if (status === kakao.maps.services.Status.OK) {
+                    console.log('검색된 장소 데이터:', data);
                     // 검색된 장소 위치를 마커로 표시합니다
                     for (var i = 0; i < data.length; i++) {
+                        if (i < 2) { // 처음 두 개의 카페 데이터만 콘솔에 출력
+                            console.log(data[i]);
+                        }
                         if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
                             displayMarker(data[i]);
                         }
@@ -73,7 +82,7 @@
                         pagination.nextPage();
                     }
                 }
-            }, { location: center, radius: 2000 });
+            }, {location: center, radius: 2000});
         }
 
         function isExcludedCategory(categoryName) {
@@ -81,7 +90,60 @@
             return excludedCategories.some(excluded => categoryName.includes(excluded));
         }
 
-        // 지도에 마커를 표시하는 함수입니다
+        function parseAddress(address) {
+            // 주소를 공백으로 분리
+            const parts = address.split(' ');
+
+            let city = parts[0]; // 시/도
+            let district = '';
+
+            // parts 배열을 순회하면서 구를 찾습니다.
+            for (let i = 1; i < parts.length; i++) {
+                if (parts[i].endsWith('구') || parts[i].endsWith('군')) {
+                    district = parts[i];
+                    break;
+                }
+            }
+
+            return {city, district};
+        }
+
+        function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, district) {
+            const data = {
+                kakaoId: kakaoId,
+                name: name,
+                address: address,
+                latitude: latitude,
+                longitude: longitude,
+                city: city,
+                district: district
+            };
+
+            console.log("Sending data:", data);
+
+            fetch(`/review/${kakaoId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text)
+                    });
+                }
+                return response.json();
+            })
+                .then(data => {
+                    console.log("Received data:", data);
+                    window.location.href = `/review/${data.id}`;
+                }).catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            });
+        }
+
         function displayMarker(place) {
             var marker = new kakao.maps.Marker({
                 map: map,
@@ -91,12 +153,21 @@
             markers[place.id] = marker;
 
             // 마커에 클릭이벤트를 등록합니다
-            kakao.maps.event.addListener(marker, 'click', function() {
-                // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-                infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
+            kakao.maps.event.addListener(marker, 'click', function () {
+                const parsedAddress = parseAddress(place.road_address_name || place.address_name);
+
+                var content = `
+            <div style="padding:10px; font-size:14px;">
+                <strong>${place.place_name}</strong><br>
+                ${place.road_address_name || place.address_name}<br>
+                <a href="#" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 페이지로 이동</a>
+            </div>
+        `;
+                infowindow.setContent(content);
                 infowindow.open(map, marker);
             });
         }
+
 
         function toggleDropdown() {
             var dropdown = document.getElementById('dropdown');
@@ -132,17 +203,15 @@
             menu.style.display = "none";
         }
 
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             var isClickInside = document.getElementById('hamburger').contains(event.target) || document.getElementById('menu').contains(event.target);
             if (!isClickInside) {
                 closeMenu();
             }
         });
 
-        window.onload = function() {
+        window.onload = function () {
             initMap();
-            // 초기 지도 위치에서 카페 검색
-            searchPlacesByCenter(map.getCenter());
         };
     </script>
 </head>
@@ -153,9 +222,9 @@
     <div id="menu" class="menu">
         <a href="#">채팅방</a>
         <a href="/login">login / logout</a>
-        <a href="/mypage/{userId}">my page</a>
+        <a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a>
         <a href="#">save</a>
-        <a href="#">지도 만들기</a>
+        <a href="/create/map">지도 만들기</a>
     </div>
 </div>
 <div class="container">
