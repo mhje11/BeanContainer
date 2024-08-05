@@ -41,6 +41,13 @@ public class MemberService implements UserDetailsService {
         return memberRepository.save(member);
     }
 
+    //ID로 유저 찾기
+    public Member findByUserId(String userId) {
+        return memberRepository.findByUserId(userId)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
 
 
     @Override
