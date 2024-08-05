@@ -82,5 +82,4 @@ class PostServiceTest {
         assertEquals("test title 4", posts.get(3).getTitle());
     }
 
-
 }

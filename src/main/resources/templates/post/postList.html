@@ -3,6 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>게시판</title>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <table>
@@ -26,7 +56,7 @@
         try {
             const response = await fetch('/api/postList'); // API 호출
             if (!response.ok) { // 반환하는게 ok 아니면
-                throw new Error('게시글을 가져오는 데 실패했습니다.');
+                throw new Error('게시글 목록을 가져오는 데 실패하였습니다.');
             }
             const posts = await response.json(); // JSON 형식으로 변환
 
@@ -37,9 +67,9 @@
                 const row = document.createElement('tr');   // 행 만들기
                 row.innerHTML = `
                 <td>${post.id}</td>
-                <td><a href="/api/postList/${post.id}">${post.title}</a></td>
+                <td><a href="/postList/${post.id}">${post.title}</a></td>
                 <td>${post.nickname}</td>
-                <td>${new Date(post.createdAt).toLocaleString()}}</td>
+                <td>${new Date(post.createdAt).toLocaleString()}</td>
                 <td>${post.views}</td>
             `;
                 postListDiv.appendChild(row);
