@@ -1,10 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bean Container</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
-index123
+<div class="container">
+    <header>
+        <h1>Bean Container</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a th:href="@{/login}" class="btn">로그인</a></li>
+            <li><a th:href="@{/signup}" class="btn">회원가입</a></li>
+        </ul>
+    </nav>
+    <main>
+        <a th:href="@{/post/postList}" class="btn">게시글 전체보기</a>
+    </main>
+    <footer>
+        <p>&copy; 2024 Bean Container. All rights reserved.</p>
+    </footer>
+</div>
 </body>
 </html>
