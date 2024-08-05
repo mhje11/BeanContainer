@@ -21,7 +21,7 @@ public class MapRestController {
 
     @PostMapping("/api/mymap")
     public ResponseEntity<String> createMap(@RequestBody MapCreateDto mapCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
-//        mapCreateDto.setUsername(userDetails.getUsername());
+        mapCreateDto.setUsername(userDetails.getUsername());
         Long mapId = mapService.createMap(mapCreateDto);
         return ResponseEntity.ok("지도 생성 성공 : ID : " + mapId);
     }
@@ -29,8 +29,8 @@ public class MapRestController {
 
     //추후에 자신의 map만 뜨도록
     @GetMapping("/api/mymap")
-    public ResponseEntity<List<MapListResponseDto>> myMapList() {
-        List<MapListResponseDto> mapList = mapService.getMapList();
+    public ResponseEntity<List<MapListResponseDto>> myMapList(@AuthenticationPrincipal UserDetails userDetails) {
+        List<MapListResponseDto> mapList = mapService.getMapList(userDetails.getUsername());
         return ResponseEntity.ok(mapList);
     }
 
