@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
 @Controller
 @RequiredArgsConstructor
 @Slf4j
@@ -36,8 +35,6 @@ public class MemberController {
         return "member/loginForm";
     }
 
-
-
     @PostMapping("/signup")
     public String signUp(@ModelAttribute SignUpDto signUpDto, RedirectAttributes redirectAttributes) {
         try {
@@ -49,8 +46,6 @@ public class MemberController {
             return "redirect:/signup";
         }
     }
-
-
 
 
     //회원가입 페이지
@@ -66,6 +61,7 @@ public class MemberController {
     public String showMyPage(@PathVariable String userId, Model model) {
 
         return "member/myPage";
+
     }
 
 }
