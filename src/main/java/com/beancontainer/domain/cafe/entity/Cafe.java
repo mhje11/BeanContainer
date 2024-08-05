@@ -34,10 +34,8 @@ public class Cafe {
     @Column(nullable = false)
     private String district;
 
-    @Column(nullable = false)
-    private String neighborhood;
 
-    public Cafe(String kakaoId, String name, String address, double latitude, double longitude, String city, String district, String neighborhood) {
+    public Cafe(String kakaoId, String name, String address, double latitude, double longitude, String city, String district) {
         this.kakaoId = kakaoId;
         this.name = name;
         this.address = address;
@@ -45,8 +43,8 @@ public class Cafe {
         this.longitude = longitude;
         this.city = city;
         this.district = district;
-        this.neighborhood = neighborhood;
     }
+
 
     protected Cafe() {}
 }
