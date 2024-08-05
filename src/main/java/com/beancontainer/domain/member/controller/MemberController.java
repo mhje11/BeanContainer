@@ -57,16 +57,15 @@ public class MemberController {
     @GetMapping("/signup")
     public String showSignUpForm(Model model) {
         model.addAttribute("memberSignUpDto", new SignUpDto());
-        return "signupForm";
+        return "member/signupForm";
     }
 
 
     //마이페이지
     @GetMapping("/mypage/{userId}")
-    public String showMyPage(@PathVariable Long userId, Model model) {
+    public String showMyPage(@PathVariable String userId, Model model) {
 
-
-        return "myPage";
+        return "member/myPage";
     }
 
 }
