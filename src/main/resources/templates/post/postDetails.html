@@ -52,7 +52,7 @@
             const btnList = document.getElementById('btn-list');
             btnList.innerHTML = `
                 <a href="/post/postList">목록</a>
-                <a href="/post/updateForm/${postId}">수정</a>
+                <a href="/postList/update/${postId}">수정</a>
                 <a href="#" onclick="deletePost(${postId})">삭제</a>
             `;  /*GET이 아닌 DELETE 요청이기 때문에 함수로 호출*/
 
