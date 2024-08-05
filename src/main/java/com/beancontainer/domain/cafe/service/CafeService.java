@@ -30,7 +30,7 @@ public class CafeService {
     }
 
     public Cafe findByKakaoId(String kakaoId) {
-        return cafeRepository.findByKakaoId(kakaoId);
+        return cafeRepository.findByKakaoId(kakaoId).orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
     }
 
     //구별 카페 검색
@@ -43,8 +43,8 @@ public class CafeService {
 
     //카페가 존재하지 않을경우 저장하고 리뷰페이지로 이동하는 로직
     @Transactional
-    public CafeResponseDto getCafeByIdOrSave(Long cafeId, CafeSaveDto cafeSaveDto) {
-       return cafeRepository.findById(cafeId)
+    public CafeResponseDto getCafeByKakaoIdOrSave(String kakaoId, CafeSaveDto cafeSaveDto) {
+       return cafeRepository.findByKakaoId(kakaoId)
                 .map(CafeResponseDto::new)
                 .orElseGet(() -> {
                     Long savedCafeId = saveCafe(cafeSaveDto);

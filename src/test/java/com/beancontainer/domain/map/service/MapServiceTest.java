@@ -38,8 +38,8 @@ class MapServiceTest {
 
     @Test
     void createMap() {
-        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1", "Neighborhood1");
-        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2", "Neighborhood2");
+        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1");
+        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2");
 
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
@@ -64,8 +64,8 @@ class MapServiceTest {
     @Test
     void getMapList() {
         // Given
-        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1", "Neighborhood1");
-        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2", "Neighborhood2");
+        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1");
+        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2");
 
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
@@ -82,23 +82,21 @@ class MapServiceTest {
         mapService.createMap(new MapCreateDto("map2", "user2", cafeIdSet2));
 
         // When
-        List<MapListResponseDto> mapList = mapService.getMapList();
+        List<MapListResponseDto> mapList = mapService.getMapList("user1");
 
         // Then
         assertNotNull(mapList);
-        assertEquals(2, mapList.size());
+        assertEquals(1, mapList.size());
         assertEquals("map1", mapList.get(0).getMapName());
         assertEquals("user1", mapList.get(0).getUsername());
-        assertEquals("map2", mapList.get(1).getMapName());
-        assertEquals("user2", mapList.get(1).getUsername());
     }
 
 
     @Test
     void getMapDetail() {
         // Given
-        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1", "Neighborhood1");
-        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2", "Neighborhood2");
+        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1");
+        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2");
 
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
@@ -125,8 +123,8 @@ class MapServiceTest {
     @Test
     public void 지도수정() throws Exception {
     //given
-        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1", "Neighborhood1");
-        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2", "Neighborhood2");
+        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1");
+        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2");
 
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);
@@ -137,7 +135,7 @@ class MapServiceTest {
 
         Long mapId = mapService.createMap(new MapCreateDto("ExMap1", "user123", cafeIdSet));
 
-        Cafe cafe3 = new Cafe("kakaoId3", "Cafe3", "Address2", 37.5675, 126.9790, "Incheon", "District3", "Neighborhood3");
+        Cafe cafe3 = new Cafe("kakaoId3", "Cafe3", "Address2", 37.5675, 126.9790, "Incheon", "District3");
 
         Set<Long> cafeIdList = new HashSet<>();
         cafeIdList.add(cafe1.getId());
@@ -159,8 +157,8 @@ class MapServiceTest {
     @Test
     public void 지도삭제() throws Exception {
     //given
-        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1", "Neighborhood1");
-        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2", "Neighborhood2");
+        Cafe cafe1 = new Cafe("kakaoId1", "Cafe1", "Address1", 37.5665, 126.9780, "Seoul", "District1");
+        Cafe cafe2 = new Cafe("kakaoId2", "Cafe2", "Address2", 37.5675, 126.9790, "Seoul", "District2");
 
         cafeRepository.save(cafe1);
         cafeRepository.save(cafe2);

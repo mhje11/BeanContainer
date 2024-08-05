@@ -45,8 +45,8 @@ public class MapService {
     }
 
     //추후에 user 추가시 findAll -> findAllByUsername
-    public List<MapListResponseDto> getMapList() {
-        return mapRepository.findAll().stream()
+    public List<MapListResponseDto> getMapList(String username) {
+        return mapRepository.findAllByUsername(username).stream()
                 .map(map -> new MapListResponseDto(map.getMapName(), map.getUsername(), map.getId()))
                 .collect(Collectors.toList());
     }

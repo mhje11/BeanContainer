@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/mypage/{userId}").authenticated() // 인증된 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능
+                        .requestMatchers("/review/{kakaoId}").permitAll()
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
                 )
                 .formLogin(form -> form
