@@ -3,30 +3,25 @@ package com.beancontainer.domain.message.service;
 
 import com.beancontainer.domain.message.entity.Message;
 import com.beancontainer.domain.message.repository.MessageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MessageService {
-
     private final MessageRepository messageRepository;
 
-    @Autowired
-    public MessageService(MessageRepository messageRepository) {
-        this.messageRepository = messageRepository;
-    }
-
+    @Transactional(readOnly = true)
     public List<Message> getMessages(Long chatRoomId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Message> messagePage = messageRepository.findByChatRoomIdOrderBySentAtDesc(chatRoomId, pageRequest);
-        return messagePage.getContent();
+        // Implement pagination logic here
+        return messageRepository.findByChatRoomIdOrderBySentAtDesc(chatRoomId);
     }
 
-    public Message saveMessage(Message message) {
-        return messageRepository.save(message);
+    @Transactional
+    public void sendMessage(Message message) {
+        messageRepository.save(message);
     }
 }

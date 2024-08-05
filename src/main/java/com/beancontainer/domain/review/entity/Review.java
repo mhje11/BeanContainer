@@ -1,11 +1,13 @@
 package com.beancontainer.domain.review.entity;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
-import com.beancontainer.domain.category.Category;
 import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "reviews")
@@ -25,13 +27,9 @@ public class Review {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
-    private String uuid;
-
     private Double score;
 
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = Category.class)
-    private List<Category> categories;
-
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ReviewCategory> reviewCategories = new HashSet<>();
 
 }

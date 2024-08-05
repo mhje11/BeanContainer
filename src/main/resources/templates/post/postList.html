@@ -69,7 +69,7 @@
                 <td>${post.id}</td>
                 <td><a href="/postList/${post.id}">${post.title}</a></td>
                 <td>${post.nickname}</td>
-                <td>${new Date(post.createdAt).toLocaleString()}</td>
+                <td>${post.updatedAt ? new Date(post.updatedAt).toLocaleString() + ' (수정됨)' : new Date(post.createdAt).toLocaleString()}</td>
                 <td>${post.views}</td>
             `;
                 postListDiv.appendChild(row);

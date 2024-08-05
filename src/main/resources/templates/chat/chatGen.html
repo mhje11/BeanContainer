@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            width: 50%;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Create Chat Room</h1>
+<form id="createChatRoomForm">
+    <div class="chat-input">
+        <label for="title">방제:</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div class="chat-input">
+        <label for="maxParticipant">수용 인원:</label>
+        <input type="number" id="maxParticipant" name="maxParticipant" required>
+    </div>
+    <div class="chat-input">
+        <label for="district">찾고 있는 구 선택:</label>
+        <input type="text" id="district" name="district" required>
+    </div>
+    <div class="chat-input">
+        <button type="submit">등록</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById('createChatRoomForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const maxParticipant = document.getElementById('maxParticipant').value;
+        const district = document.getElementById('district').value;
+        const ownerName = '사용자이름'; // 실제 사용자 이름으로 대체해야 합니다.
+
+        fetch('/api/chat/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, maxParticipant, ownerName, district })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.id) {
+                    alert('채팅방이 생성되었습니다.');
+                    window.location.href = '/chatlist';
+                } else {
+                    alert('채팅방 생성에 실패했습니다.');
+                }
+            });
+    });
+</script>
+</body>
+</html>

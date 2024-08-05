@@ -44,9 +44,15 @@ public class Post {
     @JoinColumn(name = "post_id")
     private List<PostImg> images = new ArrayList<>();
 
-    public Post(Member member, String title, String content) {
+    public Post(Member member, String title, String content) {  // 게시글 작성
         this.member = member;
         this.title = title;
         this.content = content;
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+        this.updatedAt = LocalDateTime.now();
     }
 }

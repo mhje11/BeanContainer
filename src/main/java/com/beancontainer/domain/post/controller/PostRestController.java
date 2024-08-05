@@ -54,4 +54,10 @@ public class PostRestController {
         return ResponseEntity.ok("글 삭제가 완료되었습니다");
     }
 
+    @PutMapping("/post/update/{postId}")    // 게시글 수정
+    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto) {
+        PostDetailsResponseDto updatedPost = postService.updatePost(postId, postRequestDto);
+        return ResponseEntity.ok(updatedPost);
+    }
+
 }

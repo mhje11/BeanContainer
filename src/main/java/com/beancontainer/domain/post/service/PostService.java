@@ -22,6 +22,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
+    // 게시글 작성
     @Transactional
     public Long createPost(PostRequestDto postRequestDto, String nickname) {
         Member member = memberRepository.findByNickname(nickname);
@@ -41,6 +42,7 @@ public class PostService {
         return savedPost.getId();
     }
 
+    // 게시글 목록 조회
     @Transactional(readOnly = true)
     public List<PostListResponseDto> getAllPosts() {
         return postRepository.findAll().stream()
@@ -56,6 +58,7 @@ public class PostService {
                         )).collect(Collectors.toList());
     }
 
+    // 게시글 상세 보기
     @Transactional(readOnly = true)
     public PostDetailsResponseDto postDetails(Long postId) {
         Post post = postRepository.findById(postId).get();
@@ -79,6 +82,19 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId) {
         postRepository.deleteById(postId);
+    }
+
+
+    // 게시글 수정
+    @Transactional
+    public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        post.update(postRequestDto.getTitle(), postRequestDto.getContent());
+
+        Post updatedPost = postRepository.save(post);
+
+        return new PostDetailsResponseDto(updatedPost);
     }
 
 }
