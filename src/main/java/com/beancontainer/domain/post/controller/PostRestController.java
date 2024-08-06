@@ -4,13 +4,19 @@ import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
+import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -20,15 +26,26 @@ public class PostRestController {
     private final PostService postService;
 
     @PostMapping("/post/create")    // 게시글 작성
-    public ResponseEntity<String> createPost(@RequestBody PostRequestDto postRequestDto, Principal principal) {
+    public ResponseEntity<Map<String, String>> createPost(@RequestParam("title") String title, @RequestParam("content") String content,
+                                             @RequestParam("images")List<MultipartFile> images, Principal principal) throws IOException {
         String nickname = "test";
-        log.info(postRequestDto.getTitle());
-        log.info(postRequestDto.getContent());
-//        log.info(postRequestDto.getUuid());
-        Long postId = postService.createPost(postRequestDto, nickname);
-        log.info("postId {}", postId);
+        PostRequestDto postRequestDto = new PostRequestDto();
+        postRequestDto.setTitle(title);
+        postRequestDto.setContent(content);
 
-        return ResponseEntity.ok("게시글생성 완료");
+        List<PostImgSaveDto> postImgSaveDtos = images.stream()
+                        .map(image -> new PostImgSaveDto(image))
+                                .collect(Collectors.toList());
+
+        postRequestDto.setImages(postImgSaveDtos);
+
+        Long postId = postService.createPost(postRequestDto, nickname);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "게시글생성 완료");
+        response.put("postId", postId.toString());
+
+        return ResponseEntity.ok(response); // json 형식으로 반환
     }
 
     @GetMapping("/postList")    // 게시글 전체 조회
@@ -39,7 +56,6 @@ public class PostRestController {
 
     @GetMapping("/postList/{postId}")   // 게시글 상세 정보
     public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, Principal principal) {
-        log.info("Details postId : ", postId);
         PostDetailsResponseDto post = postService.postDetails(postId);
         return ResponseEntity.ok(post);
     }
