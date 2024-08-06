@@ -7,11 +7,15 @@ import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
+import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
+import com.beancontainer.domain.postimg.entity.PostImg;
+import com.beancontainer.domain.postimg.service.PostImgService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,12 +25,13 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final PostImgService postImgService;
 
     // 게시글 작성
     @Transactional
-    public Long createPost(PostRequestDto postRequestDto, String nickname) {
+    public Long createPost(PostRequestDto postRequestDto, String nickname) throws IOException {
+
         Member member = memberRepository.findByNickname(nickname);
-        log.info(member.getNickname());
 
         Post post = new Post(
                 member,
@@ -34,11 +39,27 @@ public class PostService {
                 postRequestDto.getContent()
         );
 
-        // 이미지..
+        Post savedPost = postRepository.save(post); // 게시글 먼저 저장해서 id 생성
 
-        log.info(post.toString());
+        // 이미지
+        if (!postRequestDto.getImages().isEmpty()) {
+            for(PostImgSaveDto image : postRequestDto.getImages()) {
+                if(image.getImg().isEmpty()) continue;  // 이미지 없음 건너뜀
 
-        Post savedPost = postRepository.save(post);
+                image.setPostId(post.getId());  // 게시글 연결
+
+                // S3에 이미지 저장 및 url 생성
+                String imgUrl = postImgService.saveImage(image.getImg());
+                String originalName = image.getImg().getOriginalFilename();
+                String name = postImgService.getFileName(originalName);
+
+                PostImg postImg = new PostImg(originalName, name, post);
+                postImg.setPath(imgUrl);    // url 저장
+
+                postImgService.save(postImg);
+                post.getImages().add(postImg);  // post의 images 리스트에 추가
+            }
+        }
         return savedPost.getId();
     }
 
@@ -96,5 +117,4 @@ public class PostService {
 
         return new PostDetailsResponseDto(updatedPost);
     }
-
 }
