@@ -42,7 +42,7 @@ public class PostService {
         Post savedPost = postRepository.save(post); // 게시글 먼저 저장해서 id 생성
 
         // 이미지
-        if (!postRequestDto.getImages().isEmpty()) {
+        if (postRequestDto.getImages() != null && !postRequestDto.getImages().isEmpty()) {
             for(PostImgSaveDto image : postRequestDto.getImages()) {
                 if(image.getImg().isEmpty()) continue;  // 이미지 없음 건너뜀
 

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,5 +14,9 @@ import java.util.List;
 public class PostRequestDto {
     private String title;
     private String content;
-    private List<PostImgSaveDto> images;
+    private List<PostImgSaveDto> images = new ArrayList<>();
+
+    public List<PostImgSaveDto> getImages() {
+        return images != null ? images : new ArrayList<>();
+    }
 }

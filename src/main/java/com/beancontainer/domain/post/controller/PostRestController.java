@@ -33,18 +33,21 @@ public class PostRestController {
 
     @PostMapping("/post/create")    // 게시글 작성
     public ResponseEntity<Map<String, String>> createPost(@RequestParam("title") String title, @RequestParam("content") String content,
-                                                          @RequestParam("images")List<MultipartFile> images, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+                                                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                                                          @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         PostRequestDto postRequestDto = new PostRequestDto();
         postRequestDto.setTitle(title);
         postRequestDto.setContent(content);
 
-        List<PostImgSaveDto> postImgSaveDtos = images.stream()
-                        .map(image -> new PostImgSaveDto(image))
-                                .collect(Collectors.toList());
+        if (images != null && !images.isEmpty()) {
+            List<PostImgSaveDto> postImgSaveDtos = images.stream()
+                    .map(image -> new PostImgSaveDto(image))
+                    .collect(Collectors.toList());
+            postRequestDto.setImages(postImgSaveDtos);
+        }
 
-        postRequestDto.setImages(postImgSaveDtos);
-
-        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberRepository.findByUserId(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
 
 
         Long postId = postService.createPost(postRequestDto, member.getNickname());

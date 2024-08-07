@@ -39,10 +39,7 @@ public class PostImgService {
                 RequestBody.fromInputStream(image.getInputStream(), image.getSize())    // 파일의 본체
         );
 
-        // URL 생성
-        String imageUrl = generateImageUrl(name);
-
-        return imageUrl;
+        return generateImageUrl(name);
     }
 
     // 이미지 확장자 추출
