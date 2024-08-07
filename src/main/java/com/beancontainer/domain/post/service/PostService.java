@@ -82,16 +82,8 @@ public class PostService {
     // 게시글 상세 보기
     @Transactional(readOnly = true)
     public PostDetailsResponseDto postDetails(Long postId) {
-        Post post = postRepository.findById(postId).get();
-        return new PostDetailsResponseDto(
-                post.getId(),
-                post.getTitle(),
-                post.getMember().getNickname(),
-                post.getCreatedAt(),
-                post.getUpdatedAt(),
-                post.getViews(),
-                post.getContent()
-        );
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        return new PostDetailsResponseDto(post);
     }
 
     // 게시글 존재 여부 확인
@@ -111,11 +103,8 @@ public class PostService {
                 postImgService.deleteImage(img.getPath());
             }
         }
-
-
         postRepository.deleteById(postId);
     }
-
 
     // 게시글 수정
     @Transactional
