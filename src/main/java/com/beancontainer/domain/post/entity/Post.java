@@ -40,7 +40,7 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;    // 수정일
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "post_id")
     private List<PostImg> images = new ArrayList<>();
 

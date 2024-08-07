@@ -1,7 +1,7 @@
 package com.beancontainer.domain.cafecategory;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
-import com.beancontainer.domain.category.Category;
+import com.beancontainer.domain.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
 
