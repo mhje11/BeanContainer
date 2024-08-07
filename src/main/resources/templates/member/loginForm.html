@@ -6,30 +6,61 @@
     <link rel="stylesheet" href="/css/loginForm.css">
 </head>
 <body>
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label for="userId">아이디 :</label>
-            <input type="text" id="userId" name="userId" required>
-        </div>
-
-        <div>
-            <label for="password">비밀번호 :</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-
-        <div>
-            <button type="submit">로그인</button>
-        </div>
-
-    </form>
-    <div th:if="${param.error}">
-        Invalid username and password.
+<form id="loginForm" method="POST">
+    <div>
+        아이디: <input type="text" name="userId" required>
     </div>
-    <div th:if="${param.logout}">
-        You have been logged out.
+    <div>
+        비밀번호: <input type="password" name="password" required>
     </div>
-    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-    <a th:href="@{/signup}">회원가입</a>
+    <div>
+        <button type="submit">로그인</button>
+    </div>
+</form>
 
+<div th:if="${param.error}">
+    Invalid username and password.
+</div>
+<div th:if="${param.logout}">
+    You have been logged out.
+</div>
+<div th:if="${error}" th:text="${error}" style="color: red;">
+</div>
+
+<a th:href="@{/signup}">회원가입</a>
 </body>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+            credentials: 'include' // 쿠키를 포함하기 위해 필요
+
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 로그인 성공 시 처리
+                console.log('Login successful:', data);
+                window.location.href = '/'; // 메인 페이지로 리다이렉트
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('로그인 중 오류가 발생했습니다.');
+            });
+    });
+</script>
 </html>

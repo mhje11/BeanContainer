@@ -1,12 +1,11 @@
 package com.beancontainer.domain.member.service;
 
-import com.beancontainer.domain.member.dto.SignUpDto;
+import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,12 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder; //패스워드 암호화
+    private final PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager; //Security 에서 제공하는 인증 과정 처리
 
     //회원 가입
     @Transactional
-    public Member signUp(SignUpDto signUp) {
+    public Member signUp(SignUpRequestDTO signUp) {
         //아이디가 중복 체크
         if(memberRepository.findByUserId(signUp.getUserId()).isPresent()) {
             throw new IllegalStateException("이미 존재하는 아이디 입니다.");

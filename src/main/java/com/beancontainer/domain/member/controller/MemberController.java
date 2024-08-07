@@ -1,14 +1,17 @@
 package com.beancontainer.domain.member.controller;
 
-import com.beancontainer.domain.member.dto.SignUpDto;
 import com.beancontainer.domain.member.service.MemberService;
+import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
 
 @Controller
 @RequiredArgsConstructor
@@ -35,33 +38,30 @@ public class MemberController {
         return "member/loginForm";
     }
 
-    @PostMapping("/signup")
-    public String signUp(@ModelAttribute SignUpDto signUpDto, RedirectAttributes redirectAttributes) {
-        try {
-            memberService.signUp(signUpDto);
-            redirectAttributes.addFlashAttribute("signupSuccess", true);
-            return "redirect:/login";
-        } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/signup";
-        }
-    }
-
 
     //회원가입 페이지
     @GetMapping("/signup")
     public String showSignUpForm(Model model) {
-        model.addAttribute("memberSignUpDto", new SignUpDto());
+        model.addAttribute("memberSignUpDto");
         return "member/signupForm";
     }
-
 
     //마이페이지
     @GetMapping("/mypage/{userId}")
     public String showMyPage(@PathVariable String userId, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return "member/myPage";
+        if (authentication != null && authentication.isAuthenticated()) {
+            String authenticatedUserId = (String) authentication.getPrincipal();
 
+            if (authenticatedUserId.equals(userId)) {
+                model.addAttribute("userId", userId);
+                return "member/myPage";
+            }
+        }
+
+        return "redirect:/login"; // 인증되지 않은 사용자는 로그인 페이지로 리다이렉트
     }
 
 }
+
