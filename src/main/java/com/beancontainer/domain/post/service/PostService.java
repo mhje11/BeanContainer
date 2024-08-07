@@ -95,6 +95,7 @@ public class PostService {
     }
 
     // 게시글 존재 여부 확인
+    @Transactional(readOnly = true)
     public boolean existsById(Long postId) {
         return postRepository.existsById(postId);
     }

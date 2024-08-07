@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor //생성자 자동 주입
 @Slf4j
+@Transactional(readOnly = true)
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;

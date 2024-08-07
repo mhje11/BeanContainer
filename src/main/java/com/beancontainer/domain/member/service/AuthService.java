@@ -8,10 +8,12 @@ import com.beancontainer.global.jwt.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 //인증 관련 비즈니스 로직
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -24,6 +26,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
+    @Transactional
     public void signUp(SignUpRequestDTO signUpRequestDTO) {
         if(memberRepository.findByUserId(signUpRequestDTO.getUserId()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 사용자 ID 입니다.");
@@ -38,6 +41,7 @@ public class AuthService {
 
         memberRepository.save(member);
     }
+
 
     public LoginDTO login(LoginDTO loginDTO) {
         Member member = memberRepository.findByUserId(loginDTO.getUserId())
