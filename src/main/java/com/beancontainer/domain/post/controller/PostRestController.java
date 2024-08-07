@@ -1,5 +1,7 @@
 package com.beancontainer.domain.post.controller;
 
+import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
@@ -8,6 +10,9 @@ import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,11 +29,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PostRestController {
     private final PostService postService;
+    private final MemberRepository memberRepository;
 
     @PostMapping("/post/create")    // 게시글 작성
     public ResponseEntity<Map<String, String>> createPost(@RequestParam("title") String title, @RequestParam("content") String content,
-                                             @RequestParam("images")List<MultipartFile> images, Principal principal) throws IOException {
-        String nickname = "test";
+                                                          @RequestParam("images")List<MultipartFile> images, @AuthenticationPrincipal UserDetails userDetails) throws IOException {
         PostRequestDto postRequestDto = new PostRequestDto();
         postRequestDto.setTitle(title);
         postRequestDto.setContent(content);
@@ -39,7 +44,10 @@ public class PostRestController {
 
         postRequestDto.setImages(postImgSaveDtos);
 
-        Long postId = postService.createPost(postRequestDto, nickname);
+        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+
+
+        Long postId = postService.createPost(postRequestDto, member.getNickname());
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "게시글생성 완료");

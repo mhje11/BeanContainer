@@ -1,4 +1,4 @@
-package com.beancontainer.domain.postimg.config;
+package com.beancontainer.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
