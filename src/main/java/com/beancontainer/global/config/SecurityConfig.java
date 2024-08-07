@@ -39,9 +39,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**").permitAll() // 모든 사용자에게 허용
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
                         .requestMatchers("/post/create").permitAll()
-                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/mypage/{userId}").authenticated() // 인증된 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능
                         .requestMatchers("/review/{kakaoId}").permitAll()
