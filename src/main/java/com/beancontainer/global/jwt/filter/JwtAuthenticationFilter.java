@@ -1,12 +1,11 @@
 package com.beancontainer.global.jwt.filter;
 
-import com.beancontainer.domain.member.entity.Member;
-import com.beancontainer.domain.member.entity.Role;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.jwt.exception.JwtExceptionCode;
 import com.beancontainer.global.jwt.token.JwtAuthenticationToken;
-import com.beancontainer.global.jwt.util.JwtUtil;
+import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.CustomUserDetails;
+import com.beancontainer.global.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -19,18 +18,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,19 +34,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtTokenizer jwtTokenizer;
     private final MemberRepository memberRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
+
         if (StringUtils.hasText(token)) {
             try {
-                // 변경된 부분: getAuthentication 메서드 호출 후 Authentication 객체 설정
-                Authentication authentication = getAuthentication(token);
-                if (authentication != null) {
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                getAuthentication(token);
             } catch (ExpiredJwtException e) {
                 request.setAttribute("exception", JwtExceptionCode.EXPIRED_TOKEN.getCode());
                 log.error("Expired Token : {}", token, e);
@@ -77,39 +70,65 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     // 변경된 부분: Authentication 객체를 반환하는 메서드로 변경
-    private Authentication getAuthentication(String token) {
-        Claims claims = jwtUtil.parseAccessToken(token);
-
+    private void getAuthentication(String token) {
+        Claims claims = jwtTokenizer.parseAccessToken(token);
         String userId = claims.get("userId", String.class);
-        String roleName = claims.get("role", String.class);
-        Role role = Role.valueOf(roleName);
-
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
-
-        Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
-
-        CustomUserDetails userDetails = new CustomUserDetails(member, role);
-
-        // 변경된 부분: principal을 userDetails로 설정
-        return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+        String name = claims.get("name", String.class);
+        List<GrantedAuthority> authorities = getGrantedAuthorities(claims);
+        CustomUserDetails userDetails = new CustomUserDetails(userId, name);
+        Authentication authentication = new JwtAuthenticationToken(authorities, userDetails, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private String getToken(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
-            return authorization.substring(7);
+//    private String getToken(HttpServletRequest request) {
+//        String authorization = request.getHeader("Authorization");
+//        log.info("헤더 값 꺼내옴 !! " + authorization);
+//        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+//            return authorization.substring(7);
+//        }
+//        log.info("토큰 없음");
+//        return null;
+//    }
+
+    private List<GrantedAuthority> getGrantedAuthorities(Claims claims) {
+        List<String> roles = (List<String>) claims.get("roles");
+        if (roles == null) {
+            String roleName = claims.get("role", String.class);
+            if (roleName == null) {
+                throw new BadCredentialsException("Invalid token: missing role claim");
+            }
+            roles = Collections.singletonList(roleName);
         }
 
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+    private String getToken(HttpServletRequest request) {
+        String token = null;
+
+// 헤더에서 토큰 확인
+        String authorization = request.getHeader("Authorization");
+        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            token = authorization.substring(7);
+            log.info("Token found in header: {}", token.substring(0, Math.min(token.length(), 10)));
+            return token;
+        }
+
+        // 쿠키에서 토큰 확인
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
-                    return cookie.getValue();
+                    token = cookie.getValue();
+                    log.info("Token found in cookie: {}", token.substring(0, Math.min(token.length(), 10)));
+                    return token;
                 }
             }
         }
 
+        log.info("토큰 없음 !! ");
         return null;
     }
+
 }

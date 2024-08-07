@@ -6,7 +6,7 @@ import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.RefreshToken;
 import com.beancontainer.domain.member.service.AuthService;
 import com.beancontainer.domain.member.service.MemberService;
-import com.beancontainer.global.jwt.util.JwtUtil;
+import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,10 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,63 +28,69 @@ public class AuthController {
     private final AuthService authService;
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtTokenizer jwtTokenizer;
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO, BindingResult bindingResult, HttpServletResponse response) {
-        log.info("Login request received for user: {}", loginDTO.getUserId());
-        if (bindingResult.hasErrors()) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO userLoginDto,
+                                   BindingResult bindingResult, HttpServletResponse response) {
+        log.info("==login==");
+        //username, password가 null 일 때
+        if(bindingResult.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
-        //유저가 있는지 확인 후 password 일치 여부 확인
-        Member member = memberService.findByUserId(loginDTO.getUserId());
-        if(!passwordEncoder.matches(loginDTO.getPassword(), member.getPassword())) {
+
+        // username 과 password 값을 잘 받아왔다면
+        // 우리 서버의 저장되어 있는 유저인지 확인
+        Member member = memberService.findByUserId(userLoginDto.getUserId());
+        //요청 정보에서 얻어온 비밀번호와 서버의 비밀번호가 일치하는지 확인
+        if(!passwordEncoder.matches(userLoginDto.getPassword(), member.getPassword())) {
+            //비밀번호가 일치하지 않을 때
             return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
 
+        //토큰 발급
+        String accessToken = jwtTokenizer.createAccessToken(member);
+        String refreshToken = jwtTokenizer.createAccessToken(member);
+        log.info("Access token created: {}", accessToken.substring(0, Math.min(accessToken.length(), 10)));
+        log.info("Refresh token created: {}", refreshToken.substring(0, Math.min(refreshToken.length(), 10)));
 
-        //jwt 토큰 발급
-        String accessToken = jwtUtil.createAccessToken(
-                member.getId(), member.getUserId(), member.getName(), member.getNickname(), member.getRole());
-        String refreshToken = jwtUtil.createRefreshToken(
-                member.getId(), member.getUserId(), member.getName(), member.getNickname(), member.getRole());
 
-        log.info("Access Token (앞 7자리): {}",
-                accessToken.substring(0, Math.min(accessToken.length(), 7)));
-
-        //DB에 refreshToken 저장
+        //리프레시토큰을 디비에 저장.
         RefreshToken refreshTokenEntity = new RefreshToken();
         refreshTokenEntity.setValue(refreshToken);
-        refreshTokenEntity.setUserId(member.getUserId());
+        refreshTokenEntity.setUserId(String.valueOf(member.getId()));
+
         refreshTokenService.addRefreshToken(refreshTokenEntity);
 
-        //응답 보내줌
-        LoginDTO loginResponseDTO = loginDTO.builder()
+        // 로그인 성공 로그 출력
+        log.info("User {} logged in successfully.", userLoginDto.getUserId());
+
+        //응답으로 보낼 값들을 준비해요.
+        LoginDTO loginResponseDto = LoginDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .userId(member.getUserId())
+                .userId(String.valueOf(member.getId()))
                 .name(member.getName())
                 .build();
 
-        //보안을 위해
         Cookie accessTokenCookie = new Cookie("accessToken",accessToken);
-        accessTokenCookie.setHttpOnly(true);  //http only 로 JS에서 접근 불가능
+        accessTokenCookie.setHttpOnly(true);  //보안 (쿠키값을 자바스크립트같은곳에서는 접근할수 없어요.)
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(Math.toIntExact(jwtUtil.ACCESS_TOKEN_EXPIRE_COUNT/1000)); //30분 쿠키의 유지시간 단위는 초 ,  JWT의 시간단위는 밀리세컨드
+        accessTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT/1000)); //30분 쿠키의 유지시간 단위는 초 ,  JWT의 시간단위는 밀리세컨드
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(Math.toIntExact(jwtUtil.REFRESH_TOKEN_EXPIRE_COUNT/1000)); //7일
+        refreshTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT/1000)); //7일
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
-
-        return new ResponseEntity(loginDTO, HttpStatus.OK);
+        return new ResponseEntity(loginResponseDto, HttpStatus.OK);
     }
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {

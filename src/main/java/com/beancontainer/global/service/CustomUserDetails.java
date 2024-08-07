@@ -11,20 +11,18 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class CustomUserDetails implements UserDetails {
-    private final Member member;
-    private final Role role;
     private String userId;
+    private String role;
 
-    public CustomUserDetails(Member member, Role role) {
-        this.member = member;
+    public CustomUserDetails(String userId, String role) {
+        this.userId = userId;
         this.role = role;
-        this.userId = member.getUserId();
     }
 
     //ROLE 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override
@@ -34,11 +32,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getUserId();
+        return this.userId;
     }
     // userId를 얻기 위한 메서드 추가
     public String getUserId() {
-        return member.getUserId();
+        return this.userId;
     }
 
     @Override

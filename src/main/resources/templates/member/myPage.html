@@ -9,8 +9,8 @@
 <h1>My Page</h1>
 
 <div sec:authorize="isAuthenticated()">
-    <p>안녕하세요, <span th:text="${#authentication.principal}">사용자</span>님!</p>
-    <p>당신의 권한은: <span th:text="${#authentication.authorities}"></span></p>
+    <p>안녕하세요, <span th:text="${userId}">사용자</span>님!</p>
+    <p>당신의 권한은: <span th:text="${authorities}"></span></p>
 </div>
 
 <div sec:authorize="!isAuthenticated()">
