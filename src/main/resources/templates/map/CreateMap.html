@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>CreateMap</title>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
     <style>
         #map {
             width: 100%;
             height: 400px;
         }
+
         #added-cafes {
             margin-top: 20px;
+        }
+
+        #search-box {
+            margin-top: 20px;
+        }
+
+        #search-results {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -25,9 +35,15 @@
     <input type="text" id="map-name" placeholder="지도 이름을 입력하세요">
 </div>
 <button id="create-map-btn">지도 만들기</button>
+<div id="search-box">
+    <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
+    <button id="search-btn">검색</button>
+</div>
+<div id="search-results"></div>
 
 <script>
     let map, ps, infowindow, markers = {}, addedCafes = [];
+    let isMoving = false;
 
     function initMap() {
         var mapContainer = document.getElementById('map'),
@@ -40,20 +56,37 @@
         ps = new kakao.maps.services.Places();
         infowindow = new kakao.maps.InfoWindow({zIndex: 1});
 
+        var zoomControl = new kakao.maps.ZoomControl();
+        map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
+
         searchPlacesByCenter(map.getCenter());
 
-        kakao.maps.event.addListener(map, 'dragend', function() {
+        kakao.maps.event.addListener(map, 'dragstart', function () {
+            isMoving = true;
+        });
+
+        kakao.maps.event.addListener(map, 'dragend', function () {
+            isMoving = false;
             searchPlacesByCenter(map.getCenter());
         });
 
-        kakao.maps.event.addListener(map, 'zoom_changed', function() {
+        kakao.maps.event.addListener(map, 'zoom_start', function () {
+            isMoving = true;
+        });
+
+        kakao.maps.event.addListener(map, 'zoom_changed', function () {
+            isMoving = false;
             searchPlacesByCenter(map.getCenter());
         });
+
+        document.getElementById('search-btn').addEventListener('click', searchCafeByName);
     }
 
     function searchPlacesByCenter(center) {
+        if (isMoving) return;
+
         const keyword = '카페';
-        ps.keywordSearch(keyword, function(data, status, pagination) {
+        ps.keywordSearch(keyword, function (data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
                 for (var i = 0; i < data.length; i++) {
                     if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
@@ -64,7 +97,7 @@
                     pagination.nextPage();
                 }
             }
-        }, { location: center, radius: 2000 });
+        }, {location: center, radius: 2000});
     }
 
     function isExcludedCategory(categoryName) {
@@ -81,7 +114,7 @@
                 break;
             }
         }
-        return { city, district };
+        return {city, district};
     }
 
     function displayMarker(place) {
@@ -91,7 +124,7 @@
         });
         markers[place.id] = marker;
 
-        kakao.maps.event.addListener(marker, 'click', function() {
+        kakao.maps.event.addListener(marker, 'click', function () {
             const parsedAddress = parseAddress(place.road_address_name || place.address_name);
 
             var content = `
@@ -106,7 +139,7 @@
         });
     }
 
-    function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, district) {
+    async function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, district) {
         const data = {
             kakaoId: kakaoId,
             name: name,
@@ -119,24 +152,26 @@
 
         console.log("Sending data:", data);
 
-        fetch(`/review/${kakaoId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(response => {
+        try {
+            const response = await fetch(`/review/${kakaoId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
             if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
+                const text = await response.text();
+                throw new Error(text);
             }
-            return response.json();
-        })
-            .then(data => {
-                addCafeToList(data, kakaoId);
-            }).catch(error => {
+
+            const responseData = await response.json();
+            addCafeToList(responseData, kakaoId);
+        } catch (error) {
             console.error('Error:', error);
             alert('Error: ' + error.message);
-        });
+        }
     }
 
     function addCafeToList(cafe, kakaoId) {
@@ -174,10 +209,58 @@
         console.log("After removal cafes:", addedCafes); // 로그 추가
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    async function searchCafeByName() {
+        const keyword = document.getElementById('search-input').value;
+        if (!keyword) {
+            alert('카페 이름을 입력하세요.');
+            return;
+        }
+
+        ps.keywordSearch(keyword, function(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                if (data.length === 1) {
+                    const place = data[0];
+                    const center = new kakao.maps.LatLng(place.y, place.x);
+                    map.setCenter(center);
+                    map.setLevel(3);
+
+                    // 지도를 미세하게 이동시키는 코드
+                    const offsetCenter = new kakao.maps.LatLng(place.y + 0.00001, place.x + 0.00001);
+                    map.setCenter(offsetCenter);
+                    map.setCenter(center);
+
+                    // 강제로 마커 로딩
+                    searchPlacesByCenter(center);
+                } else {
+                    displaySearchResults(data);
+                }
+            } else {
+                alert('카페를 찾을 수 없습니다.');
+            }
+        });
+    }
+
+    function displaySearchResults(places) {
+        const searchResultsContainer = document.getElementById('search-results');
+        searchResultsContainer.innerHTML = '';
+
+        places.forEach(place => {
+            const resultItem = document.createElement('div');
+            resultItem.textContent = place.place_name;
+            resultItem.style.cursor = 'pointer';
+            resultItem.onclick = () => {
+                map.setCenter(new kakao.maps.LatLng(place.y, place.x));
+                map.setLevel(3);
+                searchResultsContainer.innerHTML = ''; // 선택 후 검색 결과 제거
+            };
+            searchResultsContainer.appendChild(resultItem);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
         initMap();
 
-        document.getElementById('create-map-btn').addEventListener('click', function() {
+        document.getElementById('create-map-btn').addEventListener('click', async function () {
             const mapName = document.getElementById('map-name').value;
             if (!mapName) {
                 alert('지도 이름을 입력하세요.');
@@ -191,21 +274,25 @@
 
             console.log("Sending map data:", mapData); // 로그 추가
 
-            fetch('/api/mymap', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(mapData)
-            }).then(response => {
+            try {
+                const response = await fetch('/api/mymap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(mapData)
+                });
+
                 if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text) });
+                    const text = await response.text();
+                    throw new Error(text);
                 }
+
                 alert('지도 생성 성공');
-            }).catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
                 alert('Error: ' + error.message);
-            });
+            }
         });
     });
 </script>
