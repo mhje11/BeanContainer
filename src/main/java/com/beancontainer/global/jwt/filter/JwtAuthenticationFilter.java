@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -44,36 +45,81 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     //토큰 검증
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
-
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+        String token = getToken(request);
+        if(StringUtils.hasText(token)){
+            try{
+                getAuthentication(token);
+            }catch (ExpiredJwtException e){
+                request.setAttribute("exception", JwtExceptionCode.EXPIRED_TOKEN.getCode());
+                log.error("Expired Token : {}",token,e);
+                throw new BadCredentialsException("Expired token exception", e);
+            }catch (UnsupportedJwtException e){
+                request.setAttribute("exception", JwtExceptionCode.UNSUPPORTED_TOKEN.getCode());
+                log.error("Unsupported Token: {}", token, e);
+                throw new BadCredentialsException("Unsupported token exception", e);
+            } catch (MalformedJwtException e) {
+                request.setAttribute("exception", JwtExceptionCode.INVALID_TOKEN.getCode());
+                log.error("Invalid Token: {}", token, e);
+                throw new BadCredentialsException("Invalid token exception", e);
+            } catch (IllegalArgumentException e) {
+                request.setAttribute("exception", JwtExceptionCode.NOT_FOUND_TOKEN.getCode());
+                log.error("Token not found: {}", token, e);
+                throw new BadCredentialsException("Token not found exception", e);
+            } catch (Exception e) {
+                log.error("JWT Filter - Internal Error: {}", token, e);
+                throw new BadCredentialsException("JWT filter internal exception", e);
+            }
         }
-
-        //순수한 토큰 값 출력
-        String token = authorization.split(" ")[1];
-
-        try {
-            Claims claims = jwtUtil.parseAccessToken(token);
-
-            String userId = claims.get("userId", String.class);
-            Role role = Role.valueOf(claims.get("role", String.class));
-
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userId, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role))
-            );
-
-
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        } catch (Exception e) {
-            logger.error("JWT Authentication failed", e);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
         filterChain.doFilter(request, response);
+    }
+
+    private void getAuthentication(String token) {
+        Claims claims = jwtUtil.parseAccessToken(token);
+
+        String userId = claims.get("userId", String.class);
+        String roleName = claims.get("role", String.class);
+        Role role = Role.valueOf(roleName);
+
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
+
+        Member member = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+
+        CustomUserDetails userDetails = new CustomUserDetails(member, role);
+
+        // principal을 userId로 설정
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userId, null, authorities);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        log.debug("Set Authentication to security context for '{}', authorities: {}",
+                userDetails.getUsername(), authorities);
+    }
+
+    private List<GrantedAuthority> getGrantedAuthorities(Claims claims){
+        List<String> roles = (List<String>)claims.get("role");
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (String role : roles){
+            authorities.add(()->role);
+        }
+        return authorities;
+    }
+    private String getToken(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            return authorization.substring(7);
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
     }
 }

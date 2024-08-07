@@ -56,10 +56,10 @@ public class MemberController {
 
             if (authenticatedUserId.equals(userId)) {
                 model.addAttribute("userId", userId);
+                model.addAttribute("authorities", authentication.getAuthorities());
                 return "member/myPage";
             }
         }
-
         return "redirect:/login"; // 인증되지 않은 사용자는 로그인 페이지로 리다이렉트
     }
 
