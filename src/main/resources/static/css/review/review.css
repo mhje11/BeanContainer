@@ -1,0 +1,53 @@
+.star-rating {
+    direction: rtl;
+    display: inline-block;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.star-rating input:checked ~ label,
+.star-rating input:hover ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f5c518;
+}
+
+.selected-categories {
+    margin-top: 10px;
+}
+
+.selected-categories ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.selected-categories li {
+    display: inline-block;
+    margin-right: 5px;
+    background-color: #e0e0e0;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.review-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.edit-form {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
