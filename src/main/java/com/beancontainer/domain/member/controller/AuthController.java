@@ -4,7 +4,6 @@ import com.beancontainer.domain.member.dto.LoginDTO;
 import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.RefreshToken;
-import com.beancontainer.domain.member.repository.RefreshTokenRepository;
 import com.beancontainer.domain.member.service.AuthService;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.global.jwt.util.JwtUtil;
