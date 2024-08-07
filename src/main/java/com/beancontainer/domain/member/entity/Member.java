@@ -44,8 +44,15 @@ public class Member {
         this.role = role;
     }
 
-    //setter 를 사용하여 엔티티에 추가하는 방법 대신 별도의 메소드를 만들어서 추가
     public static Member createMember(String name, String nickname, String userId, String password) {
-        return new Member(name, nickname, userId, password, Role.MEMBER);
+        Member member = new Member();
+        member.name = name;
+        member.nickname = nickname;
+        member.userId = userId;
+        member.password = password;
+        member.role = Role.MEMBER; // 기본 역할을 MEMBER로 설정
+        return member;
     }
+
+
 }
