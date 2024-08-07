@@ -49,7 +49,6 @@ public class PostRestController {
         Member member = memberRepository.findByUserId(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
 
-
         Long postId = postService.createPost(postRequestDto, member.getNickname());
 
         Map<String, String> response = new HashMap<>();
