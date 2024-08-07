@@ -7,6 +7,7 @@ import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
 import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
+import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class PostRestController {
     @PostMapping("/post/create")    // 게시글 작성
     public ResponseEntity<Map<String, String>> createPost(@RequestParam("title") String title, @RequestParam("content") String content,
                                                           @RequestParam(value = "images", required = false) List<MultipartFile> images,
-                                                          @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+                                                          @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
         PostRequestDto postRequestDto = new PostRequestDto();
         postRequestDto.setTitle(title);
         postRequestDto.setContent(content);
@@ -46,7 +47,7 @@ public class PostRestController {
             postRequestDto.setImages(postImgSaveDtos);
         }
 
-        Member member = memberRepository.findByUserId(userDetails.getUsername())
+        Member member = memberRepository.findByUserId(userDetails.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
 
 

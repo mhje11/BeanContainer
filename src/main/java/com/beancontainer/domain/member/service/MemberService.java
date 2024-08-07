@@ -21,25 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager; //Security 에서 제공하는 인증 과정 처리
 
-    //회원 가입
-    @Transactional
-    public Member signUp(SignUpRequestDTO signUp) {
-        //아이디가 중복 체크
-        if(memberRepository.findByUserId(signUp.getUserId()).isPresent()) {
-            throw new IllegalStateException("이미 존재하는 아이디 입니다.");
-        }
-
-        Member member = Member.createMember(
-                signUp.getName(),
-                signUp.getNickname(),
-                signUp.getUserId(),
-                passwordEncoder.encode(signUp.getPassword()) //DTO의 password 암호화
-        );
-        return memberRepository.save(member);
-    }
 
     //ID로 유저 찾기
     public Member findByUserId(String userId) {
@@ -47,6 +29,7 @@ public class MemberService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
     }
+
 
 
 

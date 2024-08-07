@@ -1,11 +1,13 @@
 package com.beancontainer.global.jwt.token;
 
+import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
 //JWT 토큰 생성 및 검증
+@Getter
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private String token;
     private Object principal;
