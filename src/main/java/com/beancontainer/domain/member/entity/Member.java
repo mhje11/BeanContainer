@@ -1,10 +1,12 @@
 package com.beancontainer.domain.member.entity;
 
+import com.beancontainer.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Profile;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity

@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -63,4 +65,18 @@ public class PostImgService {
         postImgRepository.save(postImg);
     }
 
+    public void deleteImage(String imageUrl) {
+        String fileName = fileNameFromUrl(imageUrl);
+        s3Client.deleteObject(
+                DeleteObjectRequest.builder()
+                        .bucket(bucketname)
+                        .key(fileName)
+                        .build()
+        );
+        log.info("Delete img from S3: {}", imageUrl);
+    }
+
+    private String fileNameFromUrl(String imageUrl) {
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
 }

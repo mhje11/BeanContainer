@@ -103,6 +103,16 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        // S3에서 이미지 삭제
+        if (post.getImages() != null && !post.getImages().isEmpty()) {
+            for (PostImg img : post.getImages()) {
+                postImgService.deleteImage(img.getPath());
+            }
+        }
+
+
         postRepository.deleteById(postId);
     }
 
