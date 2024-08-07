@@ -1,4 +1,4 @@
-package com.beancontainer.domain.chatroom.chatDto;
+package com.beancontainer.domain.chatroom.dto;
 
 import lombok.Getter;
 import lombok.Setter;

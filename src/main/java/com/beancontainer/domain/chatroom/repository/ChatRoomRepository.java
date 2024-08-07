@@ -1,6 +1,6 @@
 package com.beancontainer.domain.chatroom.repository;
 
-import com.beancontainer.domain.chatroom.chatDto.ChatRoom;
+import com.beancontainer.domain.chatroom.dto.ChatRoom;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
