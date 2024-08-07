@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>MyPage</title>
+    <title>My Page</title>
 </head>
 <body>
-myPage
+<h1>My Page</h1>
+
+<div sec:authorize="isAuthenticated()">
+    <p>안녕하세요, <span th:text="${#authentication.principal}">사용자</span>님!</p>
+    <p>당신의 권한은: <span th:text="${#authentication.authorities}"></span></p>
+</div>
+
+<div sec:authorize="!isAuthenticated()">
+    <p>로그인이 필요한 페이지입니다.</p>
+    <a th:href="@{/login}">로그인</a>해 주세요.
+</div>
+
 </body>
 </html>
