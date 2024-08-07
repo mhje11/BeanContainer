@@ -37,23 +37,26 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
-//JWT 인증 필요
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
 
-    //토큰 검증
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
-        if(StringUtils.hasText(token)){
-            try{
-                getAuthentication(token);
-            }catch (ExpiredJwtException e){
+        if (StringUtils.hasText(token)) {
+            try {
+                // 변경된 부분: getAuthentication 메서드 호출 후 Authentication 객체 설정
+                Authentication authentication = getAuthentication(token);
+                if (authentication != null) {
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (ExpiredJwtException e) {
                 request.setAttribute("exception", JwtExceptionCode.EXPIRED_TOKEN.getCode());
-                log.error("Expired Token : {}",token,e);
+                log.error("Expired Token : {}", token, e);
                 throw new BadCredentialsException("Expired token exception", e);
-            }catch (UnsupportedJwtException e){
+            } catch (UnsupportedJwtException e) {
                 request.setAttribute("exception", JwtExceptionCode.UNSUPPORTED_TOKEN.getCode());
                 log.error("Unsupported Token: {}", token, e);
                 throw new BadCredentialsException("Unsupported token exception", e);
@@ -73,7 +76,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void getAuthentication(String token) {
+    // 변경된 부분: Authentication 객체를 반환하는 메서드로 변경
+    private Authentication getAuthentication(String token) {
         Claims claims = jwtUtil.parseAccessToken(token);
 
         String userId = claims.get("userId", String.class);
@@ -87,24 +91,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         CustomUserDetails userDetails = new CustomUserDetails(member, role);
 
-        // principal을 userId로 설정
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userId, null, authorities);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        log.debug("Set Authentication to security context for '{}', authorities: {}",
-                userDetails.getUsername(), authorities);
+        // 변경된 부분: principal을 userDetails로 설정
+        return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
 
-    private List<GrantedAuthority> getGrantedAuthorities(Claims claims){
-        List<String> roles = (List<String>)claims.get("role");
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (String role : roles){
-            authorities.add(()->role);
-        }
-        return authorities;
-    }
     private String getToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
