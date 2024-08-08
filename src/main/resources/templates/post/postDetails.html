@@ -41,6 +41,12 @@
     <div class="images" id="images"></div>
 </div>
 <p id="btn-list"></p>
+<div id="commentForm">
+    <h3>댓글</h3>
+    <div id="comments"></div>
+    <textarea id="comment-input" placeholder="내용을 입력하세요." rows="5" required></textarea>
+    <button type="submit" id="submit-comment">댓글 등록</button>
+</div>
 <script>
     async function fetchPost() {
         try {
@@ -83,7 +89,6 @@
                 btnList.innerHTML = `<a href="/post/postList">목록</a>`;
             }
 
-
         } catch (error) {
             console.error('Error fetching post', error);
             const postDiv = document.getElementById('post-box');
@@ -112,6 +117,26 @@
             }
         }
     }
+
+    document.getElementById('submit-comment').addEventListener('click', async () => {
+        const postId = window.location.pathname.split('/').pop();
+        const content = document.getElementById('comment-input').value;
+
+        const response = await fetch(`/api/postlist/create/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content }) // 닉네임은 서버에서 설정하므로 content만 전송
+        });
+
+        if (response.ok) {
+            document.getElementById('comment-input').value = ''; // 입력 초기화
+            // fetchComments(postId); // 댓글 새로 고침
+        } else {
+            alert('댓글 등록 실패');
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', fetchPost);  // 페이지 로드 후 함수 호출
 </script>
