@@ -2,7 +2,7 @@ package com.beancontainer.global.config;
 
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.jwt.filter.JwtAuthenticationFilter;
-import com.beancontainer.global.jwt.util.JwtUtil;
+import com.beancontainer.global.jwt.util.JwtTokenizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final JwtUtil jwtUtil;
+
+    private final JwtTokenizer jwtTokenizer;
     private final MemberRepository memberRepository;
 
 
@@ -42,7 +42,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
                         .requestMatchers("/post/create").permitAll()
-                        .requestMatchers("/mypage/{userId}").authenticated() // 인증된 사용자만 접근 가능
+                        .requestMatchers("/api/post/create").hasRole("MEMBER")
+                        .requestMatchers("/mypage/**").authenticated() // 인증된 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능
                         .requestMatchers("/review/{kakaoId}").permitAll()
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
@@ -53,7 +54,7 @@ public class SecurityConfig {
                 );
         //jwt 설정
         http
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, memberRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenizer), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

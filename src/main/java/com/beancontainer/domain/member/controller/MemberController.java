@@ -1,6 +1,8 @@
 package com.beancontainer.domain.member.controller;
 
+import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
+import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -47,19 +49,25 @@ public class MemberController {
 
     //마이페이지
     @GetMapping("/mypage/{userId}")
-    public String showMyPage(@PathVariable String userId, Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.isAuthenticated()) {
-            String authenticatedUserId = (String) authentication.getPrincipal();
-
-            if (authenticatedUserId.equals(userId)) {
-                model.addAttribute("userId", userId);
-                model.addAttribute("authorities", authentication.getAuthorities());
-                return "member/myPage";
-            }
+    public String showMyPage(@PathVariable String userId, Model model, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
         }
-        return "redirect:/login"; // 인증되지 않은 사용자는 로그인 페이지로 리다이렉트
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String authenticatedUserId = userDetails.getUserId();
+
+        if (!authenticatedUserId.equals(userId)) {
+            return "redirect:/"; // 또는 에러 페이지로 리다이렉트
+        }
+
+        // 여기서 필요한 사용자 정보를 가져와 모델에 추가
+        Member member = memberService.findByUserId(userId);
+        model.addAttribute("userId", userId);
+        model.addAttribute("name", member.getName());
+        model.addAttribute("authorities", authentication.getAuthorities());
+
+        return "member/myPage";
     }
 
 }
