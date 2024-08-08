@@ -4,12 +4,19 @@ import com.beancontainer.domain.cafe.dto.CafeResponseDto;
 import com.beancontainer.domain.cafe.dto.CafeSaveDto;
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.cafe.repository.CafeRepository;
+import com.beancontainer.domain.cafecategory.CafeCategory;
+import com.beancontainer.domain.category.entity.Category;
+import com.beancontainer.domain.category.repository.CategoryRepository;
+import com.beancontainer.domain.review.repository.ReviewRepository;
+import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CafeService {
     private final CafeRepository cafeRepository;
+    private final ReviewRepository reviewRepository;
 
     //카페 db에 저장
     @Transactional
@@ -29,29 +37,64 @@ public class CafeService {
         return cafe.getId();
     }
 
-    public Cafe findByKakaoId(String kakaoId) {
-        return cafeRepository.findByKakaoId(kakaoId).orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
-    }
+
 
     //구별 카페 검색
     public List<CafeResponseDto> getCafesByDistrict(String district) {
         List<Cafe> cafes = cafeRepository.findAllByDistrict(district);
         return cafes.stream()
-                .map(CafeResponseDto::new)
+                .map(cafe -> {
+                    Double averageScore = reviewRepository.calculateAverageScoreByCafeId(cafe.getId());
+                    return new CafeResponseDto(cafe, averageScore);
+                })
                 .collect(Collectors.toList());
+    }
+
+    public CafeResponseDto getCafeById(Long cafeId) {
+        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new EntityNotFoundException("해당 카페를 찾을 수 없습니다."));
+        Double average = reviewRepository.calculateAverageScoreByCafeId(cafeId);
+        return new CafeResponseDto(cafe, average);
     }
 
     //카페가 존재하지 않을경우 저장하고 리뷰페이지로 이동하는 로직
     @Transactional
     public CafeResponseDto getCafeByKakaoIdOrSave(String kakaoId, CafeSaveDto cafeSaveDto) {
-       return cafeRepository.findByKakaoId(kakaoId)
-                .map(CafeResponseDto::new)
+        return cafeRepository.findByKakaoId(kakaoId)
+                .map(cafe -> {
+                    Double averageScore = reviewRepository.calculateAverageScoreByCafeId(cafe.getId());
+                    return new CafeResponseDto(cafe, averageScore);
+                })
                 .orElseGet(() -> {
                     Long savedCafeId = saveCafe(cafeSaveDto);
-                    return new CafeResponseDto(cafeRepository.findById(savedCafeId).orElseThrow(
+                    Cafe savedCafe = cafeRepository.findById(savedCafeId).orElseThrow(
                             () -> new RuntimeException("카페 저장 후 조회에 실패")
-                    ));
+                    );
+                    return new CafeResponseDto(savedCafe, 0.0);
                 });
+    }
+
+
+
+    @Transactional
+    public void updatedCafeCategories(Long cafeId) {
+        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new EntityNotFoundException("해당 카페를 찾을 수 없습니다."));
+
+        Map<Category, Long> categoryFrequency = reviewRepository.findAllByCafeId(cafeId).stream()
+                .flatMap(review -> review.getReviewCategories().stream())
+                .collect(Collectors.groupingBy(ReviewCategory::getCategory, Collectors.counting()));
+
+        List<Category> topCategories = categoryFrequency.entrySet().stream()
+                .sorted(Map.Entry.<Category, Long>comparingByValue().reversed())
+                .limit(3)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        cafe.getCafeCategories().clear();
+        for (Category category : topCategories) {
+            cafe.getCafeCategories().add(new CafeCategory(cafe, category));
+        }
+
+        cafeRepository.save(cafe);
     }
 
 

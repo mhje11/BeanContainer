@@ -2,6 +2,7 @@ package com.beancontainer.domain.review.service;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.cafe.repository.CafeRepository;
+import com.beancontainer.domain.cafe.service.CafeService;
 import com.beancontainer.domain.category.entity.Category;
 import com.beancontainer.domain.category.repository.CategoryRepository;
 import com.beancontainer.domain.member.entity.Member;
@@ -32,6 +33,7 @@ public class ReviewService {
     private final CafeRepository cafeRepository;
     private final ReviewCategoryRepository reviewCategoryRepository;
     private final CategoryRepository categoryRepository;
+    private final CafeService cafeService;
 
     @Transactional
     public Long createReview(ReviewCreateDto reviewCreateDto) {
@@ -51,6 +53,8 @@ public class ReviewService {
                 .collect(Collectors.toSet());
 
         reviewRepository.save(review);
+
+        cafeService.updatedCafeCategories(reviewCreateDto.getCafeId());
         return review.getId();
     }
 
@@ -72,8 +76,9 @@ public class ReviewService {
                 })
                 .collect(Collectors.toSet());
         Review updatedReview = new Review(existingReview.getId(), existingReview.getMember(), existingReview.getCafe(), reviewUpdateDto.getContent(), reviewUpdateDto.getScore(), updateCategories);
-
         Review review = reviewRepository.save(updatedReview);
+        cafeService.updatedCafeCategories(existingReview.getCafe().getId());
+
         return review.getId();
     }
 
@@ -81,4 +86,6 @@ public class ReviewService {
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
     }
+
+
 }

@@ -6,51 +6,49 @@
     <link rel="stylesheet" type="text/css" href="/css/review/review.css">
 </head>
 <body>
+
+<div id="cafe-info"></div>
 <h2>Review</h2>
 
-<div class="star-rating">
-    <input type="radio" id="5-stars" name="rating" value="5" /><label for="5-stars">&#9733;</label>
-    <input type="radio" id="4.5-stars" name="rating" value="4.5" /><label for="4.5-stars">&#9733;</label>
-    <input type="radio" id="4-stars" name="rating" value="4" /><label for="4-stars">&#9733;</label>
-    <input type="radio" id="3.5-stars" name="rating" value="3.5" /><label for="3.5-stars">&#9733;</label>
-    <input type="radio" id="3-stars" name="rating" value="3" /><label for="3-stars">&#9733;</label>
-    <input type="radio" id="2.5-stars" name="rating" value="2.5" /><label for="2.5-stars">&#9733;</label>
-    <input type="radio" id="2-stars" name="rating" value="2" /><label for="2-stars">&#9733;</label>
-    <input type="radio" id="1.5-stars" name="rating" value="1.5" /><label for="1.5-stars">&#9733;</label>
-    <input type="radio" id="1-stars" name="rating" value="1" /><label for="1-stars">&#9733;</label>
-    <input type="radio" id="0.5-stars" name="rating" value="0.5" /><label for="0.5-stars">&#9733;</label>
+<div class="review-form">
+    <div class="star-rating">
+        <input type="radio" id="5-stars" name="rating" value="5" /><label for="5-stars">&#9733;</label>
+        <input type="radio" id="4.5-stars" name="rating" value="4.5" /><label for="4.5-stars">&#9733;</label>
+        <input type="radio" id="4-stars" name="rating" value="4" /><label for="4-stars">&#9733;</label>
+        <input type="radio" id="3.5-stars" name="rating" value="3.5" /><label for="3.5-stars">&#9733;</label>
+        <input type="radio" id="3-stars" name="rating" value="3" /><label for="3-stars">&#9733;</label>
+        <input type="radio" id="2.5-stars" name="rating" value="2.5" /><label for="2.5-stars">&#9733;</label>
+        <input type="radio" id="2-stars" name="rating" value="2" /><label for="2-stars">&#9733;</label>
+        <input type="radio" id="1.5-stars" name="rating" value="1.5" /><label for="1.5-stars">&#9733;</label>
+        <input type="radio" id="1-stars" name="rating" value="1" /><label for="1-stars">&#9733;</label>
+        <input type="radio" id="0.5-stars" name="rating" value="0.5" /><label for="0.5-stars">&#9733;</label>
+    </div>
+
+    <h3>Categories</h3>
+    <div class="categories">
+        <label><input type="checkbox" value="대형카페" /> 대형카페</label>
+        <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
+        <label><input type="checkbox" value="주차가 가능한" /> 주차가 가능한</label>
+        <label><input type="checkbox" value="24시간 카페" /> 24시간 카페</label>
+        <label><input type="checkbox" value="룸" /> 룸</label>
+        <label><input type="checkbox" value="테라스" /> 테라스</label>
+        <label><input type="checkbox" value="와이파이" /> 와이파이</label>
+        <label><input type="checkbox" value="데이트 하기 좋은" /> 데이트 하기 좋은</label>
+        <label><input type="checkbox" value="혼자가기 좋은" /> 혼자가기 좋은</label>
+        <label><input type="checkbox" value="공부하기 좋은" /> 공부하기 좋은</label>
+        <label><input type="checkbox" value="비즈니스 미팅" /> 비즈니스 미팅</label>
+        <label><input type="checkbox" value="애견 동반" /> 애견 동반</label>
+        <label><input type="checkbox" value="분위기 좋은" /> 분위기 좋은</label>
+        <label><input type="checkbox" value="인스타 감성" /> 인스타 감성</label>
+        <label><input type="checkbox" value="풍경이 좋은" /> 풍경이 좋은</label>
+        <label><input type="checkbox" value="새로 오픈" /> 새로 오픈</label>
+        <label><input type="checkbox" value="조용한" /> 조용한</label>
+    </div>
+
+    <h3>Review Content</h3>
+    <textarea id="review-content" rows="4" cols="50"></textarea>
+    <button id="submit-review">Submit Review</button>
 </div>
-
-<h3>Categories</h3>
-<div class="categories">
-    <label><input type="checkbox" value="대형카페" /> 대형카페</label>
-    <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
-    <label><input type="checkbox" value="주차가 가능한" /> 주차가 가능한</label>
-    <label><input type="checkbox" value="24시간 카페" /> 24시간 카페</label>
-    <label><input type="checkbox" value="룸" /> 룸</label>
-    <label><input type="checkbox" value="테라스" /> 테라스</label>
-    <label><input type="checkbox" value="와이파이" /> 와이파이</label>
-    <label><input type="checkbox" value="데이트 하기 좋은" /> 데이트 하기 좋은</label>
-    <label><input type="checkbox" value="혼자가기 좋은" /> 혼자가기 좋은</label>
-    <label><input type="checkbox" value="공부하기 좋은" /> 공부하기 좋은</label>
-    <label><input type="checkbox" value="비즈니스 미팅" /> 비즈니스 미팅</label>
-    <label><input type="checkbox" value="애견 동반" /> 애견 동반</label>
-    <label><input type="checkbox" value="분위기 좋은" /> 분위기 좋은</label>
-    <label><input type="checkbox" value="인스타 감성" /> 인스타 감성</label>
-    <label><input type="checkbox" value="풍경이 좋은" /> 풍경이 좋은</label>
-    <label><input type="checkbox" value="새로 오픈" /> 새로 오픈</label>
-    <label><input type="checkbox" value="조용한" /> 조용한</label>
-</div>
-
-<h3>Selected Categories</h3>
-<div class="selected-categories">
-    <ul id="selected-category-list"></ul>
-</div>
-
-<h3>Review Content</h3>
-<textarea id="review-content" rows="4" cols="50"></textarea>
-
-<button id="submit-review">Submit Review</button>
 
 <h3>Reviews</h3>
 <div id="review-list"></div>

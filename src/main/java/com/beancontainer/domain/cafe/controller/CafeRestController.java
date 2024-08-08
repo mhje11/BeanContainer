@@ -29,5 +29,11 @@ public class CafeRestController {
         return ResponseEntity.ok(cafes);
     }
 
+    @GetMapping("/api/cafe/{cafeId}")
+    public ResponseEntity<CafeResponseDto> getCafe(@PathVariable("cafeId")Long cafeId) {
+        CafeResponseDto cafe = cafeService.getCafeById(cafeId);
+        return new ResponseEntity<>(cafe, HttpStatus.OK);
+    }
+
 
 }

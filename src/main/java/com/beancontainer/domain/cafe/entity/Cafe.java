@@ -1,7 +1,11 @@
 package com.beancontainer.domain.cafe.entity;
+import com.beancontainer.domain.cafecategory.CafeCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "cafes")
@@ -33,6 +37,9 @@ public class Cafe {
 
     @Column(nullable = false)
     private String district;
+
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CafeCategory> cafeCategories = new HashSet<>();
 
 
     public Cafe(String kakaoId, String name, String address, double latitude, double longitude, String city, String district) {
