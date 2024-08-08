@@ -1,7 +1,6 @@
 package com.beancontainer.domain.member.controller;
 
 import com.beancontainer.domain.member.service.MemberService;
-import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
