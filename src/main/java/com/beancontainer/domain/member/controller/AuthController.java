@@ -52,7 +52,7 @@ public class AuthController {
 
         //토큰 발급
         String accessToken = jwtTokenizer.createAccessToken(member);
-        String refreshToken = jwtTokenizer.createAccessToken(member);
+        String refreshToken = jwtTokenizer.createRefreshToken(member);
         log.info("Access token created: {}", accessToken.substring(0, Math.min(accessToken.length(), 10)));
         log.info("Refresh token created: {}", refreshToken.substring(0, Math.min(refreshToken.length(), 10)));
 
