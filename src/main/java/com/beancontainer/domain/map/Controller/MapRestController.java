@@ -5,6 +5,7 @@ import com.beancontainer.domain.map.dto.MapDetailResponseDto;
 import com.beancontainer.domain.map.dto.MapListResponseDto;
 import com.beancontainer.domain.map.dto.MapUpdateDto;
 import com.beancontainer.domain.map.service.MapService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class MapRestController {
     private final MapService mapService;
 
     @PostMapping("/api/mymap")
-    public ResponseEntity<String> createMap(@RequestBody MapCreateDto mapCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> createMap(@Valid @RequestBody MapCreateDto mapCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
         mapCreateDto.setUsername(userDetails.getUsername());
         log.info("Received Map Data: {}", mapCreateDto.getKakaoIds()); // 로그 추가
 

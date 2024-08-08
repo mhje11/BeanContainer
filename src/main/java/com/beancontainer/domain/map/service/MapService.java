@@ -11,6 +11,7 @@ import com.beancontainer.domain.map.entity.Map;
 import com.beancontainer.domain.map.repository.MapRepository;
 import com.beancontainer.domain.mapcafe.entity.MapCafe;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
+import com.beancontainer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class MapService {
     private final MapRepository mapRepository;
     private final MapCafeRepository mapCafeRepository;
     private final CafeRepository cafeRepository;
+    private final ReviewRepository reviewRepository;
 
 
     @Transactional
@@ -59,9 +61,11 @@ public class MapService {
     public MapDetailResponseDto getMapDetail(Long mapId) {
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new RuntimeException("해당 지도가 존재하지 않습니다."));
         List<CafeResponseDto> cafes = mapCafeRepository.findByMapId(map.getId()).stream()
-                .map(mapCafe -> new CafeResponseDto(mapCafe.getCafe()))
+                .map(mapCafe -> {
+                    Double averageScore = reviewRepository.calculateAverageScoreByCafeId(mapCafe.getCafe().getId());
+                    return new CafeResponseDto(mapCafe.getCafe(), averageScore);
+                })
                 .collect(Collectors.toList());
-
         return new MapDetailResponseDto(map.getMapName(), map.getUsername(), cafes);
     }
 

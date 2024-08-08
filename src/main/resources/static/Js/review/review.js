@@ -1,42 +1,37 @@
 const selectedCategories = new Set();
+const editFormCategories = new Map();
 let isEditing = false;
 let currentEditId = null;
 let reviewsData = [];
 
-document.querySelectorAll('.categories input[type="checkbox"]').forEach(checkbox => {
+// 리뷰 작성 폼의 체크박스 이벤트 리스너
+document.querySelectorAll('.review-form .categories input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', (event) => {
         if (event.target.checked) {
             selectedCategories.add(event.target.value);
         } else {
             selectedCategories.delete(event.target.value);
         }
-        updateSelectedCategories();
     });
 });
 
-function updateSelectedCategories() {
-    const selectedCategoryList = document.getElementById('selected-category-list');
-    selectedCategoryList.innerHTML = '';
-    selectedCategories.forEach(category => {
-        const li = document.createElement('li');
-        li.textContent = category;
-        const button = document.createElement('button');
-        button.textContent = 'x';
-        button.onclick = () => {
-            selectedCategories.delete(category);
-            updateSelectedCategories();
-        };
-        li.appendChild(button);
-        selectedCategoryList.appendChild(li);
+function updateSelectedCategories(formType, categories, reviewId) {
+    const categorySet = formType === 'edit' ? editFormCategories.get(reviewId) : selectedCategories;
+    categorySet.clear();
+    categories.forEach(category => {
+        categorySet.add(category);
+    });
+
+    document.querySelectorAll(`.${formType}-form-${reviewId} .categories input[type="checkbox"]`).forEach(checkbox => {
+        checkbox.checked = categorySet.has(checkbox.value);
     });
 }
 
 document.getElementById('submit-review').addEventListener('click', async () => {
-    const rating = document.querySelector('input[name="rating"]:checked').value;
+    const rating = document.querySelector('.review-form input[name="rating"]:checked').value;
     const content = document.getElementById('review-content').value;
     const categoryNames = Array.from(selectedCategories);
 
-    // URL에서 cafeId를 추출
     const path = window.location.pathname;
     const cafeId = path.split('/').filter(Boolean).pop();
 
@@ -47,8 +42,8 @@ document.getElementById('submit-review').addEventListener('click', async () => {
         cafeId: cafeId
     };
 
-    const url = isEditing ? `/api/review/update/${currentEditId}` : '/api/review/create';
-    const method = isEditing ? 'PUT' : 'POST';
+    const url = '/api/review/create';
+    const method = 'POST';
 
     try {
         const response = await fetch(url, {
@@ -62,12 +57,10 @@ document.getElementById('submit-review').addEventListener('click', async () => {
         if (response.ok) {
             alert('Review submitted successfully!');
             fetchReviews();
-            isEditing = false;
-            currentEditId = null;
             document.getElementById('review-content').value = '';
-            document.querySelector('input[name="rating"]:checked').checked = false;
+            document.querySelector('.review-form input[name="rating"]:checked').checked = false;
             selectedCategories.clear();
-            updateSelectedCategories();
+            updateSelectedCategories('review', []);
         } else {
             alert('Failed to submit review.');
         }
@@ -78,20 +71,44 @@ document.getElementById('submit-review').addEventListener('click', async () => {
 });
 
 async function fetchReviews() {
-    // URL에서 cafeId를 추출
     const path = window.location.pathname;
     const cafeId = path.split('/').filter(Boolean).pop();
 
     try {
         const response = await fetch(`/api/reviewlist/${cafeId}`);
         const reviews = await response.json();
-        reviewsData = reviews;  // Save the fetched reviews data
+        reviewsData = reviews;
 
         displayReviews(reviews);
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to fetch reviews.');
     }
+}
+
+async function fetchCafeInfo() {
+    const path = window.location.pathname;
+    const cafeId = path.split('/').filter(Boolean).pop();
+
+    try {
+        const response = await fetch(`/api/cafe/${cafeId}`);
+        const cafe = await response.json();
+        displayCafeInfo(cafe);
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to fetch cafe info.');
+    }
+}
+
+function displayCafeInfo(cafe) {
+    const cafeInfoDiv = document.createElement('div');
+    cafeInfoDiv.innerHTML = `
+        <h3>${cafe.name}</h3>
+        <p>Address: ${cafe.address}</p>
+        <p>Top Categories: ${Array.from(cafe.topCategories).join(', ')}</p>
+        <p>Average Score: ${cafe.averageScore ? cafe.averageScore.toFixed(2) : '0.0'}</p>
+    `;
+    document.getElementById('cafe-info').appendChild(cafeInfoDiv);
 }
 
 function displayReviews(reviews) {
@@ -111,7 +128,7 @@ function displayReviews(reviews) {
         `;
 
         const editForm = document.createElement('div');
-        editForm.className = 'edit-form';
+        editForm.className = `edit-form edit-form-${review.id}`;
         editForm.style.display = 'none';
         editForm.innerHTML = `
             <textarea id="edit-content-${review.id}" rows="4" cols="50"></textarea>
@@ -127,7 +144,7 @@ function displayReviews(reviews) {
                 <input type="radio" id="edit-1-stars-${review.id}" name="edit-rating-${review.id}" value="1" /><label for="edit-1-stars-${review.id}">&#9733;</label>
                 <input type="radio" id="edit-0.5-stars-${review.id}" name="edit-rating-${review.id}" value="0.5" /><label for="edit-0.5-stars-${review.id}">&#9733;</label>
             </div>
-            <div class="categories">
+            <div class="categories edit-categories">
                 <label><input type="checkbox" value="대형카페" /> 대형카페</label>
                 <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
                 <label><input type="checkbox" value="주차가 가능한" /> 주차가 가능한</label>
@@ -152,6 +169,20 @@ function displayReviews(reviews) {
 
         div.appendChild(editForm);
         reviewList.appendChild(div);
+
+        // 수정 폼의 체크박스 이벤트 리스너 추가
+        const currentEditFormCategories = new Set();
+        editFormCategories.set(review.id, currentEditFormCategories);
+
+        editForm.querySelectorAll('.categories input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                if (event.target.checked) {
+                    currentEditFormCategories.add(event.target.value);
+                } else {
+                    currentEditFormCategories.delete(event.target.value);
+                }
+            });
+        });
     });
 }
 
@@ -170,19 +201,16 @@ function showEditForm(reviewId) {
         console.warn(`Rating input with value ${review.score} not found.`);
     }
 
-    document.querySelectorAll(`.edit-form .categories input[type="checkbox"]`).forEach(checkbox => {
-        if (review.categoryNames.includes(checkbox.value)) {
-            checkbox.checked = true;
-        } else {
-            checkbox.checked = false;
-        }
-    });
+    // 선택된 카테고리 초기화 및 설정
+    const currentEditFormCategories = editFormCategories.get(reviewId);
+    currentEditFormCategories.clear();  // 수정 폼 카테고리 초기화
+    updateSelectedCategories('edit', review.categoryNames, reviewId);  // 수정 폼 카테고리 업데이트
 }
 
 async function submitEditReview(reviewId) {
-    const rating = document.querySelector(`input[name="edit-rating-${reviewId}"]:checked`).value;
+    const rating = document.querySelector(`.edit-form-${reviewId} input[name="edit-rating-${reviewId}"]:checked`).value;
     const content = document.getElementById(`edit-content-${reviewId}`).value;
-    const categoryNames = Array.from(document.querySelectorAll(`.edit-form .categories input[type="checkbox"]:checked`)).map(checkbox => checkbox.value);
+    const categoryNames = Array.from(editFormCategories.get(reviewId));
 
     const reviewData = {
         score: rating,
@@ -239,4 +267,7 @@ async function deleteReview(reviewId) {
     }
 }
 
-fetchReviews();
+document.addEventListener('DOMContentLoaded', () => {
+    fetchCafeInfo();
+    fetchReviews();
+});
