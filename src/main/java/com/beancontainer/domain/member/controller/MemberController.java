@@ -6,12 +6,10 @@ import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 
 
 @Controller
@@ -20,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+
 
     //메인 페이지
     @GetMapping("/")
@@ -69,6 +68,12 @@ public class MemberController {
 
         return "member/myPage";
     }
+
+
+
+
+
+
 
 }
 

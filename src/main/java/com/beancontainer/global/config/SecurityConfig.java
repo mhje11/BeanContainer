@@ -3,6 +3,7 @@ package com.beancontainer.global.config;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.jwt.filter.JwtAuthenticationFilter;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,18 +39,22 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**").permitAll() // 모든 사용자에게 허용
+                        .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**", "/images/**").permitAll() // 모든 사용자에게 허용
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
                         .requestMatchers("/post/create").permitAll()
                         .requestMatchers("/api/post/create").hasRole("MEMBER")
-                        .requestMatchers("/mypage/**").authenticated() // 인증된 사용자만 접근 가능
+                        .requestMatchers("/mypage/{userId}", "/api/profileImage/**").authenticated() // 인증된 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능
                         .requestMatchers("/review/{kakaoId}").permitAll()
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutUrl("/api/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        })
+                        .deleteCookies("accessToken", "refreshToken")
                         .permitAll()
                 );
         //jwt 설정
