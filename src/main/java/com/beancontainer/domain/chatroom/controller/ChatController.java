@@ -1,40 +1,35 @@
 package com.beancontainer.domain.chatroom.controller;
 
-import com.beancontainer.domain.chatroom.dto.ChatMessage;
-import com.beancontainer.domain.member.entity.Member;
-import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.domain.chatroom.model.ChatMessage;
+import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
+import com.beancontainer.domain.chatroom.service.ChatService;
+import com.beancontainer.domain.chatroom.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 
+@Slf4j
 @RequiredArgsConstructor
 @Controller
-//@RequestMapping("/chat")
 public class ChatController {
-    private final MemberRepository memberRepository;
-//    private final ChatService chatService;
-//
-//    @PostMapping
-//    public ChatRoom createRoom(@RequestParam String name) {
-//        return chatService.createRoom(name);
-//    }
-//
-//    @GetMapping
-//    public List<ChatRoom> findAllRoom() {
-//        return chatService.findAllRoom();
-//    }
-    private final SimpMessageSendingOperations messagingTemplate;
 
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatService chatService;
+
+    /**
+     * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
+     */
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message, @AuthenticationPrincipal UserDetails userDetails) {
-        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 멤버를 찾을 수 없습니다"));
-        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-            message.setMessage(member.getNickname()+"님이 입장하셨습니다");
-        }
-        messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+    public void message(ChatMessage message, @Header("token") String token) {
+        String nickname = jwtTokenProvider.getUserNameFromJwt(token);
+        // 로그인 회원 정보로 대화명 설정
+        message.setSender(nickname);
+        // 채팅방 인원수 세팅
+        message.setUserCount(chatRoomRepository.getUserCount(message.getRoomId()));
+        // Websocket에 발행된 메시지를 redis로 발행(publish)
+        chatService.sendChatMessage(message);
     }
 }
