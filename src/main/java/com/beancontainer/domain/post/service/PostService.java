@@ -108,10 +108,35 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) {
+    public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) throws IOException {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         post.update(postRequestDto.getTitle(), postRequestDto.getContent());
+
+        // 새로운 이미지가 있는 경우
+        if (postRequestDto.getImages() != null && !postRequestDto.getImages().isEmpty()) {
+            // 기존 이미지 삭제
+            for(PostImg postImg : post.getImages()) {
+                postImgService.deleteImage(postImg.getPath());
+            }
+            post.getImages().clear();
+
+            // 새 이미지 저장
+            for(PostImgSaveDto image : postRequestDto.getImages()) {
+                if(image.getImg().isEmpty()) continue;  // 이미지 없음 건너뜀
+
+                // S3에 이미지 저장 및 url 생성
+                String imgUrl = postImgService.saveImage(image.getImg());
+                String originalName = image.getImg().getOriginalFilename();
+                String name = postImgService.getFileName(originalName);
+
+                PostImg postImg = new PostImg(originalName, name, post);
+                postImg.setPath(imgUrl);    // url 저장
+
+                postImgService.save(postImg);
+                post.getImages().add(postImg);  // post의 images 리스트에 추가
+            }
+        }
 
         Post updatedPost = postRepository.save(post);
 
