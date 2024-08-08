@@ -50,7 +50,7 @@ public class Post {
         this.content = content;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content) {  // 게시글 수정
         this.title = title;
         this.content = content;
         this.updatedAt = LocalDateTime.now();

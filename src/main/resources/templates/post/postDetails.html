@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>게시글 상세보기</title>
     <style>
-
         strong {
             font-size: 17px;
             font-weight: bold;
@@ -14,6 +13,20 @@
         a {
             color: #337ab7;
             text-decoration: none;
+        }
+
+        /* 이미지 스타일 */
+        .images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .images img {
+            max-width: 100%;
+            height: auto;
+            width: 300px;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -25,10 +38,9 @@
     <strong>수정일: </strong><span id="updatedAt"></span><br>
     <strong>내용: </strong><span id="content"></span><br>
     <strong>조회수: </strong><span id="views"></span><br>
+    <div class="images" id="images"></div>
 </div>
-<p id="btn-list">
-
-</p>
+<p id="btn-list"></p>
 <script>
     async function fetchPost() {
         try {
@@ -48,6 +60,17 @@
             document.getElementById('updatedAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() : new Date(post.createdAt).toLocaleString();
             document.getElementById('content').innerText = post.content;
             document.getElementById('views').innerText = post.views;
+
+            // 이미지
+            const imagesDiv = document.getElementById('images');
+            if(post.imageUrls && post.imageUrls.length > 0) {
+                post.imageUrls.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = '게시글 이미지';
+                    imagesDiv.appendChild(img);
+                });
+            }
 
             const btnList = document.getElementById('btn-list');
             btnList.innerHTML = `
