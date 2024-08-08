@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Bean Container</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css" />
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
@@ -214,17 +218,91 @@
             initMap();
         };
     </script>
+    <script>
+        var offcanvasElementList = [].slice.call(document.querySelectorAll('.offcanvas'))
+        var offcanvasList = offcanvasElementList.map(function (offcanvasEl) {
+            return new bootstrap.Offcanvas(offcanvasEl)
+        })
+
+        function logout() {
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include', // 쿠키를 포함시키기 위해 필요합니다
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // 로그아웃 성공
+                        console.log('로그아웃 성공');
+                        // 로컬 스토리지나 세션 스토리지의 데이터를 지웁니다 (필요한 경우)
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        // 홈페이지나 로그인 페이지로 리다이렉트합니다
+                        window.location.href = '/';
+                    } else {
+                        // 로그아웃 실패
+                        console.error('로그아웃 실패');
+                    }
+                })
+                .catch(error => {
+                    console.error('로그아웃 중 오류 발생:', error);
+                });
+        }
+    </script>
+
 </head>
 <body>
 <div class="header">
-    <h1>Bean Container</h1>
-    <div id="hamburger" class="hamburger" onclick="toggleMenu()">☰</div>
-    <div id="menu" class="menu">
-        <a href="#">채팅방</a>
-        <a href="/login">login / logout</a>
-        <a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a>
-        <a href="#">save</a>
-        <a href="/create/map">지도 만들기</a>
+    <nav class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active">
+                    <a href="/" class="uk-navbar-item uk-logo">
+                        <img src="/images/BeanContainer.png" alt="Bean Container Logo" width="80" height="80" class="uk-margin-small-right">
+                        Bean Container
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+                <li>
+                    <a href="#" class="hamburger" uk-toggle="target: #offcanvas-menu">☰</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 오프캔버스 메뉴 -->
+    <div id="offcanvas-menu" uk-offcanvas="flip: true; overlay: true">
+        <div class="uk-offcanvas-bar">
+            <button class="uk-offcanvas-close" type="button" uk-close></button>
+            <ul class="uk-nav uk-nav-default">
+                <!-- 로그아웃 상태일 때만 표시되는 항목 -->
+                <li th:unless="${#authorization.expression('isAuthenticated()')}">
+                    <a href="/login" class="non-auth-only">Login</a>
+                </li>
+                <!-- 로그인 상태일 때만 표시되는 항목 -->
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a href="#">채팅방</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/post/create}" >게시글 작성</a>
+                </li>
+
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a href="#">저장 된 지도 목록</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a href="/create/map">지도 만들기</a>
+                </li>
+                <li th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a href="#" onclick="logout(); return false;">logout</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 <div class="container">

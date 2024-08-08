@@ -1,13 +1,9 @@
 package com.beancontainer.domain.member.entity;
 
-import com.beancontainer.domain.review.entity.Review;
+import com.beancontainer.domain.memberimg.entity.ProfileImage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Profile;
-
-import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "members")
@@ -54,6 +50,15 @@ public class Member {
         member.password = password;
         member.role = Role.MEMBER; // 기본 역할을 MEMBER로 설정
         return member;
+    }
+
+    //닉네임 수정
+    public void updateNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    public void setProfileImage(ProfileImage profileImage) {
+        this.profileImage = profileImage;
     }
 
 

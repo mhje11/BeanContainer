@@ -9,6 +9,7 @@ import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -99,4 +100,41 @@ public class AuthController {
         return ResponseEntity.ok("회원가입이 성공적으로 완료되었습니다.");
     }
 
-}
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = null;
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if(refreshToken != null) {
+            //DB에서 삭제
+            refreshTokenService.deleteRefreshToken(refreshToken);
+
+
+            //쿠키에서도 accessToken, refreshToken 전부 삭제 함
+            Cookie accessTokenCookie = new Cookie("accessToken", null);
+            accessTokenCookie.setMaxAge(0);
+            accessTokenCookie.setPath("/");
+
+            Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+            refreshTokenCookie.setMaxAge(0);
+            refreshTokenCookie.setPath("/");
+
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
+
+            log.info("User logged out successfully.");
+            return ResponseEntity.ok("로그아웃되었습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("Refresh token not found");
+             }
+        }
+
+    }
