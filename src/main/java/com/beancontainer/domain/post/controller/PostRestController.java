@@ -12,13 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +64,7 @@ public class PostRestController {
     }
 
     @GetMapping("/postList/{postId}")   // 게시글 상세 정보
-    public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, Principal principal) {
+    public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId) {
         PostDetailsResponseDto post = postService.postDetails(postId);
         return ResponseEntity.ok(post);
     }
@@ -82,9 +80,21 @@ public class PostRestController {
     }
 
     @PutMapping("/post/update/{postId}")    // 게시글 수정
-    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto) {
+    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestParam("title") String title, @RequestParam("content") String content,
+                                                             @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                                                             @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException{
+        PostRequestDto postRequestDto = new PostRequestDto();
+        postRequestDto.setTitle(title);
+        postRequestDto.setContent(content);
+
+        if (images != null && !images.isEmpty()) {
+            List<PostImgSaveDto> postImgSaveDtos = images.stream()
+                    .map(image -> new PostImgSaveDto(image))
+                    .collect(Collectors.toList());
+            postRequestDto.setImages(postImgSaveDtos);
+        }
+
         PostDetailsResponseDto updatedPost = postService.updatePost(postId, postRequestDto);
         return ResponseEntity.ok(updatedPost);
     }
-
 }
