@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenizer jwtTokenizer;
-    private final MemberRepository memberRepository;
-    private final RefreshTokenService refreshTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -72,42 +70,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // 변경된 부분: Authentication 객체를 반환하는 메서드로 변경
     private void getAuthentication(String token) {
         Claims claims = jwtTokenizer.parseAccessToken(token);
-        String userId = claims.get("userId", String.class);
-        String name = claims.get("name", String.class);
+        String userId = claims.getSubject();
+        String role = claims.get("role", String.class);
+        log.debug("Parsed token - userId: {}, role: {}", userId, role);
+
         List<GrantedAuthority> authorities = getGrantedAuthorities(claims);
-        CustomUserDetails userDetails = new CustomUserDetails(userId, name);
+        CustomUserDetails userDetails = new CustomUserDetails(userId, role);
         Authentication authentication = new JwtAuthenticationToken(authorities, userDetails, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-//    private String getToken(HttpServletRequest request) {
-//        String authorization = request.getHeader("Authorization");
-//        log.info("헤더 값 꺼내옴 !! " + authorization);
-//        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
-//            return authorization.substring(7);
-//        }
-//        log.info("토큰 없음");
-//        return null;
-//    }
 
     private List<GrantedAuthority> getGrantedAuthorities(Claims claims) {
-        List<String> roles = (List<String>) claims.get("roles");
-        if (roles == null) {
-            String roleName = claims.get("role", String.class);
-            if (roleName == null) {
-                throw new BadCredentialsException("Invalid token: missing role claim");
-            }
-            roles = Collections.singletonList(roleName);
+        String role = claims.get("role", String.class);
+        if (role == null) {
+            throw new BadCredentialsException("Invalid token: missing role claim");
         }
-
-        return roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
+
     private String getToken(HttpServletRequest request) {
         String token = null;
 
-// 헤더에서 토큰 확인
+        // 헤더에서 토큰 확인
         String authorization = request.getHeader("Authorization");
         if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
             token = authorization.substring(7);
