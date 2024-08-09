@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>지도 수정</title>
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            width: 70%;
+            height: 600px;
+            margin: 10px;
+        }
+
+        #sidebar {
+            width: 30%;
+            height: 600px;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #added-cafes {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        #search-box {
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        #search-results {
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        #search-results div {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #search-results div:hover {
+            background-color: #f0f0f0;
+        }
+
+        #map-title {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        #save-btn {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="sidebar">
+    <div id="map-title">
+        <label for="map-name">지도 이름:</label>
+        <input type="text" id="map-name">
+    </div>
+
+    <div id="search-box">
+        <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
+        <button id="search-btn">검색</button>
+        <div id="search-results"></div>
+    </div>
+
+    <div id="added-cafes">
+        <h3>추가된 카페 리스트</h3>
+        <ul id="cafe-list"></ul>
+    </div>
+
+    <button id="save-btn">지도 저장</button>
+</div>
+
+<script>
+    let map, ps, infowindow, markers = {}, addedCafes = new Set(), isMoving = false;
+
+    function initMap() {
+        var mapContainer = document.getElementById('map'),
+            mapOption = {
+                center: new kakao.maps.LatLng(37.5665, 126.9780), // 기본 중심 좌표
+                level: 3 // 기본 확대 레벨
+            };
+
+        map = new kakao.maps.Map(mapContainer, mapOption);
+        infowindow = new kakao.maps.InfoWindow({zIndex: 1});
+
+        // 줌 컨트롤 추가
+        var zoomControl = new kakao.maps.ZoomControl();
+        map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
+
+        // 검색 서비스 객체 생성
+        ps = new kakao.maps.services.Places();
+
+        // 지도 클릭 시 인포윈도우 닫기
+        kakao.maps.event.addListener(map, 'click', function() {
+            infowindow.close();
+        });
+
+        // 지도 드래그가 시작되었을 때
+        kakao.maps.event.addListener(map, 'dragstart', function() {
+            isMoving = true;
+        });
+
+        // 지도 드래그가 끝났을 때
+        kakao.maps.event.addListener(map, 'dragend', function() {
+            isMoving = false;
+            searchPlacesByCenter(map.getCenter());
+        });
+
+        // 지도 줌 변경이 시작되었을 때
+        kakao.maps.event.addListener(map, 'zoom_start', function() {
+            isMoving = true;
+        });
+
+        // 지도 줌 변경이 끝났을 때
+        kakao.maps.event.addListener(map, 'zoom_changed', function() {
+            isMoving = false;
+            searchPlacesByCenter(map.getCenter());
+        });
+
+        // 초기 지도 및 카페 설정
+        loadMapDetails();
+    }
+
+    function loadMapDetails() {
+        const mapId = window.location.pathname.split("/").pop();
+
+        fetch(`/api/mymap/${mapId}`)
+            .then(response => response.json())
+            .then(data => {
+                // 지도 이름 설정
+                document.getElementById('map-name').value = data.mapName;
+                // 각 카페를 세트에 추가
+                data.cafes.forEach(cafe => {
+                    // cafe.id를 사용하는 대신, cafe.kakaoId를 사용하여 추가
+                    addCafeToSet(cafe.kakaoId, cafe.name, cafe.address);
+                });
+            })
+            .catch(error => {
+                console.error('지도 세부 정보 로드 오류:', error);
+            });
+    }
+
+
+    function searchPlacesByCenter(center) {
+        if (isMoving) return;
+
+        const keyword = '카페';
+        ps.keywordSearch(keyword, function(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                for (var i = 0; i < data.length; i++) {
+                    if (!markers[data[i].id]) {
+                        displayMarker(data[i], true);
+                    }
+                }
+            }
+        }, {location: center, radius: 2000});
+    }
+
+    function displayMarker(place, isNew) {
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: new kakao.maps.LatLng(place.latitude || place.y, place.longitude || place.x)
+        });
+        markers[place.id] = marker;
+
+        const parsedAddress = parseAddress(place.road_address_name || place.address_name);
+
+        kakao.maps.event.addListener(marker, 'click', function() {
+            var content = `
+                <div style="padding:10px;">
+                    <strong>${place.name || place.place_name}</strong><br>
+                    ${place.address || place.road_address_name}<br>
+                    <button onclick="checkAndSaveCafe('${place.id}', '${place.name || place.place_name}', '${place.address || place.road_address_name}', ${place.latitude || place.y}, ${place.longitude || place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">추가</button>
+                    <a href="#" onclick="openReviewPage('${place.id}', '${place.name || place.place_name}', '${place.address || place.road_address_name}', ${place.latitude || place.y}, ${place.longitude || place.x})">리뷰 페이지로 이동</a>
+                </div>
+            `;
+            infowindow.setContent(content);
+            infowindow.open(map, marker);
+        });
+
+        if (isNew) {
+            markers[place.id] = marker;
+        }
+    }
+
+    function addCafeToSet(kakaoId, name, address) {
+        if (!addedCafes.has(kakaoId)) {
+            addedCafes.add(kakaoId);
+            const li = document.createElement('li');
+            li.textContent = `${name} (${address})`;
+            li.setAttribute('data-id', kakaoId);
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'X';
+            removeButton.onclick = () => {
+                addedCafes.delete(kakaoId);
+                li.remove();
+            };
+
+            li.appendChild(removeButton);
+            document.getElementById('cafe-list').appendChild(li);
+        }
+    }
+
+    function saveMap() {
+        const mapId = window.location.pathname.split("/").pop();
+        const mapName = document.getElementById('map-name').value;
+        const kakaoIds = Array.from(addedCafes);
+
+        const mapData = {
+            mapId: mapId,
+            mapName: mapName,
+            kakaoIds: kakaoIds
+        };
+
+        fetch(`/api/mymap/update/${mapId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(mapData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                return response.text();
+            })
+            .then(data => {
+                alert('지도 업데이트 성공!');
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('지도 업데이트 실패: ' + error.message);
+            });
+    }
+
+    document.getElementById('search-btn').addEventListener('click', function() {
+        const keyword = document.getElementById('search-input').value;
+        ps.keywordSearch(keyword, function(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                const searchResultsContainer = document.getElementById('search-results');
+                searchResultsContainer.innerHTML = '';
+                data.forEach(place => {
+                    const resultItem = document.createElement('div');
+                    resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
+                    resultItem.onclick = () => {
+                        map.setCenter(new kakao.maps.LatLng(place.y, place.x));
+                        displayMarker(place, true);
+                        searchResultsContainer.innerHTML = '';
+                    };
+                    searchResultsContainer.appendChild(resultItem);
+                });
+            }
+        });
+    });
+
+    document.getElementById('save-btn').addEventListener('click', saveMap);
+
+    document.addEventListener('DOMContentLoaded', initMap);
+
+    function parseAddress(address) {
+        // 주소를 공백으로 분리
+        const parts = address.split(' ');
+
+        let city = parts[0]; // 시/도
+        let district = '';
+
+        // parts 배열을 순회하면서 구를 찾습니다.
+        for (let i = 1; i < parts.length; i++) {
+            if (parts[i].endsWith('구') || parts[i].endsWith('군')) {
+                district = parts[i];
+                break;
+            }
+        }
+
+        return {city, district};
+    }
+
+    function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, district) {
+        const data = {
+            kakaoId: kakaoId,
+            name: name,
+            address: address,
+            latitude: latitude,
+            longitude: longitude,
+            city: city,
+            district: district
+        };
+
+        console.log("Sending data:", data);
+
+        fetch(`/review/${kakaoId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+            return response.json();
+        })
+            .then(data => {
+                console.log("Cafe saved or found:", data);
+                addCafeToSet(kakaoId, name, address);  // 세트에 카페 추가
+            }).catch(error => {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);
+        });
+    }
+
+    function openReviewPage(kakaoId, name, address, latitude, longitude) {
+        // 주소 파싱
+        const parsedAddress = parseAddress(address);
+
+        const data = {
+            kakaoId: kakaoId,
+            name: name,
+            address: address,
+            latitude: latitude,
+            longitude: longitude,
+            city: parsedAddress.city,
+            district: parsedAddress.district
+        };
+
+        console.log("Sending data for review page:", data);
+
+        // 카페가 없으면 저장하고, 있으면 바로 리뷰 페이지로 이동
+        fetch(`/review/${kakaoId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+            return response.json();
+        })
+            .then(data => {
+                console.log("Cafe saved or found:", data);
+                // 새로운 창에서 리뷰 페이지 열기
+                window.open(`/review/${data.id}`, '_blank');
+            }).catch(error => {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);
+        });
+    }
+</script>
+
+</body>
+</html>
