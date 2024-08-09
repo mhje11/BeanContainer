@@ -21,4 +21,9 @@ public class MapController {
         return "map/UpdateMap";
     }
 
+    @GetMapping("/mymap/{mapId}")
+    public String viewDetailMap() {
+        return "map/DetailMap";
+    }
+
 }
