@@ -5,6 +5,7 @@ import com.beancontainer.domain.category.entity.Category;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "reviews")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Review {
     @Id

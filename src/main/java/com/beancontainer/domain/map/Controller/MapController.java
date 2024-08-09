@@ -11,4 +11,14 @@ public class MapController {
         return "map/CreateMap";
     }
 
+    @GetMapping("/mymap")
+    public String checkMyMap() {
+        return "map/MapList";
+    }
+
+    @GetMapping("/mymap/update/{mapId}")
+    public String updateMyMap() {
+        return "map/UpdateMap";
+    }
+
 }
