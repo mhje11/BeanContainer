@@ -39,6 +39,7 @@ public class JwtTokenizer {
                 .signWith(getSigningKey(secretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
+
     public static Key getSigningKey(byte[] secretKey){
         return Keys.hmacShaKeyFor(secretKey);
     }

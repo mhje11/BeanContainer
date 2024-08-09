@@ -23,7 +23,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    // 댓글 작성
+    // 댓글 등록
     public Long createComment(Long postId, CommentRequestDto commentRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         Member member = memberRepository.findByNickname(commentRequestDto.getNickname());
@@ -33,18 +33,31 @@ public class CommentService {
         return savedComment.getId();
     }
 
-    // 댓글 목록 조회
+    // 댓글 조회
     @Transactional(readOnly = true)
-    public List<CommentListResponseDto> getAllComments(Long postId) {
+    public List<CommentListResponseDto> getAllComments(Long postId, Long currentUserId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         List<Comment> comments = commentRepository.findByPost(post);
 
+
         return comments.stream()
-                .map(comment -> new CommentListResponseDto(
-                        comment.getId(),
-                        comment.getMember().getNickname(),
-                        comment.getContent(),
-                        comment.getCreatedAt()
-                )).collect(Collectors.toList());
+                .map(comment -> new CommentListResponseDto(comment, currentUserId))
+                .collect(Collectors.toList());
+    }
+
+    // 댓글 삭제
+    public void deleteComment(Long postId, Long commentId, Long memberId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+
+        if (!comment.getPost().getId().equals(post.getId())) {
+            throw new IllegalArgumentException("해당 게시글에 속하지 않는 댓글입니다.");
+        }
+
+        if(!comment.getMember().getId().equals(memberId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+
+        commentRepository.delete(comment);
     }
 }

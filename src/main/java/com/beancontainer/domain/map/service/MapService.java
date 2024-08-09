@@ -76,28 +76,28 @@ public class MapService {
         List<MapCafe> existingMapCafes = mapCafeRepository.findByMapId(map.getId());
 
         //업데이트 할 카페목록
-        Set<Long> newCafeIds = mapUpdateDto.getCafeIds();
+        Set<String> newCafeIds = mapUpdateDto.getKakaoIds();
 
         //기존 카페 목록
-        Set<Long> existingCafeIds = existingMapCafes.stream()
-                .map(mapCafe -> mapCafe.getCafe().getId())
+        Set<String> existingCafeIds = existingMapCafes.stream()
+                .map(mapCafe -> mapCafe.getCafe().getKakaoId())
                 .collect(Collectors.toSet());
 
 
         //새로추가할 카페목록
-        Set<Long> addCafe = new HashSet<>(newCafeIds);
+        Set<String> addCafe = new HashSet<>(newCafeIds);
         addCafe.removeAll(existingCafeIds);
 
         //삭제할 카페 목록
-        Set<Long> removeCafe = new HashSet<>(existingCafeIds);
+        Set<String> removeCafe = new HashSet<>(existingCafeIds);
         removeCafe.removeAll(newCafeIds);
 
         existingMapCafes.stream()
-                .filter(mapCafe -> removeCafe.contains(mapCafe.getCafe().getId()))
+                .filter(mapCafe -> removeCafe.contains(mapCafe.getCafe().getKakaoId()))
                 .forEach(mapCafeRepository::delete);
 
-        addCafe.forEach(cafeId -> {
-            Cafe cafe = cafeRepository.findById(cafeId)
+        addCafe.forEach(kakaoId -> {
+            Cafe cafe = cafeRepository.findByKakaoId(kakaoId)
                     .orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
             MapCafe mapCafe = new MapCafe(map, cafe);
             mapCafeRepository.save(mapCafe);

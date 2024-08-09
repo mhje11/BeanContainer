@@ -36,24 +36,25 @@ public class MemberAPIController {
     }
 
     @PostMapping("/mypage/{userId}/uploadProfileImage")
-    public ResponseEntity<?> uploadProfileImage(@PathVariable String userId, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadProfileImage(@PathVariable String userId, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if(!customUserDetails.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         try {
-            String imageUrl = String.valueOf(profileImageService.updateProfileImage(userId, file));
+            String imageUrl = profileImageService.updateProfileImage(userId, file);
             return ResponseEntity.ok().body(Map.of("imageUrl", imageUrl));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드에 실패했습니다.");
         }
     }
 
-//    @GetMapping("/profileImage/{fileName}")
-//    public ResponseEntity<byte[]> getProfileImage(@PathVariable String fileName) throws IOException {
-//        byte[] imageBytes = profileImageService.(fileName);
-//        return ResponseEntity.ok().body(imageBytes);
-//    }
 
-    @PostMapping("/mypage/deleteAccount")
-    public ResponseEntity<?> deleteAccount(@RequestParam String userId) {
+    @PostMapping("/mypage/{userId}/deleteAccount")
+    public ResponseEntity<?> deleteAccount(@PathVariable String userId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (!customUserDetails.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to delete this account.");
+        }
         memberService.deleteAccount(userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Account successfully deleted.");
     }
 }
