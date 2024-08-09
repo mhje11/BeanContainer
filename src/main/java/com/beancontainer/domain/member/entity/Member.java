@@ -32,9 +32,7 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_image_id")
-    private ProfileImage profileImage;
+    private String profileImageUrl;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -65,9 +63,11 @@ public class Member {
         this.nickname = newNickname;
     }
 
-    public void setProfileImage(ProfileImage profileImage) {
-        this.profileImage = profileImage;
+    // 프로필 이미지 URL 업데이트
+    public void updateProfileImageUrl(String newProfileImageUrl) {
+        this.profileImageUrl = newProfileImageUrl;
     }
+
 
 
 }

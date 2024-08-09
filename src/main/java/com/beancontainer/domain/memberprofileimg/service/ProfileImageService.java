@@ -30,65 +30,48 @@ public class ProfileImageService {
 
     private static final String DEFAULT_PROFILE_IMAGE = "images/BeanContainer.png";
 
-    @Transactional
-    public ProfileImage getOrCreateDefaultProfileImage(Member member) {
-        if (member.getProfileImage() == null) {
-            ProfileImage defaultImage = new ProfileImage(
-                    DEFAULT_PROFILE_IMAGE,
-                    generateImageUrl(DEFAULT_PROFILE_IMAGE),
-                    "image/png"
-            );
-            profileImageRepository.save(defaultImage);
-            member.setProfileImage(defaultImage);
-            memberRepository.save(member);
-            return defaultImage;
-        }
-        return member.getProfileImage();
-    }
 
-    public String getProfileImageUrl(Member member) {
-        if (member.getProfileImage() != null && member.getProfileImage().getFilePath() != null) {
-            return member.getProfileImage().getFilePath() + "?v=" + System.currentTimeMillis();
-        }
-        return DEFAULT_PROFILE_IMAGE;
-    }
 
-    @Transactional
-    public ProfileImage updateProfileImage(String userId, MultipartFile file) throws IOException {
-        Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        String fileName = getFileName(file.getOriginalFilename());
+    public String updateProfileImage(String userId, MultipartFile image) throws IOException {
+        String originalName = image.getOriginalFilename();
+        String name = getFileName(originalName);
 
-        String imageUrl = uploadImageToS3(fileName, file);
-
-        if (member.getProfileImage() != null && !member.getProfileImage().getFileName().equals(DEFAULT_PROFILE_IMAGE)) {
-            deleteImageFromS3(member.getProfileImage().getFileName());
-        }
-
-        ProfileImage profileImage = new ProfileImage(
-                fileName,
-                imageUrl,
-                file.getContentType()
-        );
-        profileImageRepository.save(profileImage);
-
-        member.setProfileImage(profileImage);
-        memberRepository.save(member);
-
-        return profileImage;
-    }
-
-    private String uploadImageToS3(String fileName, MultipartFile file) throws IOException {
         s3Client.putObject(
                 PutObjectRequest.builder()
                         .bucket(bucketName)
-                        .key(fileName)
+                        .key(name)
                         .build(),
-                RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+                RequestBody.fromInputStream(image.getInputStream(), image.getSize())
         );
-        return generateImageUrl(fileName);
+        String imageUrl = generateImageUrl(name);
+
+        // 기존 프로필 이미지 삭제
+        deleteExistingProfileImage(userId);
+
+        // 새로운 프로필 이미지 URL 저장
+        Member member = memberRepository.findByUserId(userId).orElseThrow();
+        member.updateProfileImageUrl(imageUrl);
+        memberRepository.save(member);
+
+        return imageUrl;
+    }
+    private void deleteExistingProfileImage(String userId) {
+        Member member = memberRepository.findByUserId(userId).orElseThrow();
+        if (member.getProfileImageUrl() != null && !member.getProfileImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
+            String fileName = member.getProfileImageUrl().substring(member.getProfileImageUrl().lastIndexOf("/") + 1);
+            deleteImageFromS3(fileName);
+        }
     }
 
+
+    // 이미지 확장자 추출
+    public String extractExtension(String originalName) {
+        int index = originalName.lastIndexOf(".");
+        return originalName.substring(index + 1);
+    }
+
+
+    //s3에 업로드 된 이미지 제거
     private void deleteImageFromS3(String fileName) {
         s3Client.deleteObject(
                 DeleteObjectRequest.builder()
@@ -98,6 +81,7 @@ public class ProfileImageService {
         );
     }
 
+    //파일 이름 UUID 변환
     private String getFileName(String originalName) {
         return UUID.randomUUID() + "-" + originalName;
     }

@@ -38,10 +38,6 @@ public class MemberService implements UserDetailsService {
     }
 
 
-    @Transactional
-    public Member createMember(Member member) {
-        return memberRepository.save(member);
-    }
 
 
 

@@ -68,8 +68,8 @@ public class MemberController {
         Member member = memberService.findByUserId(userId);
         model.addAttribute("userId", userId);
         model.addAttribute("name", member.getName());
+        model.addAttribute("profileImageUrl", member.getProfileImageUrl());
         model.addAttribute("authorities", authentication.getAuthorities());
-//        model.addAttribute("profileImageUrl", member.getProfileImageUrl());
 
         return "member/myPage";
     }
