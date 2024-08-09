@@ -42,7 +42,7 @@
             const listItem = document.createElement('li');
             listItem.innerHTML = `
                 <span>${map.mapName}</span> - Created by <span>${map.username}</span>
-                <a href="/myMap/update/${map.mapId}" class="btn btn-primary">수정</a>
+                <a href="/mymap/update/${map.mapId}" class="btn btn-primary">수정</a>
                 <button data-map-id="${map.mapId}" class="btn btn-danger" onclick="deleteMap(this)">삭제</button>
             `;
             mapListElement.appendChild(listItem);
