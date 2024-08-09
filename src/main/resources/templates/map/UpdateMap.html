@@ -191,10 +191,6 @@
                 if (pagination.hasNextPage) {
                     pagination.nextPage();
                 }
-            } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-                console.log('검색 결과가 없습니다.');
-            } else if (status === kakao.maps.services.Status.ERROR) {
-                console.log('검색 중 오류가 발생했습니다.');
             }
         }, {location: center, radius: 2000});
     }
@@ -216,48 +212,9 @@
 
         markers[place.id] = marker;
 
-        const parsedAddress = parseAddress(place.road_address_name || place.address_name);
-
         kakao.maps.event.addListener(marker, 'click', function () {
-            const content = `
-            <div style="padding:10px;">
-                <strong>${place.name || place.place_name}</strong><br>
-                ${place.address || place.road_address_name}<br>
-                <button onclick="checkAndSaveCafe('${place.id}', '${place.name || place.place_name}', '${place.address || place.road_address_name}', ${place.latitude || place.y}, ${place.longitude || place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">추가</button>
-                <a href="#" onclick="openReviewPage('${place.id}', '${place.name || place.place_name}', '${place.address || place.road_address_name}', ${place.latitude || place.y}, ${place.longitude || place.x})">리뷰 페이지로 이동</a>
-            </div>
-        `;
-            infowindow.setContent(content);
-            infowindow.open(map, marker);
+            openInfoWindow(marker, place);
         });
-    }
-
-    function handleCardClick(kakaoId) {
-        const marker = markers[kakaoId];
-        if (marker) {
-            map.setCenter(marker.getPosition());
-
-            // 확인 로그 추가
-            console.log(`카드 클릭: ${kakaoId} - 지도 이동`);
-        }
-    }
-
-    function handleCardMouseOver(kakaoId, name, address) {
-        const marker = markers[kakaoId];
-        if (marker) {
-            // 지도를 이동시키지 않고, 인포창만 열도록 합니다.
-            var content = `
-            <div style="padding:10px;">
-                <strong>${name}</strong><br>
-                ${address}<br>
-            </div>
-            `;
-            infowindow.setContent(content);
-            infowindow.open(map, marker);
-
-            // 확인 로그 추가
-            console.log(`마우스 오버: ${name} - 인포창 열기`);
-        }
     }
 
     function addCafeToSet(kakaoId, name, address) {
@@ -273,16 +230,7 @@
             <button onclick="removeCafe('${kakaoId}')">삭제</button>
             `;
 
-            // 클릭 시 지도만 해당 위치로 이동합니다.
             card.addEventListener('click', () => handleCardClick(kakaoId));
-
-            // 마우스를 올렸을 때 인포창에 카페 이름과 주소만 표시합니다. (지도 이동 없음)
-            card.addEventListener('mouseover', () => handleCardMouseOver(kakaoId, name, address));
-
-            // 마우스를 치우면 인포창을 닫습니다.
-            card.addEventListener('mouseout', () => {
-                infowindow.close();
-            });
 
             document.getElementById('cafe-cards').appendChild(card);
 
@@ -298,6 +246,25 @@
             }
         }
     }
+
+    function handleCardClick(kakaoId) {
+        const marker = markers[kakaoId];
+        if (marker) {
+            map.setCenter(marker.getPosition());
+
+            // 인포윈도우가 열려 있으면 닫기
+            if (infowindow.getMap()) {
+                infowindow.close();
+            }
+        }
+    }
+
+    document.querySelectorAll('.cafe-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const kakaoId = card.getAttribute('data-id');
+            handleCardClick(kakaoId);
+        });
+    });
 
     function removeCafe(kakaoId) {
         addedCafes.delete(kakaoId);
@@ -363,15 +330,13 @@
                             map.setCenter(center);
                             map.setLevel(3);
 
-                            // 주변 카페들을 로드하는 함수 호출
                             searchPlacesByCenter(center);
 
-                            // 약간의 지연 후 메인 카페 마커에 인포창 열기
                             setTimeout(() => {
                                 if (markers[place.id]) {
                                     openInfoWindowForSearch(place);
                                 } else {
-                                    displayMarker(place, true);
+                                    displayMarker(place);
                                     setTimeout(() => openInfoWindowForSearch(place), 500);
                                 }
                             }, 500);
@@ -384,21 +349,59 @@
             }
         });
     });
-
     function openInfoWindowForSearch(place) {
         const marker = markers[place.id];
+        openInfoWindow(marker, place);
+    }
+
+    function openInfoWindow(marker, place) {
         const parsedAddress = parseAddress(place.road_address_name || place.address_name);
         const content = `
         <div style="padding:10px;">
-            <strong>${place.place_name}</strong><br>
+            <strong>${place.name || place.place_name}</strong><br>
             ${place.road_address_name || place.address_name}<br>
-            <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${marker.getPosition().getLat()}, ${marker.getPosition().getLng()}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-            <a href="#" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${marker.getPosition().getLat()}, ${marker.getPosition().getLng()})">리뷰 페이지로 이동</a>
+            <button onclick="checkAndSaveCafe('${place.id}', '${place.name || place.place_name}', '${place.road_address_name || place.address_name}', ${marker.getPosition().getLat()}, ${marker.getPosition().getLng()}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+            <a href="#" onclick="openReviewPage('${place.id}', '${place.name || place.place_name}', '${place.road_address_name || place.address_name}', ${marker.getPosition().getLat()}, ${marker.getPosition().getLng()})">리뷰 페이지로 이동</a>
         </div>
     `;
         infowindow.setContent(content);
         infowindow.open(map, marker);
     }
+
+    document.getElementById('search-btn').addEventListener('click', function() {
+        const keyword = document.getElementById('search-input').value;
+        ps.keywordSearch(keyword, function(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                const searchResultsContainer = document.getElementById('search-results');
+                searchResultsContainer.innerHTML = '';
+                data.forEach(place => {
+                    if (!isExcludedCategory(place.category_name)) {
+                        const resultItem = document.createElement('div');
+                        resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
+                        resultItem.onclick = () => {
+                            const center = new kakao.maps.LatLng(place.y, place.x);
+                            map.setCenter(center);
+                            map.setLevel(3);
+
+                            searchPlacesByCenter(center);
+
+                            setTimeout(() => {
+                                if (markers[place.id]) {
+                                    openInfoWindow(markers[place.id], place);
+                                } else {
+                                    displayMarker(place);
+                                    setTimeout(() => openInfoWindow(markers[place.id], place), 500);
+                                }
+                            }, 500);
+
+                            searchResultsContainer.innerHTML = '';
+                        };
+                        searchResultsContainer.appendChild(resultItem);
+                    }
+                });
+            }
+        });
+    });
 
     document.getElementById('save-btn').addEventListener('click', saveMap);
 
@@ -484,7 +487,6 @@
         })
             .then(data => {
                 console.log("Cafe saved or found:", data);
-                // 새로운 창에서 리뷰 페이지 열기
                 window.open(`/review/${data.id}`, '_blank');
             }).catch(error => {
             console.error('Error:', error);
@@ -495,3 +497,5 @@
 
 </body>
 </html>
+
+
