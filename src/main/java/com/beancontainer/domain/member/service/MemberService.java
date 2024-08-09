@@ -2,6 +2,7 @@ package com.beancontainer.domain.member.service;
 
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
+    private final ProfileImageService profileImageService;
 
 
 
@@ -33,6 +35,12 @@ public class MemberService implements UserDetailsService {
         Member member = findByUserId(userId);
         member.updateNickname(newNickname);
         memberRepository.save(member);
+    }
+
+
+    @Transactional
+    public Member createMember(Member member) {
+        return memberRepository.save(member);
     }
 
 

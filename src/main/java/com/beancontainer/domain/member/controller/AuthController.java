@@ -6,6 +6,7 @@ import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.RefreshToken;
 import com.beancontainer.domain.member.service.AuthService;
 import com.beancontainer.domain.member.service.MemberService;
+import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
@@ -31,6 +32,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
     private final RefreshTokenService refreshTokenService;
+    private final ProfileImageService profileImageService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginDTO userLoginDto,
@@ -91,6 +93,7 @@ public class AuthController {
 
         return new ResponseEntity(loginResponseDto, HttpStatus.OK);
     }
+
 
 
     @PostMapping("/signup")
