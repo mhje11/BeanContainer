@@ -1,14 +1,18 @@
-package com.beancontainer.domain.comment;
+package com.beancontainer.domain.comment.entity;
 
 
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.post.entity.Post;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
+@Getter
+@NoArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +31,10 @@ public class Comment {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public Comment(Post post, Member member, String content) {
+        this.post = post;
+        this.member = member;
+        this.content = content;
+    }
 }

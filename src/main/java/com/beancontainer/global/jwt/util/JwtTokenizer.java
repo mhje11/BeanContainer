@@ -2,9 +2,7 @@ package com.beancontainer.global.jwt.util;
 
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.Role;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // JWT 유틸리티
 @Component
@@ -94,5 +89,48 @@ public class JwtTokenizer {
             throw e;
         }
     }
+
+    public boolean validateTokenHeader(String token) {
+        try {
+            String[] chunks = token.split("\\.");
+            if (chunks.length < 2) {
+                return false;
+            }
+
+            Base64.Decoder decoder = Base64.getUrlDecoder();
+            String header = new String(decoder.decode(chunks[0]));
+
+            // 헤더에 "alg"와 "typ" 필드가 있는지 확인
+            return header.contains("\"alg\"") && header.contains("\"typ\"") && header.contains("\"JWT\"");
+        } catch (Exception e) {
+            log.error("Error validating token header", e);
+            return false;
+        }
+    }
+
+    public boolean validateToken(String token) {
+        if (!validateTokenHeader(token)) {
+            return false;
+        }
+
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey(accessSecret))
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("Invalid JWT signature.");
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT token.");
+        } catch (UnsupportedJwtException e) {
+            log.info("Unsupported JWT token.");
+        } catch (IllegalArgumentException e) {
+            log.info("JWT token compact of handler are invalid.");
+        }
+        return false;
+    }
+
+
 
 }

@@ -68,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // 변경된 부분: Authentication 객체를 반환하는 메서드로 변경
+    // Authentication 객체를 반환하는 메서드로 변경
     private void getAuthentication(String token) {
         Claims claims = jwtTokenizer.parseAccessToken(token);
         String userId = claims.getSubject();

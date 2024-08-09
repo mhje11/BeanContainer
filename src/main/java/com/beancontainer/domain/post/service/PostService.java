@@ -81,9 +81,10 @@ public class PostService {
 
     // 게시글 상세 보기
     @Transactional(readOnly = true)
-    public PostDetailsResponseDto postDetails(Long postId) {
+    public PostDetailsResponseDto postDetails(Long postId, String userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        return new PostDetailsResponseDto(post);
+        boolean isAuthor = post.getMember().getUserId().equals(userId);
+        return new PostDetailsResponseDto(post, isAuthor);
     }
 
     // 게시글 존재 여부 확인
@@ -139,7 +140,7 @@ public class PostService {
         }
 
         Post updatedPost = postRepository.save(post);
-
-        return new PostDetailsResponseDto(updatedPost);
+        boolean isAuthor = post.getMember().getUserId().equals(post.getMember().getUserId());
+        return new PostDetailsResponseDto(updatedPost, isAuthor);
     }
 }
