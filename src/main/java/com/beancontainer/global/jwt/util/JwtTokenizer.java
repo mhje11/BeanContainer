@@ -36,7 +36,7 @@ public class JwtTokenizer {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expire))
-                .signWith(getSigningKey(secretKey))
+                .signWith(getSigningKey(secretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
 
