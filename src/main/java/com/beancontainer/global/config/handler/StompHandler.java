@@ -22,7 +22,7 @@ import java.util.Optional;
 @Component
 public class StompHandler implements ChannelInterceptor {
 
-    private final JwtAuthenticationToken jwtTokenProvider;
+    private final JwtTokenizer jwtTokenizer;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatService chatService;
 
@@ -34,7 +34,7 @@ public class StompHandler implements ChannelInterceptor {
             String jwtToken = accessor.getFirstNativeHeader("token");
             log.info("CONNECT {}", jwtToken);
             // Header의 jwt token 검증
-            jwtTokenProvider.validateToken(jwtToken);
+            jwtTokenizer.validateToken(jwtToken);
         } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) { // 채팅룸 구독요청
             // header정보에서 구독 destination정보를 얻고, roomId를 추출한다.
             String roomId = chatService.getRoomId(Optional.ofNullable((String) message.getHeaders().get("simpDestination")).orElse("InvalidRoomId"));
