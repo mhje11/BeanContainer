@@ -143,6 +143,9 @@
 
         // 초기 지도 및 카페 설정
         loadMapDetails();
+
+        // 지도의 중심을 기준으로 카페 검색을 시작 (초기 로드 시)
+        searchPlacesByCenter(map.getCenter());
     }
 
     function loadMapDetails() {
@@ -164,6 +167,10 @@
             });
     }
 
+    function isExcludedCategory(categoryName) {
+        const excludedCategories = ['보드게임카페', '룸카페', '방탈출카페', '테마카페', '고양이카페', '북카페', '레드버튼', '벌툰', '키즈'];
+        return excludedCategories.some(excluded => categoryName.includes(excluded));
+    }
 
     function searchPlacesByCenter(center) {
         if (isMoving) return;
@@ -172,7 +179,7 @@
         ps.keywordSearch(keyword, function(data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
                 for (let i = 0; i < data.length; i++) {
-                    if (!markers[data[i].id]) {
+                    if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
                         displayMarker(data[i], true);
                     }
                 }
@@ -187,7 +194,6 @@
             }
         }, {location: center, radius: 2000});
     }
-
 
     function displayMarker(place, isNew) {
         let markerImageUrl;
@@ -237,8 +243,6 @@
             markers[place.id] = marker;
         }
     }
-
-
     function addCafeToSet(kakaoId, name, address) {
         if (!addedCafes.has(kakaoId)) {
             addedCafes.add(kakaoId);
@@ -319,18 +323,26 @@
                 const searchResultsContainer = document.getElementById('search-results');
                 searchResultsContainer.innerHTML = '';
                 data.forEach(place => {
-                    const resultItem = document.createElement('div');
-                    resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
-                    resultItem.onclick = () => {
-                        map.setCenter(new kakao.maps.LatLng(place.y, place.x));
-                        displayMarker(place, true);
-                        searchResultsContainer.innerHTML = '';
-                    };
-                    searchResultsContainer.appendChild(resultItem);
+                    if (!isExcludedCategory(place.category_name)) {
+                        const resultItem = document.createElement('div');
+                        resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
+                        resultItem.onclick = () => {
+                            const center = new kakao.maps.LatLng(place.y, place.x);
+                            map.setCenter(center);
+                            map.setLevel(3);
+
+                            // 선택된 위치에서 마커를 강제로 로드
+                            searchPlacesByCenter(center);
+
+                            searchResultsContainer.innerHTML = '';
+                        };
+                        searchResultsContainer.appendChild(resultItem);
+                    }
                 });
             }
         });
     });
+
 
     document.getElementById('save-btn').addEventListener('click', saveMap);
 
@@ -434,3 +446,4 @@
 
 </body>
 </html>
+
