@@ -14,9 +14,16 @@
          onclick="document.getElementById('file-upload').click();">
     </div>
 
-    <form id="profileImageForm" enctype="multipart/form-data">
-        <input type="file" id="file-upload" name="file" accept="image/*" style="display: none;">
-    </form>
+    <div class="profile-upload">
+        <form id="profileImageForm" enctype="multipart/form-data">
+            <label for="file-upload" class="custom-file-upload">
+                프로필 이미지 업로드
+            </label>
+            <input id="file-upload" type="file" name="file" accept="image/*">
+        </form>
+    </div>
+
+
 
     <p>닉네임: <span id="currentNickname" th:text="${nickname}"></span></p>
     <input type="text" id="newNickname" placeholder="새 닉네임">
