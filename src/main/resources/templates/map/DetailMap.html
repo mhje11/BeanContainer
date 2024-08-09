@@ -94,6 +94,7 @@
 
 <script>
     let map, infowindow, markers = {};
+    let selectedMarker = null; // 선택된 마커를 추적하는 변수
 
     async function initMap() {
         var mapContainer = document.getElementById('map'),
@@ -170,11 +171,26 @@
             <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
         `;
 
-        // 카드 클릭 시 해당 마커 위치로 이동하고 인포윈도우 닫기
+        // 카드 클릭 시 해당 마커 위치로 이동하고 인포윈도우 닫기 및 마커 이미지 변경
         cafeBox.addEventListener('click', () => {
             const marker = markers[cafe.id];
             if (marker) {
+                // 이전에 선택된 마커가 있으면 기본 이미지로 되돌림
+                if (selectedMarker) {
+                    selectedMarker.setImage(null);  // 기본 이미지로 돌아감 (null로 설정 시 기본 마커로 변경)
+                }
+
+                // 현재 선택된 마커의 이미지를 변경
                 map.setCenter(marker.getPosition());
+                const markerImage = new kakao.maps.MarkerImage(
+                    "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png", // 선택된 마커 이미지 URL
+                    new kakao.maps.Size(24, 35), // 마커 이미지 크기
+                    { offset: new kakao.maps.Point(12, 35) } // 마커 이미지 위치 보정
+                );
+                marker.setImage(markerImage);
+
+                // 현재 선택된 마커를 추적
+                selectedMarker = marker;
             }
             infowindow.close();
         });
@@ -184,7 +200,6 @@
 
     document.addEventListener('DOMContentLoaded', initMap);
 </script>
-
 
 </body>
 </html>
