@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
                         .requestMatchers("/post/create").permitAll()
                         .requestMatchers("/api/post/create").hasRole("MEMBER")
-                        .requestMatchers("/mypage/{userId}", "/api/profileImage/**").authenticated() // 인증된 사용자만 접근 가능
+                        .requestMatchers("/mypage/{userId}", "/api/profileImage/**", "/mymap","/mymap/update/{mapId}").authenticated() // 인증된 사용자만 접근 가능
                         .requestMatchers("/admin").hasRole("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능
                         .requestMatchers("/review/{kakaoId}").permitAll()
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Maps</title>
+</head>
+<body>
+
+<h2>My Maps</h2>
+
+<ul id="map-list">
+    <!-- JavaScript에서 지도 목록을 여기에 동적으로 삽입 -->
+</ul>
+
+<script>
+    // 페이지 로드 시 지도 목록 가져오기
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchMyMaps();
+    });
+
+    function fetchMyMaps() {
+        fetch('/api/mymap')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayMapList(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
+    function displayMapList(mapList) {
+        const mapListElement = document.getElementById('map-list');
+        mapListElement.innerHTML = ''; // 기존 목록 초기화
+
+        mapList.forEach(map => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <span>${map.mapName}</span> - Created by <span>${map.username}</span>
+                <a href="/myMap/update/${map.mapId}" class="btn btn-primary">수정</a>
+                <button data-map-id="${map.mapId}" class="btn btn-danger" onclick="deleteMap(this)">삭제</button>
+            `;
+            mapListElement.appendChild(listItem);
+        });
+    }
+
+    function deleteMap(button) {
+        const mapId = button.getAttribute('data-map-id');
+        const confirmed = confirm('정말 이 지도를 삭제하시겠습니까?');
+
+        if (confirmed) {
+            fetch(`/api/mymap/delete/${mapId}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('지도 삭제 성공');
+                        fetchMyMaps(); // 삭제 후 목록을 다시 불러옴
+                    } else {
+                        alert('지도 삭제 실패');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('지도 삭제 실패');
+                });
+        }
+    }
+</script>
+
+</body>
+</html>
