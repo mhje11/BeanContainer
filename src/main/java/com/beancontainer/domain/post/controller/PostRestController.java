@@ -84,6 +84,7 @@ public class PostRestController {
                                                              @RequestParam(value = "images", required = false) List<MultipartFile> images) throws IOException{
 
         PostRequestDto postRequestDto = new PostRequestDto();
+
         postRequestDto.setTitle(title);
         postRequestDto.setContent(content);
 

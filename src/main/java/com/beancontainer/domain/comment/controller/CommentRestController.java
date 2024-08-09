@@ -23,12 +23,13 @@ import java.util.Map;
 public class CommentRestController {
     private final CommentService commentService;
     private final MemberRepository memberRepository;
-    private final PostService postService;
 
+    // 댓글 등록
     @PostMapping("/create/{postId}")
     public ResponseEntity<Map<String, String>> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Member member = memberRepository.findByUserId(userDetails.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+
         commentRequestDto.setNickname(member.getNickname());
         Long id = commentService.createComment(postId, commentRequestDto);
 
@@ -39,9 +40,26 @@ public class CommentRestController {
         return ResponseEntity.ok(response); // json 형식으로 반환
     }
 
+    // 댓글 조회
     @GetMapping("/comments/{postId}")
-    public ResponseEntity<List<CommentListResponseDto>> getAllComments(@PathVariable Long postId) {
-        List<CommentListResponseDto> comments = commentService.getAllComments(postId);
+    public ResponseEntity<List<CommentListResponseDto>> getAllComments(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUserId(userDetails.getUserId())
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+
+        List<CommentListResponseDto> comments = commentService.getAllComments(postId, member.getId());
         return ResponseEntity.ok(comments);
     }
+
+    // 댓글 삭제
+    @DeleteMapping("/{postId}/delete/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long postId, @PathVariable Long commentId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUserId(userDetails.getUserId())
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+
+        commentService.deleteComment(postId, commentId, member.getId());
+        return ResponseEntity.ok("댓글 삭제가 완료되었습니다.");
+    }
+
+    // @PutMapping("/{postId}/update/{commentId}")
+
 }
