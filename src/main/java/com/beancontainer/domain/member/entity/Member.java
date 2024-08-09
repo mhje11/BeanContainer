@@ -1,6 +1,6 @@
 package com.beancontainer.domain.member.entity;
 
-import com.beancontainer.domain.memberimg.entity.ProfileImage;
+import com.beancontainer.domain.memberprofileimg.entity.ProfileImage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

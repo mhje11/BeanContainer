@@ -21,4 +21,6 @@ public class RefreshToken {
         this.userId = userId;
         this.value = value;
     }
+
+
 }

@@ -64,8 +64,8 @@ public class PostRestController {
     }
 
     @GetMapping("/postList/{postId}")   // 게시글 상세 정보
-    public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId) {
-        PostDetailsResponseDto post = postService.postDetails(postId);
+    public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        PostDetailsResponseDto post = postService.postDetails(postId, userDetails.getUserId());
         return ResponseEntity.ok(post);
     }
 
@@ -81,8 +81,8 @@ public class PostRestController {
 
     @PutMapping("/post/update/{postId}")    // 게시글 수정
     public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestParam("title") String title, @RequestParam("content") String content,
-                                                             @RequestParam(value = "images", required = false) List<MultipartFile> images,
-                                                             @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException{
+                                                             @RequestParam(value = "images", required = false) List<MultipartFile> images) throws IOException{
+
         PostRequestDto postRequestDto = new PostRequestDto();
         postRequestDto.setTitle(title);
         postRequestDto.setContent(content);

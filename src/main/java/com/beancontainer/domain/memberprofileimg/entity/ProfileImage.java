@@ -1,5 +1,6 @@
-package com.beancontainer.domain.memberimg.entity;
+package com.beancontainer.domain.memberprofileimg.entity;
 
+import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +27,7 @@ public class ProfileImage {
         this.fileType = fileType;
     }
 
-    //이미지 인스턴스 생성
-    public static ProfileImage createProfileImage(String fileName, String filePath, String fileType) {
-        return new ProfileImage(fileName, filePath, fileType);
+    public void setFilePath(String path) {
+        this.filePath = path;
     }
 }

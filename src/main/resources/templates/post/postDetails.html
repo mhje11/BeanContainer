@@ -41,6 +41,12 @@
     <div class="images" id="images"></div>
 </div>
 <p id="btn-list"></p>
+<div>
+    <h3>댓글</h3>
+    <div id="comments"></div>
+    <textarea id="comment-input" placeholder="내용을 입력하세요." rows="5" required></textarea>
+    <button type="submit" id="submit-comment">댓글 등록</button>
+</div>
 <script>
     async function fetchPost() {
         try {
@@ -73,16 +79,49 @@
             }
 
             const btnList = document.getElementById('btn-list');
-            btnList.innerHTML = `
+            if (post.author) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
+                btnList.innerHTML = `
                 <a href="/post/postList">목록</a>
                 <a href="/postList/update/${postId}">수정</a>
                 <a href="#" onclick="deletePost(${postId})">삭제</a>
             `;  /*GET이 아닌 DELETE 요청이기 때문에 함수로 호출*/
+            } else {
+                btnList.innerHTML = `<a href="/post/postList">목록</a>`;
+            }
+
+            // 댓글 불러오기
+            await commentAll(postId);
 
         } catch (error) {
             console.error('Error fetching post', error);
             const postDiv = document.getElementById('post-box');
             postDiv.innerHTML = '<h3>게시글을 불러오는 중 오류가 발생하였습니다.</h3>';
+        }
+    }
+
+    async function commentAll(postId) {
+        try {
+            const response = await fetch(`/api/postlist/comments/${postId}`);
+            if (!response.ok) {
+                throw new Error('댓글을 가져오는 데 실패하였습니다.');
+            }
+            const comments = await response.json();
+
+            console.log('Fetched Comments:', comments); // 실제로 가져온 댓글 데이터 출력
+
+            const commentsDiv = document.getElementById('comments');
+            commentsDiv.innerHTML = '';  // 기존 내용 삭제
+
+            comments.forEach(comment => {
+                const div = document.createElement('div');
+                div.className = 'comment';
+                div.innerHTML = `<strong>${comment.nickname}</strong>: ${comment.content} <em>${new Date(comment.createdAt).toLocaleString()}</em>`;
+                commentsDiv.appendChild(div);
+            });
+        } catch (error) {
+            console.error('Error fetching comments', error);
+            const commentsDiv = document.getElementById('comments');
+            commentsDiv.innerHTML = '<p>댓글을 불러오는 중 오류가 발생하였습니다.</p>';
         }
     }
 
@@ -107,6 +146,26 @@
             }
         }
     }
+
+    document.getElementById('submit-comment').addEventListener('click', async () => {
+        const postId = window.location.pathname.split('/').pop();
+        const content = document.getElementById('comment-input').value;
+
+        const response = await fetch(`/api/postlist/create/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content })
+        });
+
+        if (response.ok) {
+            document.getElementById('comment-input').value = ''; // 입력 초기화
+            await commentAll(postId); // 댓글 새로 고침
+        } else {
+            alert('댓글 등록 실패');
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', fetchPost);  // 페이지 로드 후 함수 호출
 </script>
