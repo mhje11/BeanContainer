@@ -1,6 +1,6 @@
-package com.beancontainer.domain.memberimg.repository;
+package com.beancontainer.domain.memberprofileimg.repository;
 
-import com.beancontainer.domain.memberimg.entity.ProfileImage;
+import com.beancontainer.domain.memberprofileimg.entity.ProfileImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

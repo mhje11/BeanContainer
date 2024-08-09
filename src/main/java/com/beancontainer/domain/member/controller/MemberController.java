@@ -2,6 +2,7 @@ package com.beancontainer.domain.member.controller;
 
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
+import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class MemberController {
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
+    private final ProfileImageService profileImageService;
+
+    private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
+
 
 
     //메인 페이지
@@ -65,6 +69,7 @@ public class MemberController {
         model.addAttribute("userId", userId);
         model.addAttribute("name", member.getName());
         model.addAttribute("authorities", authentication.getAuthorities());
+//        model.addAttribute("profileImageUrl", member.getProfileImageUrl());
 
         return "member/myPage";
     }
