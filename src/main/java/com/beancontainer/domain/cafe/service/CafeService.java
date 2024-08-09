@@ -4,11 +4,7 @@ import com.beancontainer.domain.cafe.dto.CafeResponseDto;
 import com.beancontainer.domain.cafe.dto.CafeSaveDto;
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.cafe.repository.CafeRepository;
-import com.beancontainer.domain.cafecategory.CafeCategory;
-import com.beancontainer.domain.category.entity.Category;
-import com.beancontainer.domain.category.repository.CategoryRepository;
 import com.beancontainer.domain.review.repository.ReviewRepository;
-import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,22 +74,25 @@ public class CafeService {
 
     @Transactional
     public void updatedCafeCategories(Long cafeId) {
-        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new EntityNotFoundException("해당 카페를 찾을 수 없습니다."));
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 카페를 찾을 수 없습니다."));
 
-        Map<Category, Long> categoryFrequency = reviewRepository.findAllByCafeId(cafeId).stream()
+        // 리뷰에서 카테고리 빈도를 계산
+        Map<String, Long> categoryFrequency = reviewRepository.findAllByCafeId(cafeId).stream()
                 .flatMap(review -> review.getReviewCategories().stream())
-                .collect(Collectors.groupingBy(ReviewCategory::getCategory, Collectors.counting()));
+                .map(reviewCategory -> reviewCategory.getCategory().getName())
+                .collect(Collectors.groupingBy(categoryName -> categoryName, Collectors.counting()));
 
-        List<Category> topCategories = categoryFrequency.entrySet().stream()
-                .sorted(Map.Entry.<Category, Long>comparingByValue().reversed())
+        // 상위 3개의 카테고리를 선택
+        Set<String> topCategories = categoryFrequency.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(3)
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
-        cafe.getCafeCategories().clear();
-        for (Category category : topCategories) {
-            cafe.getCafeCategories().add(new CafeCategory(cafe, category));
-        }
+        // Cafe의 topCategories 업데이트
+        cafe.getTopCategories().clear();
+        cafe.getTopCategories().addAll(topCategories);
 
         cafeRepository.save(cafe);
     }
