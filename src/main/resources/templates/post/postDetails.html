@@ -115,7 +115,15 @@
             comments.forEach(comment => {
                 const div = document.createElement('div');
                 div.className = 'comment';
-                div.innerHTML = `<strong>${comment.nickname}</strong>: ${comment.content} <em>${new Date(comment.createdAt).toLocaleString()}</em>`;
+                div.innerHTML = `
+                    <strong>${comment.nickname}</strong>: ${comment.content} <em>${new Date(comment.createdAt).toLocaleString()}</em>
+                    `;
+                if (comment.author) {
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerText = '삭제';
+                    deleteButton.onclick = () => deleteComment(comment.id, postId);
+                    div.appendChild(deleteButton);
+                }
                 commentsDiv.appendChild(div);
             });
         } catch (error) {
@@ -166,6 +174,27 @@
             alert('댓글 등록 실패');
         }
     });
+
+    async function deleteComment(commentId, postId) {
+        if(confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
+            try {
+                const response = await fetch(`/api/postlist/${postId}/delete/${commentId}`, {
+                    method: 'DELETE',
+                });
+
+                if(response.ok) {
+                    alert('댓글이 삭제되었습니다.');
+                    window.location.href = `/postList/${postId}`;    // 삭제 후 게시글로 리다이렉트
+                } else {
+                    const errorMsg = await response.text();
+                    alert(errorMsg || '댓글 삭제에 실패하였습니다.');
+                }
+            } catch (error) {
+                console.error('Error deleting comment: ', error);
+                alert('댓글 삭제 중 오류가 발생하였습니다.');
+            }
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', fetchPost);  // 페이지 로드 후 함수 호출
 </script>
