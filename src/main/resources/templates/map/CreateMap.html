@@ -42,7 +42,7 @@
 <div id="search-results"></div>
 
 <script>
-    let map, ps, infowindow, markers = {}, addedCafes = [];
+    let map, ps, infowindow, markers = {}, addedCafes = new Set();
     let isMoving = false;
 
     function initMap() {
@@ -128,12 +128,12 @@
             const parsedAddress = parseAddress(place.road_address_name || place.address_name);
 
             var content = `
-                    <div style="padding:10px; font-size:14px;">
-                        <strong>${place.place_name}</strong><br>
-                        ${place.road_address_name || place.address_name}<br>
-                        <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-                    </div>
-                `;
+                <div style="padding:10px; font-size:14px;">
+                    <strong>${place.place_name}</strong><br>
+                    ${place.road_address_name || place.address_name}<br>
+                    <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+                </div>
+            `;
             infowindow.setContent(content);
             infowindow.open(map, marker);
         });
@@ -175,7 +175,7 @@
     }
 
     function addCafeToList(cafe, kakaoId) {
-        addedCafes.push({
+        const cafeData = JSON.stringify({
             kakaoId: kakaoId,
             name: cafe.name,
             address: cafe.address,
@@ -184,20 +184,29 @@
             city: cafe.city,
             district: cafe.district
         });
-        const li = document.createElement('li');
-        li.textContent = cafe.name;
-        li.dataset.kakaoId = kakaoId; // li 요소에 kakaoId 데이터 속성 추가
-        const button = document.createElement('button');
-        button.textContent = '삭제';
-        button.onclick = () => removeCafe(kakaoId);
-        li.appendChild(button);
-        document.getElementById('cafe-list').appendChild(li);
 
-        console.log("Added cafes:", addedCafes); // 로그 추가
+        if (!addedCafes.has(cafeData)) {
+            addedCafes.add(cafeData);
+            const li = document.createElement('li');
+            li.textContent = cafe.name;
+            li.dataset.kakaoId = kakaoId; // li 요소에 kakaoId 데이터 속성 추가
+            const button = document.createElement('button');
+            button.textContent = '삭제';
+            button.onclick = () => removeCafe(kakaoId);
+            li.appendChild(button);
+            document.getElementById('cafe-list').appendChild(li);
+
+            console.log("Added cafes:", Array.from(addedCafes)); // 로그 추가
+        }
     }
 
     function removeCafe(kakaoId) {
-        addedCafes = addedCafes.filter(cafe => cafe.kakaoId !== kakaoId);
+        addedCafes.forEach(cafe => {
+            if (JSON.parse(cafe).kakaoId === kakaoId) {
+                addedCafes.delete(cafe);
+            }
+        });
+
         const cafeList = document.getElementById('cafe-list');
         const items = cafeList.getElementsByTagName('li');
         for (let i = 0; i < items.length; i++) {
@@ -206,7 +215,7 @@
                 break;
             }
         }
-        console.log("After removal cafes:", addedCafes); // 로그 추가
+        console.log("After removal cafes:", Array.from(addedCafes)); // 로그 추가
     }
 
     async function searchCafeByName() {
@@ -269,7 +278,7 @@
 
             const mapData = {
                 mapName: mapName,
-                kakaoIds: addedCafes.map(cafe => cafe.kakaoId)
+                kakaoIds: Array.from(addedCafes).map(cafe => JSON.parse(cafe).kakaoId)
             };
 
             console.log("Sending map data:", mapData); // 로그 추가
@@ -289,6 +298,7 @@
                 }
 
                 alert('지도 생성 성공');
+                window.location.href = "/";
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error: ' + error.message);

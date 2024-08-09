@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "members")
 @Getter
@@ -30,9 +32,13 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_image_id")
-    private ProfileImage profileImage;
+    private String profileImageUrl;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public Member(String name, String nickname, String userId, String password, Role role) {
         this.name = name;
@@ -57,9 +63,11 @@ public class Member {
         this.nickname = newNickname;
     }
 
-    public void setProfileImage(ProfileImage profileImage) {
-        this.profileImage = profileImage;
+    // 프로필 이미지 URL 업데이트
+    public void updateProfileImageUrl(String newProfileImageUrl) {
+        this.profileImageUrl = newProfileImageUrl;
     }
+
 
 
 }

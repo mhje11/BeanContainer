@@ -14,6 +14,8 @@ public class CustomUserDetails implements UserDetails {
     private String userId;
     private String role;
 
+    private String nickName;
+
     public CustomUserDetails(String userId, String role) {
         this.userId = userId;
         this.role = role;
