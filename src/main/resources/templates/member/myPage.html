@@ -6,25 +6,21 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<div th:if="${#authentication.isAuthenticated()}">
-    <div class="container" th:if="${#authentication.isAuthenticated()}">
-        <h1>안녕하세요, <span th:text="${name}">사용자</span>님!</h1>
+<div th:if="${#authentication.isAuthenticated()}" class="container">
+    <h1>안녕하세요, <span th:text="${name}">사용자</span>님!</h1>
 
-        <div class="profile-image" th:style="${profileImageUrl != null} ? 'background-image: url(' + ${profileImageUrl} + ')' : ''"></div>
+    <div class="profile-image"
+         th:style="'background-image: url(' + (${profileImageUrl != null ? profileImageUrl : '/images/BeanContainer.png'}) + ')'"
+         onclick="document.getElementById('file-upload').click();">
+    </div>
 
-        <div class="profile-upload">
-            <form id="profileImageForm" enctype="multipart/form-data">
-                <label for="file-upload">프로필 이미지 변경</label>
-                <input id="file-upload" type="file" name="file" accept="image/*">
-                <button type="submit">업로드</button>
-            </form>
-        </div>
+    <form id="profileImageForm" enctype="multipart/form-data">
+        <input type="file" id="file-upload" name="file" accept="image/*" style="display: none;">
+    </form>
 
     <p>닉네임: <span id="currentNickname" th:text="${nickname}"></span></p>
     <input type="text" id="newNickname" placeholder="새 닉네임">
     <button onclick="updateNickname()">닉네임 변경</button>
-
-    <p>당신의 권한은: <span th:text="${authorities}"></span></p>
 
     <button onclick="deleteAccount()">회원 탈퇴</button>
 </div>
@@ -34,47 +30,54 @@
     var userId = /*[[${userId}]]*/ 'defaultUserId';
     /*]]>*/
 
-    function updateNickname() {
-        var newNickname = $('#newNickname').val();
-        $.post('/api/mypage/updateNickname', {userId: userId, newNickname: newNickname})
-            .done(function() {
-                $('#currentNickname').text(newNickname);
-                alert('닉네임이 변경되었습니다.');
-            })
-            .fail(function() {
-                alert('닉네임 변경에 실패했습니다.');
-            });
-    }
-
-    $('#profileImageForm').submit(function(e) {
-        e.preventDefault();
-        var formData = new FormData(this);
-        formData.append('userId', userId);
-        $.ajax({
-            url: '/api/mypage/uploadProfileImage',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                $('.profile-image').css('background-image', 'url(' + response + ')');
-                alert('프로필 이미지가 업데이트되었습니다.');
-            },
-            error: function() {
-                alert('프로필 이미지 업로드에 실패했습니다.');
+    $(document).ready(function() {
+        $('#file-upload').change(function() {
+            var file = this.files[0];
+            if (file) {
+                var formData = new FormData($('#profileImageForm')[0]);
+                $.ajax({
+                    url: '/api/mypage/' + userId + '/uploadProfileImage',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if(response.imageUrl) {
+                            $('.profile-image').css('background-image', 'url(' + response.imageUrl + ')');
+                            alert('프로필 이미지가 업데이트되었습니다.');
+                        } else {
+                            alert('프로필 이미지 업데이트에 실패했습니다.');
+                        }
+                    },
+                    error: function() {
+                        alert('프로필 이미지 업로드 중 오류가 발생했습니다.');
+                    }
+                });
             }
         });
     });
 
+    function updateNickname() {
+        var newNickname = $('#newNickname').val();
+        $.post('/api/mypage/' + userId + '/updateNickname', {newNickname: newNickname})
+            .done(function(response) {
+                $('#currentNickname').text(newNickname);
+                alert('닉네임이 변경되었습니다.');
+            })
+            .fail(function(error) {
+                alert('닉네임 변경에 실패했습니다: ' + error.responseText);
+            });
+    }
+
     function deleteAccount() {
         if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-            $.post('/api/mypage/deleteAccount', {userId: userId})
-                .done(function() {
+            $.post('/api/mypage/' + userId + '/deleteAccount')
+                .done(function(response) {
                     alert('계정이 삭제되었습니다.');
                     window.location.href = '/';
                 })
-                .fail(function() {
-                    alert('계정 삭제에 실패했습니다.');
+                .fail(function(error) {
+                    alert('계정 삭제에 실패했습니다: ' + error.responseText);
                 });
         }
     }
