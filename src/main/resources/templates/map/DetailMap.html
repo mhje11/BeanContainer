@@ -124,6 +124,11 @@
         } catch (error) {
             console.error('Error fetching map details:', error);
         }
+
+        // 맵을 클릭하면 인포윈도우 닫기
+        kakao.maps.event.addListener(map, 'click', function() {
+            infowindow.close();
+        });
     }
 
     function displayMarker(cafe) {
@@ -165,24 +170,12 @@
             <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
         `;
 
-        // 마우스 오버 시 마커 인포윈도우 열기
-        cafeBox.addEventListener('mouseover', () => {
+        // 카드 클릭 시 해당 마커 위치로 이동하고 인포윈도우 닫기
+        cafeBox.addEventListener('click', () => {
             const marker = markers[cafe.id];
-            const content = `
-                <div style="padding:10px; font-size:14px;">
-                    <strong>${cafe.name}</strong><br>
-                    ${cafe.address}<br>
-                    <strong>평점:</strong> ${cafe.averageScore} / 5.0<br>
-                    <strong>카테고리:</strong> ${Array.from(cafe.topCategories).join(', ')}<br>
-                    <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
-                </div>
-            `;
-            infowindow.setContent(content);
-            infowindow.open(map, marker);
-        });
-
-        // 마우스 아웃 시 인포윈도우 닫기
-        cafeBox.addEventListener('mouseout', () => {
+            if (marker) {
+                map.setCenter(marker.getPosition());
+            }
             infowindow.close();
         });
 
@@ -191,6 +184,7 @@
 
     document.addEventListener('DOMContentLoaded', initMap);
 </script>
+
 
 </body>
 </html>

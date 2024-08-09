@@ -301,27 +301,17 @@
             <button onclick="removeCafe('${kakaoId}')">삭제</button>
         `;
 
-            card.addEventListener('mouseover', () => {
+            // 카드 클릭 시 해당 카페의 마커 위치로 지도 이동
+            card.addEventListener('click', () => {
                 const marker = markers[kakaoId];
                 if (marker) {
-                    const parsedAddress = parseAddress(cafe.address);
-                    var content = `
-            <div style="padding:10px; font-size:14px;">
-                <strong>${cafe.name}</strong><br>
-                ${cafe.address}<br>
-                <button onclick="checkAndSaveCafe('${kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-                <button onclick="openReviewPage('${kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude})">리뷰 페이지로 이동</button>
-            </div>
-        `;
-                    infowindow.setContent(content);
-                    infowindow.open(map, marker);
                     map.setCenter(marker.getPosition());
+
+                    // 인포윈도우가 열려 있으면 닫기
+                    if (infowindow.getMap()) {
+                        infowindow.close();
+                    }
                 }
-            });
-
-
-            card.addEventListener('mouseout', () => {
-                infowindow.close();
             });
 
             document.getElementById('cafe-cards').appendChild(card);
@@ -340,6 +330,7 @@
             console.log("Added cafes:", Array.from(addedCafes));
         }
     }
+
 
 
     function removeCafe(kakaoId) {
