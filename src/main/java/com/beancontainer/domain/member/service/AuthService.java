@@ -5,7 +5,9 @@ import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.member.repository.RefreshTokenRepository;
+import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,19 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenizer jwtTokenizer;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final ProfileImageService profileImageService;
 
 
-    public AuthService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer, RefreshTokenRepository refreshTokenRepository) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder= passwordEncoder;
-        this.jwtTokenizer = jwtTokenizer;
-        this.refreshTokenRepository = refreshTokenRepository;
-    }
 
     @Transactional
     public void signUp(SignUpRequestDTO signUpRequestDTO) {
@@ -44,8 +40,12 @@ public class AuthService {
         );
 
         //db에 저장
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
         log.info("==== 새로운 유저 회원가입!: {}", signUpRequestDTO.getUserId() + " ====");
+
+        // 기본 프로필 이미지 설정
+        profileImageService.getOrCreateDefaultProfileImage(savedMember);
+
     }
 
 
