@@ -12,10 +12,49 @@
             font-family: Arial, sans-serif;
         }
 
-        #map {
+        #map-container {
+            position: relative;
             width: 70%;
             height: 600px;
             margin: 10px;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #cafe-cards {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            max-height: 80%;
+            overflow-y: auto;
+            z-index: 1;
+        }
+
+        .cafe-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 200px;
+        }
+
+        .cafe-card h4 {
+            margin: 0 0 5px 0;
+        }
+
+        .cafe-card p {
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .cafe-card button {
+            margin-top: 5px;
+            padding: 2px 5px;
+            font-size: 12px;
         }
 
         #sidebar {
@@ -24,13 +63,6 @@
             margin: 10px;
             display: flex;
             flex-direction: column;
-        }
-
-        #added-cafes {
-            flex: 1;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
         }
 
         #search-box {
@@ -71,7 +103,10 @@
     </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="map-container">
+    <div id="map"></div>
+    <div id="cafe-cards"></div>
+</div>
 
 <div id="sidebar">
     <div id="map-title">
@@ -83,11 +118,6 @@
         <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
         <button id="search-btn">검색</button>
         <div id="search-results"></div>
-    </div>
-
-    <div id="added-cafes">
-        <h3>추가된 카페 리스트</h3>
-        <ul id="cafe-list"></ul>
     </div>
 
     <button id="save-btn">지도 저장</button>
@@ -113,7 +143,7 @@
         searchPlacesByCenter(map.getCenter());
 
         kakao.maps.event.addListener(map, 'click', function () {
-            infowindow.close();  // 지도를 클릭하면 인포윈도우 닫기
+            infowindow.close();
         });
 
         kakao.maps.event.addListener(map, 'dragstart', function () {
@@ -176,26 +206,24 @@
         let markerImageUrl;
 
         if (addedCafes.has(place.id)) {
-            // 세트에 추가된 카페의 마커 이미지 URL
-            markerImageUrl = "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"; // 샘플 이미지
+            markerImageUrl = "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
         } else {
-            // 기본 마커 이미지 URL
-            markerImageUrl = null; // 기본 마커 이미지 사용 (null로 설정 시 기본 마커 사용)
+            markerImageUrl = null;
         }
 
         let markerImage = null;
         if (markerImageUrl) {
             markerImage = new kakao.maps.MarkerImage(
                 markerImageUrl,
-                new kakao.maps.Size(24, 35), // 마커 이미지 크기
-                {offset: new kakao.maps.Point(12, 35)} // 마커의 좌표에 사용할 이미지의 좌표
+                new kakao.maps.Size(24, 35),
+                {offset: new kakao.maps.Point(12, 35)}
             );
         }
 
         var marker = new kakao.maps.Marker({
             map: map,
             position: new kakao.maps.LatLng(place.y, place.x),
-            image: markerImage // 마커 이미지 설정 (기본 마커인 경우 null로 전달)
+            image: markerImage
         });
 
         markers[place.id] = marker;
@@ -244,14 +272,14 @@
             }
 
             const responseData = await response.json();
-            addCafeToList(responseData, kakaoId);
+            addCafeToSet(responseData, kakaoId);
         } catch (error) {
             console.error('Error:', error);
             alert('Error: ' + error.message);
         }
     }
 
-    function addCafeToList(cafe, kakaoId) {
+    function addCafeToSet(cafe, kakaoId) {
         const cafeData = JSON.stringify({
             kakaoId: kakaoId,
             name: cafe.name,
@@ -264,32 +292,55 @@
 
         if (!addedCafes.has(cafeData)) {
             addedCafes.add(cafeData);
-            const li = document.createElement('li');
-            li.textContent = cafe.name;
-            li.dataset.kakaoId = kakaoId; // li 요소에 kakaoId 데이터 속성 추가
-            const button = document.createElement('button');
-            button.textContent = '삭제';
-            button.onclick = () => removeCafe(kakaoId);
-            li.appendChild(button);
-            document.getElementById('cafe-list').appendChild(li);
 
-            // 마커 모양을 커스텀 모양으로 변경
+            const card = document.createElement('div');
+            card.className = 'cafe-card';
+            card.innerHTML = `
+            <h4>${cafe.name}</h4>
+            <p>${cafe.address}</p>
+            <button onclick="removeCafe('${kakaoId}')">삭제</button>
+        `;
+
+            card.addEventListener('mouseover', () => {
+                const marker = markers[kakaoId];
+                if (marker) {
+                    const parsedAddress = parseAddress(cafe.address);
+                    var content = `
+            <div style="padding:10px; font-size:14px;">
+                <strong>${cafe.name}</strong><br>
+                ${cafe.address}<br>
+                <button onclick="checkAndSaveCafe('${kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+                <button onclick="openReviewPage('${kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude})">리뷰 페이지로 이동</button>
+            </div>
+        `;
+                    infowindow.setContent(content);
+                    infowindow.open(map, marker);
+                    map.setCenter(marker.getPosition());
+                }
+            });
+
+
+            card.addEventListener('mouseout', () => {
+                infowindow.close();
+            });
+
+            document.getElementById('cafe-cards').appendChild(card);
+
             const marker = markers[kakaoId];
             if (marker) {
-                const markerImageUrl = "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"; // 세트에 추가된 카페 마커 이미지 URL
-
+                const markerImageUrl = "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
                 const markerImage = new kakao.maps.MarkerImage(
                     markerImageUrl,
-                    new kakao.maps.Size(24, 35), // 마커 이미지 크기
-                    {offset: new kakao.maps.Point(12, 35)} // 마커의 좌표에 사용할 이미지의 좌표
+                    new kakao.maps.Size(24, 35),
+                    {offset: new kakao.maps.Point(12, 35)}
                 );
-
-                marker.setImage(markerImage); // 마커 이미지를 업데이트
+                marker.setImage(markerImage);
             }
 
-            console.log("Added cafes:", Array.from(addedCafes)); // 로그 추가
+            console.log("Added cafes:", Array.from(addedCafes));
         }
     }
+
 
     function removeCafe(kakaoId) {
         addedCafes.forEach(cafe => {
@@ -298,22 +349,21 @@
             }
         });
 
-        const cafeList = document.getElementById('cafe-list');
-        const items = cafeList.getElementsByTagName('li');
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].dataset.kakaoId === kakaoId) { // li 요소의 데이터 속성을 사용하여 비교
-                cafeList.removeChild(items[i]);
+        const cafeCards = document.getElementById('cafe-cards');
+        const cards = cafeCards.getElementsByClassName('cafe-card');
+        for (let i = 0; i < cards.length; i++) {
+            if (cards[i].querySelector('button').getAttribute('onclick').includes(kakaoId)) {
+                cafeCards.removeChild(cards[i]);
                 break;
             }
         }
 
-        // 마커를 기본 모양으로 되돌림
         const marker = markers[kakaoId];
         if (marker) {
-            marker.setImage(null); // null로 설정하여 기본 마커로 변경
+            marker.setImage(null);
         }
 
-        console.log("After removal cafes:", Array.from(addedCafes)); // 로그 추가
+        console.log("After removal cafes:", Array.from(addedCafes));
     }
 
     async function searchCafeByName() {
@@ -330,8 +380,6 @@
                     const center = new kakao.maps.LatLng(place.y, place.x);
                     map.setCenter(center);
                     map.setLevel(3);
-
-                    // 검색된 위치에서 마커를 강제로 로드
                     searchPlacesByCenter(center);
                 } else {
                     displaySearchResults(data);
@@ -348,7 +396,6 @@
 
         places.forEach(place => {
             const resultItem = document.createElement('div');
-            // 이름과 주소를 함께 표시
             resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
             resultItem.style.cursor = 'pointer';
             resultItem.onclick = () => {
@@ -356,18 +403,45 @@
                 map.setCenter(center);
                 map.setLevel(3);
 
-                // 선택된 위치에서 마커를 강제로 로드
                 searchPlacesByCenter(center);
 
-                searchResultsContainer.innerHTML = ''; // 선택 후 검색 결과 제거
+                // 마커가 이미 존재하는지 확인
+                if (markers[place.id]) {
+                    openInfoWindow(place);
+                } else {
+                    // 마커가 아직 없을 경우 약간의 지연 후 재시도
+                    setTimeout(() => {
+                        if (markers[place.id]) {
+                            openInfoWindow(place);
+                        }
+                    }, 200);
+                }
+
+                searchResultsContainer.innerHTML = '';
             };
             searchResultsContainer.appendChild(resultItem);
         });
     }
 
+    function openInfoWindow(place) {
+        const marker = markers[place.id];
+        const parsedAddress = parseAddress(place.road_address_name || place.address_name);
+        const content = `
+        <div style="padding:10px; font-size:14px;">
+            <strong>${place.place_name}</strong><br>
+            ${place.road_address_name || place.address_name}<br>
+            <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+            <button onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 페이지로 이동</button>
+        </div>
+    `;
+        infowindow.setContent(content);
+        infowindow.open(map, marker);
+    }
+
+
+
 
     function openReviewPage(kakaoId, name, address, latitude, longitude) {
-        // 주소 파싱
         const parsedAddress = parseAddress(address);
 
         const data = {
@@ -382,7 +456,6 @@
 
         console.log("Sending data for review page:", data);
 
-        // 카페가 없으면 저장하고, 있으면 바로 리뷰 페이지로 이동
         fetch(`/review/${kakaoId}`, {
             method: 'POST',
             headers: {
@@ -399,7 +472,6 @@
         })
             .then(data => {
                 console.log("Cafe saved or found:", data);
-                // 새로운 창에서 리뷰 페이지 열기
                 window.open(`/review/${data.id}`, '_blank');
             }).catch(error => {
             console.error('Error:', error);
