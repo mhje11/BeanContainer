@@ -1,12 +1,9 @@
 package com.beancontainer.domain.chatroom.controller;
 
 import com.beancontainer.domain.chatroom.model.ChatRoom;
-import com.beancontainer.domain.chatroom.model.LoginInfo;
 import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
-import com.beancontainer.domain.chatroom.service.JwtTokenProvider;
+import com.beancontainer.global.jwt.util.JwtTokenizer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +16,6 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/room")
     public String rooms() {
@@ -52,11 +48,4 @@ public class ChatRoomController {
         return chatRoomRepository.findRoomById(roomId);
     }
 
-    @GetMapping("/user")
-    @ResponseBody
-    public LoginInfo getUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String name = auth.getName();
-        return LoginInfo.builder().name(name).token(jwtTokenProvider.generateToken(name)).build();
-    }
 }

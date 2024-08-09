@@ -3,7 +3,8 @@ package com.beancontainer.global.config.handler;
 import com.beancontainer.domain.chatroom.model.ChatMessage;
 import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
 import com.beancontainer.domain.chatroom.service.ChatService;
-import com.beancontainer.domain.chatroom.service.JwtTokenProvider;
+import com.beancontainer.global.jwt.token.JwtAuthenticationToken;
+import com.beancontainer.global.jwt.util.JwtTokenizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @Component
 public class StompHandler implements ChannelInterceptor {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationToken jwtTokenProvider;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatService chatService;
 
