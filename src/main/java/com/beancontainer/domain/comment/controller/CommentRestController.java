@@ -73,5 +73,4 @@ public class CommentRestController {
         commentService.updateComment(postId, commentId, commentRequestDto.getContent(), member);
         return ResponseEntity.ok("댓글 수정이 완료되었습니다.");
     }
-
 }

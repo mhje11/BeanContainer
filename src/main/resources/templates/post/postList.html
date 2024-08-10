@@ -41,7 +41,7 @@
         <th>번호</th>
         <th>제목</th>
         <th>작성자</th>
-<!--        댓글 수-->
+        <th>댓글수</th>
 <!--        좋아요 수-->
         <th>작성일 / 수정일</th>
         <th>조회수</th>
@@ -69,6 +69,7 @@
                 <td>${post.id}</td>
                 <td><a href="/postList/${post.id}">${post.title}</a></td>
                 <td>${post.nickname}</td>
+                <td>${post.commentCount}</td>
                 <td>${post.updatedAt ? new Date(post.updatedAt).toLocaleString() + ' (수정됨)' : new Date(post.createdAt).toLocaleString()}</td>
                 <td>${post.views}</td>
             `;

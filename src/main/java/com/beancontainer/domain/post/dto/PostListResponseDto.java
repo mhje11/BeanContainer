@@ -13,7 +13,7 @@ public class PostListResponseDto {
     private Long id;
     private String title;
     private String nickname;
-    // 댓글 수
+    private int commentCount;   // 댓글 수
     // 좋아요 수
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
