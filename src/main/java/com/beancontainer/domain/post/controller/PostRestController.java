@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.controller;
 
+import com.beancontainer.domain.admin.RequireAdmin;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostRequestDto;
@@ -70,12 +71,16 @@ public class PostRestController {
     }
 
     @DeleteMapping("/post/delete/{postId}") // 게시글 삭제
-    public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+    @RequireAdmin
+    public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (!postService.existsById(postId)) {
             return ResponseEntity.badRequest().body("잘못된 요청입니다.");
         }
 
-        postService.deletePost(postId);
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+
+        postService.deletePost(postId,  userDetails.getUserId(), isAdmin);
         return ResponseEntity.ok("글 삭제가 완료되었습니다");
     }
 

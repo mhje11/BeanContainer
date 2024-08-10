@@ -1,10 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin</title>
+    <title>관리자 페이지</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-adminPage
+<h1>관리자 페이지</h1>
+<button id="loadPosts">게시글 전체 조회</button>
+<div id="postList"></div>
+
+<script>
+    $(document).ready(function() {
+        $('#loadPosts').click(function() {
+            $.ajax({
+                url: '/api/admin/posts',
+                type: 'GET',
+                success: function(posts) {
+                    let html = '<ul>';
+                    posts.forEach(function(post) {
+                        html += '<li>' + post.title +
+                            ' <button onclick="deletePost(' + post.id + ')">삭제</button></li>';
+                    });
+                    html += '</ul>';
+                    $('#postList').html(html);
+                },
+                error: function(xhr, status, error) {
+                    alert('게시글 로딩 실패: ' + error);
+                }
+            });
+        });
+    });
+
+    function deletePost(postId) {
+        if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+            $.ajax({
+                url: '/api/admin/post/' + postId,
+                type: 'DELETE',
+                success: function(response) {
+                    alert(response);
+                    $('#loadPosts').click();  // 목록 새로고침
+                },
+                error: function(xhr, status, error) {
+                    alert('게시글 삭제 실패: ' + error);
+                }
+            });
+        }
+    }
+</script>
 </body>
 </html>
