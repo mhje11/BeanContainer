@@ -3,7 +3,6 @@ package com.beancontainer.domain.chatroom.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -34,6 +33,7 @@ public class User {
     @Column(name = "registration_date", nullable = false, updatable = false)
     private LocalDateTime registrationDate = LocalDateTime.now();
 
+    // 사용자의 역할을 저장하는 다대다 관계
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
