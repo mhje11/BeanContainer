@@ -2,12 +2,13 @@ package com.beancontainer.domain.chatroom.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "roles")
-@Setter
 @Getter
+@NoArgsConstructor
 
 //사용자의 역할의 정의함
 public class Role {
@@ -18,4 +19,8 @@ public class Role {
 
     @Column(nullable = false, unique = true, length = 50)
     private String name;
+
+    public Role(String name) {
+        this.name = name;
+    }
 }
