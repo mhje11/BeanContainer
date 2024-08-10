@@ -17,5 +17,5 @@ public class PostListResponseDto {
     // 좋아요 수
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private int views;
+    private int views;  // 조회수
 }
