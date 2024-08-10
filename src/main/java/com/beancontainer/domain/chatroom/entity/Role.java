@@ -8,6 +8,8 @@ import lombok.Setter;
 @Table(name = "roles")
 @Setter
 @Getter
+
+//사용자의 역할의 정의함
 public class Role {
 
     @Id
