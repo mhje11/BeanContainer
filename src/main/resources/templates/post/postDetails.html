@@ -139,6 +139,39 @@ class PostOperations {
         }
     }
 
+    async saveOrUpdateComment(isUpdate, commentId = null) {
+        let content;
+
+        if (isUpdate) {
+            content = document.getElementById(`update-content-${commentId}`).value;
+        } else {
+            content = document.getElementById('comment-input').value;
+        }
+
+        const endpoint = isUpdate
+            ? `/api/postlist/${this.postId}/update/${commentId}`
+            : `/api/postlist/create/${this.postId}`;
+
+        const method = isUpdate ? 'PUT' : 'POST';
+
+        const response = await fetch(endpoint, {
+            method: method,
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify({content})
+        });
+
+        if (response.ok) {
+            if (!isUpdate) {
+                document.getElementById('comment-input').value = '';    // 입력 초기화
+            }
+            await this.commentAll();    // 댓글 새로 고침
+        } else {
+            alert(isUpdate ? '댓글 수정 실패' : '댓글 등록 실패');
+        }
+    }
+
     async deletePost() {
         if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
             try {
@@ -180,12 +213,37 @@ class PostOperations {
             }
         }
     }
+
+    async updateComment(commentId, currentContent) {
+        const commentsDiv = document.getElementById('comments');
+        const commentContentSpan = document.getElementById(`comment-content-${commentId}`);
+        commentContentSpan.innerHTML = `<input type="text" id="update-content-${commentId}" value="${currentContent}"/>`;
+
+        const saveBtn = document.createElement('button');
+        saveBtn.innerText = '저장';
+        saveBtn.id = `#save-button-${commentId}`;
+        saveBtn.onclick = () => this.saveOrUpdateComment(true, commentId);
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.innerText = '취소';
+        cancelBtn.id = `#cancel-button-${commentId}`;
+        cancelBtn.onclick = () => {
+            commentContentSpan.innerHTML = currentContent;
+
+            saveBtn.remove();
+            cancelBtn.remove();
+        };
+
+        commentsDiv.appendChild(saveBtn);
+        commentsDiv.appendChild(cancelBtn);
+    }
 }
 
 const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
 const postOps = new PostOperations(postId);
 
 document.addEventListener('DOMContentLoaded', () => postOps.fetchPost());  // 페이지 로드 후 함수 호출
+document.getElementById('submit-comment').addEventListener('click', () => postOps.saveOrUpdateComment(false))
 </script>
 </body>
 </html>
