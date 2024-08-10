@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.service;
 
+import com.beancontainer.domain.like.repository.LikeRepository;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
@@ -26,6 +27,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostImgService postImgService;
+    private final LikeRepository likeRepository;
 
     // 게시글 작성
     @Transactional
@@ -72,7 +74,7 @@ public class PostService {
                         post.getTitle(),
                         post.getMember().getNickname(),
                         post.getCommentCount(), // 댓글 수
-                        // 좋아요 수
+                        likeRepository.countByPostId(post.getId()),   // 좋아요 수
                         post.getCreatedAt(),
                         post.getUpdatedAt(),
                         post.getViews()
@@ -87,8 +89,10 @@ public class PostService {
         post.incrementViews();  // 조회수 증가
         postRepository.save(post);
 
+        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
+
         boolean isAuthor = post.getMember().getUserId().equals(userId);
-        return new PostDetailsResponseDto(post, isAuthor);
+        return new PostDetailsResponseDto(post, likesCount, isAuthor);
     }
 
     // 게시글 존재 여부 확인
@@ -148,7 +152,8 @@ public class PostService {
         }
 
         Post updatedPost = postRepository.save(post);
+        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
         boolean isAuthor = post.getMember().getUserId().equals(post.getMember().getUserId());
-        return new PostDetailsResponseDto(updatedPost, isAuthor);
+        return new PostDetailsResponseDto(updatedPost, likesCount, isAuthor);
     }
 }
