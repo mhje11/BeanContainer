@@ -44,7 +44,7 @@
 <div>
     <h3>댓글</h3>
     <div id="comments"></div>
-    <textarea id="comment-input" placeholder="내용을 입력하세요." rows="5" required></textarea>
+    <textarea id="comment-input" placeholder="내용을 입력하세요." rows="3" required></textarea>
     <button type="submit" id="submit-comment">댓글 등록</button>
 </div>
 <script>
@@ -116,9 +116,15 @@
                 const div = document.createElement('div');
                 div.className = 'comment';
                 div.innerHTML = `
-                    <strong>${comment.nickname}</strong>: ${comment.content} <em>${new Date(comment.createdAt).toLocaleString()}</em>
+                    <strong>${comment.nickname}</strong>: <span id="comment-content-${comment.id}">${comment.content}</span>
+                    <em>${new Date(comment.createdAt).toLocaleString()}</em>
                     `;
                 if (comment.author) {
+                    const updateButton = document.createElement('button');
+                    updateButton.innerText = '수정';
+                    updateButton.onclick = () => updateComment(comment.id, comment.content);
+                    div.appendChild(updateButton);
+
                     const deleteButton = document.createElement('button');
                     deleteButton.innerText = '삭제';
                     deleteButton.onclick = () => deleteComment(comment.id, postId);
@@ -130,28 +136,6 @@
             console.error('Error fetching comments', error);
             const commentsDiv = document.getElementById('comments');
             commentsDiv.innerHTML = '<p>댓글을 불러오는 중 오류가 발생하였습니다.</p>';
-        }
-    }
-
-    async function deletePost(postId) {
-        console.log('delete postId : ', postId);
-        if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-            try {
-                const response = await fetch(`/api/post/delete/${postId}`, {
-                    method: 'DELETE',
-                });
-
-                if(response.ok) {
-                    alert('게시글이 삭제되었습니다.');
-                    window.location.href = '/post/postList';    // 삭제 후 게시판으로 리다이렉트
-                } else {
-                    const errorMsg = await response.text();
-                    alert(errorMsg || '게시글 삭제에 실패하였습니다.');
-                }
-            } catch (error) {
-                console.error('Error deleting post: ', error);
-                alert('게시글 삭제 중 오류가 발생하였습니다.');
-            }
         }
     }
 
@@ -192,6 +176,28 @@
             } catch (error) {
                 console.error('Error deleting comment: ', error);
                 alert('댓글 삭제 중 오류가 발생하였습니다.');
+            }
+        }
+    }
+
+    async function deletePost(postId) {
+        console.log('delete postId : ', postId);
+        if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+            try {
+                const response = await fetch(`/api/post/delete/${postId}`, {
+                    method: 'DELETE',
+                });
+
+                if(response.ok) {
+                    alert('게시글이 삭제되었습니다.');
+                    window.location.href = '/post/postList';    // 삭제 후 게시판으로 리다이렉트
+                } else {
+                    const errorMsg = await response.text();
+                    alert(errorMsg || '게시글 삭제에 실패하였습니다.');
+                }
+            } catch (error) {
+                console.error('Error deleting post: ', error);
+                alert('게시글 삭제 중 오류가 발생하였습니다.');
             }
         }
     }
