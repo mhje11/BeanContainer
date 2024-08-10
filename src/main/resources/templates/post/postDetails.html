@@ -48,16 +48,18 @@
     <button type="submit" id="submit-comment">댓글 등록</button>
 </div>
 <script>
-    async function fetchPost() {
+class PostOperations {
+    constructor(postId) {
+        this.postId = postId;
+    }
+
+    async fetchPost() {
         try {
-            const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
-            const response = await fetch(`/api/postList/${postId}`);
+            const response = await fetch(`/api/postList/${this.postId}`);
             if (!response.ok) {
                 throw new Error('게시글을 가져오는 데 실패하였습니다.');
             }
             const post = await response.json();
-
-            console.log('Fetched Post:', post); // 실제로 가져온 게시글 데이터 출력
 
             // HTML 요소에 값 설정
             document.getElementById('title').innerText = post.title;
@@ -82,15 +84,15 @@
             if (post.author) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
                 btnList.innerHTML = `
                 <a href="/post/postList">목록</a>
-                <a href="/postList/update/${postId}">수정</a>
-                <a href="#" onclick="deletePost(${postId})">삭제</a>
+                <a href="/postList/update/${this.postId}">수정</a>
+                <a href="#" onclick="postOps.deletePost()">삭제</a>
             `;  /*GET이 아닌 DELETE 요청이기 때문에 함수로 호출*/
             } else {
                 btnList.innerHTML = `<a href="/post/postList">목록</a>`;
             }
 
             // 댓글 불러오기
-            await commentAll(postId);
+            await this.commentAll();
 
         } catch (error) {
             console.error('Error fetching post', error);
@@ -99,15 +101,13 @@
         }
     }
 
-    async function commentAll(postId) {
+    async commentAll() {
         try {
-            const response = await fetch(`/api/postlist/comments/${postId}`);
+            const response = await fetch(`/api/postlist/comments/${this.postId}`);
             if (!response.ok) {
                 throw new Error('댓글을 가져오는 데 실패하였습니다.');
             }
             const comments = await response.json();
-
-            console.log('Fetched Comments:', comments); // 실제로 가져온 댓글 데이터 출력
 
             const commentsDiv = document.getElementById('comments');
             commentsDiv.innerHTML = '';  // 기존 내용 삭제
@@ -122,12 +122,12 @@
                 if (comment.author) {
                     const updateButton = document.createElement('button');
                     updateButton.innerText = '수정';
-                    updateButton.onclick = () => updateComment(comment.id, comment.content);
+                    updateButton.onclick = () => this.updateComment(comment.id, comment.content);
                     div.appendChild(updateButton);
 
                     const deleteButton = document.createElement('button');
                     deleteButton.innerText = '삭제';
-                    deleteButton.onclick = () => deleteComment(comment.id, postId);
+                    deleteButton.onclick = () => this.deleteComment(comment.id);
                     div.appendChild(deleteButton);
                 }
                 commentsDiv.appendChild(div);
@@ -139,52 +139,10 @@
         }
     }
 
-    document.getElementById('submit-comment').addEventListener('click', async () => {
-        const postId = window.location.pathname.split('/').pop();
-        const content = document.getElementById('comment-input').value;
-
-        const response = await fetch(`/api/postlist/create/${postId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ content })
-        });
-
-        if (response.ok) {
-            document.getElementById('comment-input').value = ''; // 입력 초기화
-            await commentAll(postId); // 댓글 새로 고침
-        } else {
-            alert('댓글 등록 실패');
-        }
-    });
-
-    async function deleteComment(commentId, postId) {
-        if(confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
-            try {
-                const response = await fetch(`/api/postlist/${postId}/delete/${commentId}`, {
-                    method: 'DELETE',
-                });
-
-                if(response.ok) {
-                    alert('댓글이 삭제되었습니다.');
-                    window.location.href = `/postList/${postId}`;    // 삭제 후 게시글로 리다이렉트
-                } else {
-                    const errorMsg = await response.text();
-                    alert(errorMsg || '댓글 삭제에 실패하였습니다.');
-                }
-            } catch (error) {
-                console.error('Error deleting comment: ', error);
-                alert('댓글 삭제 중 오류가 발생하였습니다.');
-            }
-        }
-    }
-
-    async function deletePost(postId) {
-        console.log('delete postId : ', postId);
+    async deletePost() {
         if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
             try {
-                const response = await fetch(`/api/post/delete/${postId}`, {
+                const response = await fetch(`/api/post/delete/${this.postId}`, {
                     method: 'DELETE',
                 });
 
@@ -202,7 +160,32 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', fetchPost);  // 페이지 로드 후 함수 호출
+    async deleteComment(commentId) {
+        if(confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
+            try {
+                const response = await fetch(`/api/postlist/${this.postId}/delete/${commentId}`, {
+                    method: 'DELETE',
+                });
+
+                if(response.ok) {
+                    alert('댓글이 삭제되었습니다.');
+                    await this.commentAll();    // 댓글 새로고침
+                } else {
+                    const errorMsg = await response.text();
+                    alert(errorMsg || '댓글 삭제에 실패하였습니다.');
+                }
+            } catch (error) {
+                console.error('Error deleting comment: ', error);
+                alert('댓글 삭제 중 오류가 발생하였습니다.');
+            }
+        }
+    }
+}
+
+const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
+const postOps = new PostOperations(postId);
+
+document.addEventListener('DOMContentLoaded', () => postOps.fetchPost());  // 페이지 로드 후 함수 호출
 </script>
 </body>
 </html>
