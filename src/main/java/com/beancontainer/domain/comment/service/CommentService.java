@@ -60,4 +60,21 @@ public class CommentService {
 
         commentRepository.delete(comment);
     }
+
+    // 댓글 수정
+    public void updateComment(Long postId, Long commentId, String content, Member member) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        if(!comment.getPost().getId().equals(post.getId())) {
+            throw new IllegalArgumentException("해당 게시글에 속하지 않는 댓글입니다.");
+        }
+        if(!comment.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("수정 권한이 없습니다.");
+        }
+        comment.updateComment(content);
+        commentRepository.save(comment);
+    }
 }
+
