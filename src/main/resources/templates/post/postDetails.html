@@ -40,6 +40,10 @@
     <strong>조회수: </strong><span id="views"></span><br>
     <div class="images" id="images"></div>
 </div>
+<div>
+    <button id="like-button" class="like-button">좋아요</button>
+    <span id="like-count">0</span>명이 좋아합니다.
+</div>
 <p id="btn-list"></p>
 <div>
     <h3>댓글</h3>
@@ -80,6 +84,9 @@ class PostOperations {
                 });
             }
 
+            // 좋아요
+            document.getElementById('like-count').innerText = post.likes;
+
             const btnList = document.getElementById('btn-list');
             if (post.author) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
                 btnList.innerHTML = `
@@ -98,6 +105,40 @@ class PostOperations {
             console.error('Error fetching post', error);
             const postDiv = document.getElementById('post-box');
             postDiv.innerHTML = '<h3>게시글을 불러오는 중 오류가 발생하였습니다.</h3>';
+        }
+    }
+
+    async toggleLike() {
+        try {
+            const response = await fetch(`/api/postlist/${this.postId}/like`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                await this.updateLikeCount();
+            } else {
+                // 이미 좋아요를 누른 상태라면 좋아요 삭제
+                const removeResponse = await fetch(`/api/postlist/${this.postId}/like/delete`, {
+                    method: 'DELETE'
+                });
+
+                if (removeResponse.ok) {
+                    await this.updateLikeCount();
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling like: ', error);
+            alert('좋아요를 처리하는 중 오류가 발생하였습니다.');
+        }
+    }
+
+    async updateLikeCount() {
+        try {
+            const response = await fetch(`/api/postlist/${this.postId}/likes/count`);
+            const likeCount = await response.json();
+            document.getElementById('like-count').innerText = likeCount;
+        } catch (error) {
+            console.error('Error updating like count: ', error);
         }
     }
 
@@ -237,12 +278,17 @@ class PostOperations {
         commentsDiv.appendChild(saveBtn);
         commentsDiv.appendChild(cancelBtn);
     }
+
+
 }
 
 const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
 const postOps = new PostOperations(postId);
 
-document.addEventListener('DOMContentLoaded', () => postOps.fetchPost());  // 페이지 로드 후 함수 호출
+document.addEventListener('DOMContentLoaded', () =>  {
+    postOps.fetchPost();    // 페이지 로드 후 함수 호출
+    document.getElementById('like-button').addEventListener('click', () => postOps.toggleLike());
+});
 document.getElementById('submit-comment').addEventListener('click', () => postOps.saveOrUpdateComment(false))
 </script>
 </body>
