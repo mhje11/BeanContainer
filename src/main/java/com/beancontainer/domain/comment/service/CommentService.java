@@ -30,6 +30,10 @@ public class CommentService {
         Comment comment = new Comment(post, member, commentRequestDto.getContent());
         Comment savedComment = commentRepository.save(comment);
 
+        // 댓글수 증가
+        post.incrementCommentCount();
+        postRepository.save(post);
+
         return savedComment.getId();
     }
 
@@ -57,6 +61,10 @@ public class CommentService {
         if (!isAdmin && !comment.getMember().getUserId().equals(userId)) {
             throw new IllegalArgumentException("삭제 권한이 없습니다.");
         }
+
+        // 댓글수 감소
+        post.decrementCommentCount();
+        postRepository.save(post);
 
         commentRepository.delete(comment);
     }

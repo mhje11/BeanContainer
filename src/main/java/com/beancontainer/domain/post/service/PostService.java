@@ -71,7 +71,7 @@ public class PostService {
                         post.getId(),
                         post.getTitle(),
                         post.getMember().getNickname(),
-                        // 댓글 수
+                        post.getCommentCount(), // 댓글 수
                         // 좋아요 수
                         post.getCreatedAt(),
                         post.getUpdatedAt(),
