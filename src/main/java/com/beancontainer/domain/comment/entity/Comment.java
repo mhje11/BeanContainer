@@ -40,5 +40,6 @@ public class Comment {
 
     public void updateComment(String content) {
         this.content = content;
+        this.createdAt = LocalDateTime.now();
     }
 }
