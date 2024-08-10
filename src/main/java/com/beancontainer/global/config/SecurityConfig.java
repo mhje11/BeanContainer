@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+//@EnableGlobalAuthentication(prePostEnabled = true)
 public class SecurityConfig {
 
 
@@ -43,9 +45,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
                         .requestMatchers("/post/create").permitAll()
-                        .requestMatchers("/api/post/create").hasRole("MEMBER")
+                        .requestMatchers("/api/post/create").authenticated()
                         .requestMatchers("/mypage/{userId}", "/api/profileImage/**", "/mymap","/mymap/update/{mapId}").authenticated() // 인증된 사용자만 접근 가능
-                        .requestMatchers("/admin").hasRole("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능
+                        .requestMatchers("/admin/**", "/api/admin/**").hasAuthority("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능 ROLE 접두사 제거
                         .requestMatchers("/review/{kakaoId}").permitAll()
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
                 )

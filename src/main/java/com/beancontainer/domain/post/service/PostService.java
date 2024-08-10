@@ -95,8 +95,12 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, String userId, boolean isAdmin) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (!isAdmin && !post.getMember().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
 
         // S3에서 이미지 삭제
         if (post.getImages() != null && !post.getImages().isEmpty()) {

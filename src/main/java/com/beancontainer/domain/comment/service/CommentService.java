@@ -46,7 +46,7 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void deleteComment(Long postId, Long commentId, Long memberId) {
+    public void deleteComment(Long postId, Long commentId, String userId, boolean isAdmin) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
 
@@ -54,7 +54,7 @@ public class CommentService {
             throw new IllegalArgumentException("해당 게시글에 속하지 않는 댓글입니다.");
         }
 
-        if(!comment.getMember().getId().equals(memberId)) {
+        if (!isAdmin && !comment.getMember().getUserId().equals(userId)) {
             throw new IllegalArgumentException("삭제 권한이 없습니다.");
         }
 

@@ -87,7 +87,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (role == null) {
             throw new BadCredentialsException("Invalid token: missing role claim");
         }
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     private String getToken(HttpServletRequest request) {
