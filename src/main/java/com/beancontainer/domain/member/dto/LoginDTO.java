@@ -10,9 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDTO {
-    @NotEmpty
     private String userId;
-    @NotEmpty
+
     //@Pattern(regexp=  "^(?=.[a-zA-Z])(?=.\d)(?=.*\W).{8,20}$")
     private String password;
 

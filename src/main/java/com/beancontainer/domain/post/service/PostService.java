@@ -13,6 +13,10 @@ import com.beancontainer.domain.postimg.entity.PostImg;
 import com.beancontainer.domain.postimg.service.PostImgService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,18 +71,11 @@ public class PostService {
 
     // 게시글 목록 조회
     @Transactional(readOnly = true)
-    public List<PostListResponseDto> getAllPosts() {
-        return postRepository.findAll().stream()
-                .map(post -> new PostListResponseDto(
-                        post.getId(),
-                        post.getTitle(),
-                        post.getMember().getNickname(),
-                        post.getCommentCount(), // 댓글 수
-                        likeRepository.countByPostId(post.getId()),   // 좋아요 수
-                        post.getCreatedAt(),
-                        post.getUpdatedAt(),
-                        post.getViews()
-                        )).collect(Collectors.toList());
+    public Page<PostListResponseDto> getAllPosts(Pageable pageable) {
+
+        Page<Post> postList = postRepository.findAll(pageable);
+
+        return postList.map(PostListResponseDto::new);
     }
 
     // 게시글 상세 보기
