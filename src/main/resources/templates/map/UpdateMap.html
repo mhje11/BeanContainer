@@ -261,6 +261,20 @@
         });
     }
 
+    function openInfoWindow(marker, place) {
+        const parsedAddress = parseAddress(place.road_address_name || place.address_name);
+        const content = `
+            <div style="padding:10px; font-size:14px;">
+                <strong>${place.place_name}</strong><br>
+                ${place.road_address_name || place.address_name}<br>
+                <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.latitude || place.y}, ${place.longitude || place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+                <button onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.latitude || place.y}, ${place.longitude || place.x})">리뷰 페이지로 이동</button>
+            </div>
+        `;
+        infowindow.setContent(content);
+        infowindow.open(map, marker);
+    }
+
     function addCafeToSet(kakaoId, name, address) {
         if (!addedCafes.has(kakaoId)) {
             addedCafes.add(kakaoId);
@@ -415,7 +429,6 @@
             alert("카테고리를 선택하세요.");
         }
     }
-
 
     function resetCategories() {
         isCategorySearch = false;
