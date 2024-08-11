@@ -67,6 +67,30 @@
             justify-content: space-between;
             margin-bottom: 10px;
         }
+
+        #district-select {
+            margin-bottom: 20px;
+        }
+
+        #search-box {
+            margin-bottom: 20px;
+        }
+
+        #search-results {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        #search-results div {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #search-results div:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -123,39 +147,46 @@
 </div>
 <div class="container">
     <div class="left-section">
-        <button onclick="toggleDropdown()">지역토글</button>
-        <div id="dropdown" style="display:none;">
-            <ul>
-                <li onclick="selectDistrict('강남구')">강남구</li>
-                <li onclick="selectDistrict('강동구')">강동구</li>
-                <li onclick="selectDistrict('강북구')">강북구</li>
-                <li onclick="selectDistrict('강서구')">강서구</li>
-                <li onclick="selectDistrict('관악구')">관악구</li>
-                <li onclick="selectDistrict('광진구')">광진구</li>
-                <li onclick="selectDistrict('구로구')">구로구</li>
-                <li onclick="selectDistrict('금천구')">금천구</li>
-                <li onclick="selectDistrict('노원구')">노원구</li>
-                <li onclick="selectDistrict('도봉구')">도봉구</li>
-                <li onclick="selectDistrict('동대문구')">동대문구</li>
-                <li onclick="selectDistrict('동작구')">동작구</li>
-                <li onclick="selectDistrict('마포구')">마포구</li>
-                <li onclick="selectDistrict('서대문구')">서대문구</li>
-                <li onclick="selectDistrict('서초구')">서초구</li>
-                <li onclick="selectDistrict('성동구')">성동구</li>
-                <li onclick="selectDistrict('성북구')">성북구</li>
-                <li onclick="selectDistrict('송파구')">송파구</li>
-                <li onclick="selectDistrict('양천구')">양천구</li>
-                <li onclick="selectDistrict('영등포구')">영등포구</li>
-                <li onclick="selectDistrict('용산구')">용산구</li>
-                <li onclick="selectDistrict('은평구')">은평구</li>
-                <li onclick="selectDistrict('종로구')">종로구</li>
-                <li onclick="selectDistrict('중구')">중구</li>
-                <li onclick="selectDistrict('중랑구')">중랑구</li>
-            </ul>
+        <div id="district-select">
+            <label for="districts">지역 선택:</label>
+            <select id="districts">
+                <option value="">지역을 선택하세요</option>
+                <option value="강남구">강남구</option>
+                <option value="강동구">강동구</option>
+                <option value="강북구">강북구</option>
+                <option value="강서구">강서구</option>
+                <option value="관악구">관악구</option>
+                <option value="광진구">광진구</option>
+                <option value="구로구">구로구</option>
+                <option value="금천구">금천구</option>
+                <option value="노원구">노원구</option>
+                <option value="도봉구">도봉구</option>
+                <option value="동대문구">동대문구</option>
+                <option value="동작구">동작구</option>
+                <option value="마포구">마포구</option>
+                <option value="서대문구">서대문구</option>
+                <option value="서초구">서초구</option>
+                <option value="성동구">성동구</option>
+                <option value="성북구">성북구</option>
+                <option value="송파구">송파구</option>
+                <option value="양천구">양천구</option>
+                <option value="영등포구">영등포구</option>
+                <option value="용산구">용산구</option>
+                <option value="은평구">은평구</option>
+                <option value="종로구">종로구</option>
+                <option value="중구">중구</option>
+                <option value="중랑구">중랑구</option>
+            </select>
         </div>
+
         <div id="map" class="map"></div>
     </div>
     <div class="right-section">
+        <div id="search-box">
+            <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
+            <button id="search-btn">검색</button>
+            <div id="search-results"></div>
+        </div>
         <div class="filter-container">
             <div class="category-selection">
                 <div class="available-categories">
@@ -189,8 +220,7 @@
 
     const categories = [
         "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
-        "와이파이", "데이트 하기 좋은", "혼자가기 좋은", "공부하기 좋은", "비즈니스 미팅",
-        "애견 동반", "분위기 좋은", "인스타 감성", "풍경이 좋은", "새로 오픈", "조용한"
+        "와이파이", "데이트 하기 좋은", "혼자가기 좋은", "공부하기 좋은",         "비즈니스 미팅", "애견 동반", "분위기 좋은", "인스타 감성", "풍경이 좋은", "새로 오픈", "조용한"
     ];
 
     const districts = {
@@ -236,6 +266,11 @@
         ps = new kakao.maps.services.Places();
         infowindow = new kakao.maps.InfoWindow({zIndex: 1});
 
+        // 지도 클릭 시 인포창 닫기
+        kakao.maps.event.addListener(map, 'click', function() {
+            infowindow.close();
+        });
+
         kakao.maps.event.addListener(map, 'dragend', function () {
             const center = map.getCenter();
             if (lastCenter && center.equals(lastCenter)) return;
@@ -250,9 +285,22 @@
             searchPlacesByCenter(center);
         });
 
+        document.getElementById('districts').addEventListener('change', function () {
+            const district = this.value;
+            if (district && districts[district]) {
+                const center = new kakao.maps.LatLng(districts[district].lat, districts[district].lng);
+                map.setCenter(center);
+                map.setLevel(3);
+                searchPlacesByCenter(center);
+            }
+        });
+
+        document.getElementById('search-btn').addEventListener('click', searchCafeByName);
+
         searchPlacesByCenter(map.getCenter());
         createCategoryButtons();
     }
+
 
     function searchPlacesByCenter(center) {
         const keyword = '카페';
@@ -404,7 +452,6 @@
         }
     }
 
-
     function createCategoryButtons() {
         const availableList = document.querySelector('.available-categories');
         const selectedList = document.querySelector('.selected-categories');
@@ -442,6 +489,78 @@
         selectedCategories.clear();
         createCategoryButtons();
         searchPlacesByCenter(map.getCenter());
+    }
+
+    async function searchCafeByName() {
+        const keyword = document.getElementById('search-input').value;
+        if (!keyword) {
+            alert('카페 이름을 입력하세요.');
+            return;
+        }
+
+        ps.keywordSearch(keyword, function(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                if (data.length === 1) {
+                    const place = data[0];
+                    const center = new kakao.maps.LatLng(place.y, place.x);
+                    map.setCenter(center);
+                    map.setLevel(3);
+                    searchPlacesByCenter(center);
+                    openInfoWindow(place);
+                } else {
+                    displaySearchResults(data);
+                }
+            } else {
+                alert('카페를 찾을 수 없습니다.');
+            }
+        });
+    }
+
+    function displaySearchResults(places) {
+        const searchResultsContainer = document.getElementById('search-results');
+        searchResultsContainer.innerHTML = '';
+
+        places.forEach(place => {
+            const resultItem = document.createElement('div');
+            resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
+            resultItem.style.cursor = 'pointer';
+            resultItem.onclick = () => {
+                const center = new kakao.maps.LatLng(place.y, place.x);
+                map.setCenter(center);
+                map.setLevel(3);
+
+                searchPlacesByCenter(center);
+
+                // 마커가 이미 존재하는지 확인
+                if (markers[place.id]) {
+                    openInfoWindow(place);
+                } else {
+                    // 마커가 아직 없을 경우 약간의 지연 후 재시도
+                    setTimeout(() => {
+                        if (markers[place.id]) {
+                            openInfoWindow(place);
+                        }
+                    }, 200);
+                }
+
+                searchResultsContainer.innerHTML = '';
+            };
+            searchResultsContainer.appendChild(resultItem);
+        });
+    }
+
+    function openInfoWindow(place) {
+        const marker = markers[place.id];
+        const parsedAddress = parseAddress(place.road_address_name || place.address_name);
+        const content = `
+        <div style="padding:10px; font-size:14px;">
+            <strong>${place.place_name}</strong><br>
+            ${place.road_address_name || place.address_name}<br>
+            <a href="#" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 페이지로 이동</a>
+        </div>
+    `;
+        infowindow.setContent(content);
+        infowindow.open(map, marker);
     }
 
     function toggleDropdown() {
@@ -484,3 +603,5 @@
 </script>
 </body>
 </html>
+
+

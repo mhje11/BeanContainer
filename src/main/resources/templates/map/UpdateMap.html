@@ -92,6 +92,27 @@
             border: 1px solid #ccc;
         }
 
+        .category-selection {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .available-categories, .selected-categories {
+            width: 48%;
+            border: 1px solid #ddd;
+            padding: 10px;
+            min-height: 100px;
+        }
+
+        .category-item {
+            padding: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
         #save-btn {
             margin-top: 10px;
             padding: 10px;
@@ -121,11 +142,33 @@
         <div id="search-results"></div>
     </div>
 
+    <div class="filter-container">
+        <div class="category-selection">
+            <div class="available-categories">
+                <!-- 사용 가능한 카테고리 버튼들 -->
+            </div>
+            <div class="selected-categories">
+                <!-- 선택된 카테고리 버튼들 -->
+            </div>
+        </div>
+        <div class="button-container">
+            <button onclick="onCategorySelect()">카테고리 검색</button>
+            <button onclick="resetCategories()">카테고리 초기화</button>
+        </div>
+    </div>
+
     <button id="save-btn">지도 저장</button>
 </div>
 
 <script>
-    let map, ps, infowindow, markers = {}, addedCafes = new Set();
+    let map, ps, infowindow, markers = {}, addedCafes = new Set(), isCategorySearch = false;
+    const categories = [
+        "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
+        "와이파이", "데이트 하기 좋은", "혼자가기 좋은", "공부하기 좋은",
+        "비즈니스 미팅", "애견 동반", "분위기 좋은", "인스타 감성", "풍경이 좋은",
+        "새로 오픈", "조용한"
+    ];
+    const selectedCategories = new Set();
 
     function initMap() {
         const mapContainer = document.getElementById('map');
@@ -147,15 +190,16 @@
         });
 
         kakao.maps.event.addListener(map, 'dragend', function() {
-            searchPlacesByCenter(map.getCenter());
+            if (!isCategorySearch) searchPlacesByCenter(map.getCenter());
         });
 
         kakao.maps.event.addListener(map, 'zoom_changed', function() {
-            searchPlacesByCenter(map.getCenter());
+            if (!isCategorySearch) searchPlacesByCenter(map.getCenter());
         });
 
         loadMapDetails();
         searchPlacesByCenter(map.getCenter());
+        createCategoryButtons();
     }
 
     function loadMapDetails() {
@@ -231,7 +275,6 @@
             `;
 
             card.addEventListener('click', () => handleCardClick(kakaoId));
-
             document.getElementById('cafe-cards').appendChild(card);
 
             const marker = markers[kakaoId];
@@ -252,19 +295,11 @@
         if (marker) {
             map.setCenter(marker.getPosition());
 
-            // 인포윈도우가 열려 있으면 닫기
             if (infowindow.getMap()) {
                 infowindow.close();
             }
         }
     }
-
-    document.querySelectorAll('.cafe-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const kakaoId = card.getAttribute('data-id');
-            handleCardClick(kakaoId);
-        });
-    });
 
     function removeCafe(kakaoId) {
         addedCafes.delete(kakaoId);
@@ -315,93 +350,86 @@
             });
     }
 
-    document.getElementById('search-btn').addEventListener('click', function() {
-        const keyword = document.getElementById('search-input').value;
-        ps.keywordSearch(keyword, function(data, status, pagination) {
-            if (status === kakao.maps.services.Status.OK) {
-                const searchResultsContainer = document.getElementById('search-results');
-                searchResultsContainer.innerHTML = '';
-                data.forEach(place => {
-                    if (!isExcludedCategory(place.category_name)) {
-                        const resultItem = document.createElement('div');
-                        resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
-                        resultItem.onclick = () => {
-                            const center = new kakao.maps.LatLng(place.y, place.x);
-                            map.setCenter(center);
-                            map.setLevel(3);
+    function createCategoryButtons() {
+        const availableList = document.querySelector('.available-categories');
+        const selectedList = document.querySelector('.selected-categories');
 
-                            searchPlacesByCenter(center);
+        availableList.innerHTML = '';
+        selectedList.innerHTML = '';
 
-                            setTimeout(() => {
-                                if (markers[place.id]) {
-                                    openInfoWindowForSearch(place);
-                                } else {
-                                    displayMarker(place);
-                                    setTimeout(() => openInfoWindowForSearch(place), 500);
-                                }
-                            }, 500);
+        categories.forEach(category => {
+            const item = document.createElement('div');
+            item.textContent = category;
+            item.classList.add('category-item');
 
-                            searchResultsContainer.innerHTML = '';
-                        };
-                        searchResultsContainer.appendChild(resultItem);
+            item.onclick = () => {
+                if (selectedCategories.has(category)) {
+                    selectedCategories.delete(category);
+                    selectedList.removeChild(item);
+                    availableList.appendChild(item);
+                } else {
+                    if (selectedCategories.size < 3) {
+                        selectedCategories.add(category);
+                        availableList.removeChild(item);
+                        selectedList.appendChild(item);
+                    } else {
+                        alert("카테고리는 최대 3개까지만 선택할 수 있습니다.");
                     }
-                });
-            }
+                }
+            };
+
+            availableList.appendChild(item);
         });
-    });
-    function openInfoWindowForSearch(place) {
-        const marker = markers[place.id];
-        openInfoWindow(marker, place);
     }
 
-    function openInfoWindow(marker, place) {
-        const parsedAddress = parseAddress(place.road_address_name || place.address_name);
-        const content = `
-        <div style="padding:10px;">
-            <strong>${place.name || place.place_name}</strong><br>
-            ${place.road_address_name || place.address_name}<br>
-            <button onclick="checkAndSaveCafe('${place.id}', '${place.name || place.place_name}', '${place.road_address_name || place.address_name}', ${marker.getPosition().getLat()}, ${marker.getPosition().getLng()}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-            <a href="#" onclick="openReviewPage('${place.id}', '${place.name || place.place_name}', '${place.road_address_name || place.address_name}', ${marker.getPosition().getLat()}, ${marker.getPosition().getLng()})">리뷰 페이지로 이동</a>
-        </div>
-    `;
-        infowindow.setContent(content);
-        infowindow.open(map, marker);
+    function onCategorySelect() {
+        if (selectedCategories.size > 0) {
+            isCategorySearch = true;
+            const selectedCategoryArray = Array.from(selectedCategories);
+            const queryString = selectedCategoryArray.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+
+            fetch(`/api/map/category?${queryString}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('카페 데이터를 불러오는 중 오류가 발생했습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    clearMarkers();
+                    data.forEach(cafe => {
+                        displayMarker({
+                            id: cafe.kakaoId,
+                            place_name: cafe.name,
+                            road_address_name: cafe.address,
+                            latitude: cafe.latitude,
+                            longitude: cafe.longitude
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('카테고리 검색에 실패했습니다.');
+                });
+        } else {
+            alert("카테고리를 선택하세요.");
+        }
     }
 
-    document.getElementById('search-btn').addEventListener('click', function() {
-        const keyword = document.getElementById('search-input').value;
-        ps.keywordSearch(keyword, function(data, status, pagination) {
-            if (status === kakao.maps.services.Status.OK) {
-                const searchResultsContainer = document.getElementById('search-results');
-                searchResultsContainer.innerHTML = '';
-                data.forEach(place => {
-                    if (!isExcludedCategory(place.category_name)) {
-                        const resultItem = document.createElement('div');
-                        resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
-                        resultItem.onclick = () => {
-                            const center = new kakao.maps.LatLng(place.y, place.x);
-                            map.setCenter(center);
-                            map.setLevel(3);
 
-                            searchPlacesByCenter(center);
+    function resetCategories() {
+        isCategorySearch = false;
+        selectedCategories.clear();
+        createCategoryButtons();
+        searchPlacesByCenter(map.getCenter());
+    }
 
-                            setTimeout(() => {
-                                if (markers[place.id]) {
-                                    openInfoWindow(markers[place.id], place);
-                                } else {
-                                    displayMarker(place);
-                                    setTimeout(() => openInfoWindow(markers[place.id], place), 500);
-                                }
-                            }, 500);
-
-                            searchResultsContainer.innerHTML = '';
-                        };
-                        searchResultsContainer.appendChild(resultItem);
-                    }
-                });
-            }
-        });
-    });
+    function clearMarkers() {
+        for (let id in markers) {
+            markers[id].setMap(null);
+        }
+        markers = {};
+    }
 
     document.getElementById('save-btn').addEventListener('click', saveMap);
 
@@ -497,5 +525,4 @@
 
 </body>
 </html>
-
 
