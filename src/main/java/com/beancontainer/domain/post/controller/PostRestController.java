@@ -6,11 +6,16 @@ import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
+import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.service.PostService;
 import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -59,8 +64,11 @@ public class PostRestController {
     }
 
     @GetMapping("/postList")    // 게시글 전체 조회
-    public ResponseEntity<List<PostListResponseDto>> getAllPosts() {
-        List<PostListResponseDto> posts = postService.getAllPosts();
+    public ResponseEntity<Page<PostListResponseDto>> getAllPosts(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size,
+                                                                 @RequestParam(defaultValue = "createdAt") String sortBy) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        Page<PostListResponseDto> posts = postService.getAllPosts(pageable);
         return ResponseEntity.ok(posts);
     }
 
