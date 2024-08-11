@@ -7,7 +7,7 @@
 </head>
 <body>
 <div th:if="${#authentication.isAuthenticated()}" class="container">
-    <h1>안녕하세요, <span th:text="${name}">사용자</span>님!</h1>
+    <h1>안녕하세요, <span id="userNickname" th:text="${nickname}"></span>님!</h1>
 
     <div class="profile-image"
          th:style="'background-image: url(' + (${profileImageUrl != null ? profileImageUrl : '/images/BeanContainer.png'}) + ')'"
@@ -25,9 +25,13 @@
 
 
 
-    <p>닉네임: <span id="currentNickname" th:text="${nickname}"></span></p>
-    <input type="text" id="newNickname" placeholder="새 닉네임">
-    <button onclick="updateNickname()">닉네임 변경</button>
+    <button onclick="showNicknameChangeForm()">닉네임 변경</button>
+
+    <div id="nicknameChangeForm" style="display: none;">
+        <input type="text" id="newNickname" placeholder="새 닉네임 입력">
+        <button onclick="changeNickname()">변경 완료</button>
+    </div>
+
 
     <button onclick="deleteAccount()">회원 탈퇴</button>
 </div>
@@ -64,16 +68,36 @@
         });
     });
 
-    function updateNickname() {
-        var newNickname = $('#newNickname').val();
-        $.post('/api/mypage/' + userId + '/updateNickname', {newNickname: newNickname})
-            .done(function(response) {
-                $('#currentNickname').text(newNickname);
-                alert('닉네임이 변경되었습니다.');
+    function showNicknameChangeForm() {
+        document.getElementById('nicknameChangeForm').style.display = 'block';
+    }
+    function changeNickname() {
+        var newNickname = document.getElementById('newNickname').value;
+        if (newNickname) {
+            fetch('/api/mypage/' + userId + '/updateNickname', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ newNickname: newNickname })
             })
-            .fail(function(error) {
-                alert('닉네임 변경에 실패했습니다: ' + error.responseText);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('userNickname').textContent = newNickname;
+                        document.getElementById('nicknameChangeForm').style.display = 'none';
+                        alert(data.message);
+                    } else {
+                        alert('닉네임 변경에 실패했습니다: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('닉네임 변경 중 오류가 발생했습니다.');
+                });
+        } else {
+            alert('새 닉네임을 입력해주세요.');
+        }
     }
 
     function deleteAccount() {
