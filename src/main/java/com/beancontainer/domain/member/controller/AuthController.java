@@ -13,10 +13,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +41,7 @@ public class AuthController {
                                    BindingResult bindingResult, HttpServletResponse response) {
         log.info("==login==");
         //username, password가 null 일 때
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
@@ -48,7 +50,7 @@ public class AuthController {
         // 우리 서버의 저장되어 있는 유저인지 확인
         Member member = memberService.findByUserId(userLoginDto.getUserId());
         //요청 정보에서 얻어온 비밀번호와 서버의 비밀번호가 일치하는지 확인
-        if(!passwordEncoder.matches(userLoginDto.getPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches(userLoginDto.getPassword(), member.getPassword())) {
             //비밀번호가 일치하지 않을 때
             return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
@@ -78,22 +80,21 @@ public class AuthController {
                 .name(member.getName())
                 .build();
 
-        Cookie accessTokenCookie = new Cookie("accessToken",accessToken);
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setHttpOnly(true);  //보안 (쿠키값을 자바스크립트같은곳에서는 접근할수 없어요.)
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT/1000)); //30분 쿠키의 유지시간 단위는 초 ,  JWT의 시간단위는 밀리세컨드
+        accessTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000)); //30분 쿠키의 유지시간 단위는 초 ,  JWT의 시간단위는 밀리세컨드
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT/1000)); //7일
+        refreshTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000)); //7일
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
         return new ResponseEntity(loginResponseDto, HttpStatus.OK);
     }
-
 
 
     @PostMapping("/signup")
@@ -107,16 +108,16 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         String refreshToken = null;
-        if(cookies != null) {
-            for(Cookie cookie : cookies) {
-                if("refreshToken".equals(cookie.getName())) {
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
                     refreshToken = cookie.getValue();
                     break;
                 }
             }
         }
 
-        if(refreshToken != null) {
+        if (refreshToken != null) {
             //DB에서 삭제
             refreshTokenService.deleteRefreshToken(refreshToken);
 
@@ -137,7 +138,20 @@ public class AuthController {
             return ResponseEntity.ok("로그아웃되었습니다.");
         } else {
             return ResponseEntity.badRequest().body("Refresh token not found");
-             }
         }
-
     }
+
+    //아이디 중복 체크
+    @GetMapping("/check-userid")
+    public ResponseEntity<?> checkUserId(@RequestParam String userId) {
+        try {
+            memberService.findByUserId(userId);
+            // 사용자를 찾았다면, 이미 존재하는 ID
+            return ResponseEntity.ok(true);
+        } catch (UsernameNotFoundException e) {
+            // 사용자를 찾지 못했다면, 사용 가능한 ID
+            return ResponseEntity.ok(false);
+        }
+    }
+}
+
