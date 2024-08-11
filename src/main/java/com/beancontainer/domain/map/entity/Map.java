@@ -2,8 +2,10 @@ package com.beancontainer.domain.map.entity;
 
 import com.beancontainer.domain.mapcafe.entity.MapCafe;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 @Table(name = "maps")
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Map {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,5 +38,4 @@ public class Map {
         }
     }
 
-    protected Map() {}
 }

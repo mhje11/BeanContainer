@@ -32,7 +32,11 @@ public class Post {
     @Column(nullable = false)
     private String content; // 내용
 
+    @Column(name = "comment_count")
+    private int commentCount = 0;   // 댓글수
+
     private int views = 0;  // 조회수
+
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();  // 작성일
@@ -40,13 +44,34 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;    // 수정일
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "post_id")
     private List<PostImg> images = new ArrayList<>();
 
-    public Post(Member member, String title, String content) {
+    public Post(Member member, String title, String content) {  // 게시글 작성
         this.member = member;
         this.title = title;
         this.content = content;
+    }
+
+    public void update(String title, String content) {  // 게시글 수정
+        this.title = title;
+        this.content = content;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 조회수 증가
+    public void incrementViews() {
+        this.views++;
+    }
+
+    // 댓글수 증가
+    public void incrementCommentCount() {
+        this.commentCount++;
+    }
+
+    // 댓글수 감소
+    public void decrementCommentCount() {
+        this.commentCount--;
     }
 }

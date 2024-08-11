@@ -1,11 +1,11 @@
 package com.beancontainer.domain.member.entity;
 
+import com.beancontainer.domain.memberprofileimg.entity.ProfileImage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Profile;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "members")
@@ -32,8 +32,13 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ProfileImage profileImage;
+    private String profileImageUrl;
+
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public Member(String name, String nickname, String userId, String password, Role role) {
         this.name = name;
@@ -43,8 +48,26 @@ public class Member {
         this.role = role;
     }
 
-    //setter 를 사용하여 엔티티에 추가하는 방법 대신 별도의 메소드를 만들어서 추가
     public static Member createMember(String name, String nickname, String userId, String password) {
-        return new Member(name, nickname, userId, password, Role.MEMBER);
+        Member member = new Member();
+        member.name = name;
+        member.nickname = nickname;
+        member.userId = userId;
+        member.password = password;
+        member.role = Role.MEMBER; // 기본 역할을 MEMBER로 설정
+        return member;
     }
+
+    //닉네임 수정
+    public void updateNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    // 프로필 이미지 URL 업데이트
+    public void updateProfileImageUrl(String newProfileImageUrl) {
+        this.profileImageUrl = newProfileImageUrl;
+    }
+
+
+
 }
