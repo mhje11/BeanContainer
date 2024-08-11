@@ -5,7 +5,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-color: #EDE3D5;
 }
 
 form {
@@ -39,11 +39,25 @@ button {
     width: 100%;
     padding: 10px;
     margin-top: 20px;
-    background-color: #007bff;
+    background-color: #884D33;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.user-id-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+#checkUserIdButton {
+    width: 30%;
+    padding: 8px 10px;
+    margin-top: 5px;
+    white-space: nowrap;
+    font-size: 0.9em;
 }
 
 button:hover {

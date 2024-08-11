@@ -7,63 +7,36 @@
     <link rel="stylesheet" href="/css/member/signUpForm.css">
 </head>
 <body>
-<form id="signupForm" method="POST">
+
+<form id="signupForm">
     <h2>회원가입</h2>
 
     <label for="userId">아이디:</label>
-    <input type="text" id="userId" name="userId" required>
-    <span class="error" id="userIdError"></span>
+    <div class="user-id-container">
+        <input type="text" id="userId" name="userId" required>
+        <button type="button" id="checkUserIdButton">중복 확인</button>
+    </div>
+    <div id="userIdError" class="error"></div>
 
     <label for="password">비밀번호:</label>
     <input type="password" id="password" name="password" required>
-    <span class="error" id="passwordError"></span>
+    <div id="passwordError" class="error"></div>
+
+    <label for="confirmPassword">비밀번호 확인:</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" required>
+    <div id="confirmPasswordError" class="error"></div>
 
     <label for="nickname">닉네임:</label>
     <input type="text" id="nickname" name="nickname" required>
-    <span class="error" id="nicknameError"></span>
+    <div id="nicknameError" class="error"></div>
 
     <label for="name">이름:</label>
     <input type="text" id="name" name="name" required>
-    <span class="error" id="nameError"></span>
+    <div id="nameError" class="error"></div>
 
-    <label for="role">역할:</label>
-    <select id="role" name="role">
-        <option value="MEMBER">일반 회원</option>
-        <option value="ADMIN">관리자</option>
-    </select>
-
-    <button type="submit">가입하기</button>
+    <button type="submit" id="signupButton">가입하기</button>
 </form>
 
-<script>
-    document.getElementById('signupForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData);
-
-        fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('HTTP error ' + response.status);
-                }
-                return response.text();
-            })
-            .then(data => {
-                alert('회원가입이 성공적으로 완료되었습니다.');
-                window.location.href = '/login';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('회원가입 중 오류가 발생했습니다.');
-            });
-    });
-</script>
+<script src="/js/member/signup.js"></script>
 </body>
 </html>

@@ -18,11 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class MemberController {
     private final MemberService memberService;
-    private final ProfileImageService profileImageService;
-
-    private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
-
-
 
     //메인 페이지
     @GetMapping("/")
