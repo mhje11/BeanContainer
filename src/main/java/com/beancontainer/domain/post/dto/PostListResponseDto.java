@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.dto;
 
+import com.beancontainer.domain.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,20 @@ public class PostListResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int views;  // 조회수
+
+    public PostListResponseDto(Post post, int likeCount) {
+        this.id = post.getId();
+        this.title = post.getTitle();
+        this.nickname = post.getMember().getNickname();
+        this.commentCount = post.getCommentCount();
+//        if (post.getLikes().isEmpty()) {
+//            this.likeCount = 0;
+//        } else {
+//            this.likeCount = post.getLikes().size();
+//        }
+        this.likeCount = likeCount;
+        this.createdAt = post.getCreatedAt();
+        this.updatedAt = post.getUpdatedAt();
+        this.views = post.getViews();
+    }
 }

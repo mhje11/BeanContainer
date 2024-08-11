@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.entity;
 
+import com.beancontainer.domain.like.entity.Likes;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import jakarta.persistence.*;
@@ -47,6 +48,9 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "post_id")
     private List<PostImg> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likes> likes = new ArrayList<>();
 
     public Post(Member member, String title, String content) {  // 게시글 작성
         this.member = member;

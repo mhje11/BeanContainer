@@ -4,6 +4,10 @@ import com.beancontainer.domain.comment.service.CommentService;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +20,11 @@ public class AdminController {
     private final PostService postService;
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostListResponseDto>> getAllPosts() {
-        List<PostListResponseDto> posts = postService.getAllPosts();
+    public ResponseEntity<Page<PostListResponseDto>> getAllPosts(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size,
+                                                                 @RequestParam(defaultValue = "createdAt") String sortBy) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sortBy));
+
+        Page<PostListResponseDto> posts = postService.getAllPosts(pageable);
         return ResponseEntity.ok(posts);
     }
 
