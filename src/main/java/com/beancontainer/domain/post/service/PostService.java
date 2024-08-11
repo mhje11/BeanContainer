@@ -75,10 +75,7 @@ public class PostService {
 
         Page<Post> postList = postRepository.findAll(pageable);
 
-        return postList.map(post -> {
-            int likeCount = likeRepository.countByPostId(post.getId());
-            return new PostListResponseDto(post, likeCount);
-        });
+        return postList.map(PostListResponseDto::new);
     }
 
     // 게시글 상세 보기
