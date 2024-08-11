@@ -1,5 +1,6 @@
 body {
     font-family: Arial, sans-serif;
+    background-color: #EDE3D5;
 }
 
 .container {
@@ -61,4 +62,86 @@ body {
     margin-top: 10px;
     border: 1px solid #000;
     padding: 10px;
+}
+
+
+.container {
+    display: flex;
+}
+
+.left-section, .right-section {
+    width: 50%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.map {
+    height: 400px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.filter-container {
+    margin-bottom: 20px;
+}
+
+.category-selection {
+    display: flex;
+    justify-content: space-between;
+}
+
+.available-categories, .selected-categories {
+    width: 48%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    min-height: 100px;
+    margin-bottom: 10px;
+}
+
+.category-item {
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.board-list, .chat-room {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.chat-room {
+    height: 200px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#district-select {
+    margin-bottom: 20px;
+}
+
+#search-box {
+    margin-bottom: 20px;
+}
+
+#search-results {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+#search-results div {
+    cursor: pointer;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+#search-results div:hover {
+    background-color: #f0f0f0;
 }

@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.entity;
 
+import com.beancontainer.domain.like.entity.Likes;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import jakarta.persistence.*;
@@ -48,6 +49,8 @@ public class Post {
     @JoinColumn(name = "post_id")
     private List<PostImg> images = new ArrayList<>();
 
+    private int likeCount = 0;
+
     public Post(Member member, String title, String content) {  // 게시글 작성
         this.member = member;
         this.title = title;
@@ -73,5 +76,15 @@ public class Post {
     // 댓글수 감소
     public void decrementCommentCount() {
         this.commentCount--;
+    }
+
+    // 좋아요 증가
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    // 좋아요 감소
+    public void decrementLikeCount() {
+        this.likeCount--;
     }
 }

@@ -33,6 +33,9 @@ public class LikeService {
 
         Likes like = new Likes(post, member);
         likeRepository.save(like);
+
+        post.incrementLikeCount();
+        postRepository.save(post);
     }
 
     // 좋아요 삭제
@@ -45,6 +48,9 @@ public class LikeService {
                 .orElseThrow(() -> new IllegalArgumentException("좋아요를 누르지 않았습니다."));
 
         likeRepository.delete(like);
+
+        post.decrementLikeCount();
+        postRepository.save(post);
     }
 
     // 좋아요수 조회
