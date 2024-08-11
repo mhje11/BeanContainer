@@ -239,6 +239,61 @@
         }, {location: center, radius: 2000});
     }
 
+    function searchCafeByName() {
+        const keyword = document.getElementById('search-input').value;
+        if (!keyword) {
+            alert('카페 이름을 입력하세요.');
+            return;
+        }
+
+        ps.keywordSearch(keyword, function(data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                if (data.length === 1) {
+                    const place = data[0];
+                    const center = new kakao.maps.LatLng(place.y, place.x);
+                    map.setCenter(center);
+                    map.setLevel(3);
+                    searchPlacesByCenter(center);
+                } else {
+                    displaySearchResults(data);
+                }
+            } else {
+                alert('카페를 찾을 수 없습니다.');
+            }
+        });
+    }
+
+    function displaySearchResults(places) {
+        const searchResultsContainer = document.getElementById('search-results');
+        searchResultsContainer.innerHTML = '';
+
+        places.forEach(place => {
+            const resultItem = document.createElement('div');
+            resultItem.textContent = `${place.place_name} (${place.road_address_name || place.address_name})`;
+            resultItem.style.cursor = 'pointer';
+            resultItem.onclick = () => {
+                const center = new kakao.maps.LatLng(place.y, place.x);
+                map.setCenter(center);
+                map.setLevel(3);
+
+                searchPlacesByCenter(center);
+
+                if (markers[place.id]) {
+                    openInfoWindow(markers[place.id], place);
+                } else {
+                    setTimeout(() => {
+                        if (markers[place.id]) {
+                            openInfoWindow(markers[place.id], place);
+                        }
+                    }, 200);
+                }
+
+                searchResultsContainer.innerHTML = '';
+            };
+            searchResultsContainer.appendChild(resultItem);
+        });
+    }
+
     function displayMarker(place) {
         let markerImageUrl = addedCafes.has(place.id) ?
             "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png" :
@@ -445,6 +500,8 @@
     }
 
     document.getElementById('save-btn').addEventListener('click', saveMap);
+
+    document.getElementById('search-btn').addEventListener('click', searchCafeByName);
 
     document.addEventListener('DOMContentLoaded', initMap);
 

@@ -32,4 +32,5 @@ public class CustomCafeRepositoryImpl implements CustomCafeRepository{
                 .where(builder)
                 .fetch();
     }
+
 }
