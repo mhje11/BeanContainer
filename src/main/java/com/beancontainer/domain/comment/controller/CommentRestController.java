@@ -1,5 +1,6 @@
 package com.beancontainer.domain.comment.controller;
 
+import com.beancontainer.domain.admin.RequireAdmin;
 import com.beancontainer.domain.comment.dto.CommentListResponseDto;
 import com.beancontainer.domain.comment.dto.CommentRequestDto;
 import com.beancontainer.domain.comment.service.CommentService;
@@ -52,14 +53,24 @@ public class CommentRestController {
 
     // 댓글 삭제
     @DeleteMapping("/{postId}/delete/{commentId}")
+    @RequireAdmin
     public ResponseEntity<String> deleteComment(@PathVariable Long postId, @PathVariable Long commentId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+
         Member member = memberRepository.findByUserId(userDetails.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
 
-        commentService.deleteComment(postId, commentId, member.getId());
+        commentService.deleteComment(postId, commentId, userDetails.getUserId(), isAdmin);
         return ResponseEntity.ok("댓글 삭제가 완료되었습니다.");
     }
 
-    // @PutMapping("/{postId}/update/{commentId}")
-
+    @PutMapping("/{postId}/update/{commentId}")
+    public ResponseEntity<String> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                                @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUserId(userDetails.getUserId())
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+        commentService.updateComment(postId, commentId, commentRequestDto.getContent(), member);
+        return ResponseEntity.ok("댓글 수정이 완료되었습니다.");
+    }
 }

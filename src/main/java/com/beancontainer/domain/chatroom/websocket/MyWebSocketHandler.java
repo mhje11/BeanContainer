@@ -11,6 +11,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Component
 @RequiredArgsConstructor
 public class MyWebSocketHandler extends TextWebSocketHandler {
@@ -42,14 +45,13 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             username = userDetails.getUsername();
         }
 
+//        // 현재 시간 추가
+//        LocalDateTime now = LocalDateTime.now();
+//        String formattedTime = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+//        String messageWithTime = username + ": " + payload + " (" + formattedTime + ")";
 
-////        synchronized (sessions){
-//            for (WebSocketSession webSocketSession : sessions){
-//                if(webSocketSession.isOpen()){
-//                    webSocketSession.sendMessage(new TextMessage( username + ": "+payload));
-//                }
-//            }
-////        }
+
+        // Redis로 메시지 전송
 
         redisMessagePublisher.publish(username + ": "+payload);
     }

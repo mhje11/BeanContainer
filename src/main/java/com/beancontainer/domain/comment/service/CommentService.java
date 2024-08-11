@@ -30,6 +30,10 @@ public class CommentService {
         Comment comment = new Comment(post, member, commentRequestDto.getContent());
         Comment savedComment = commentRepository.save(comment);
 
+        // 댓글수 증가
+        post.incrementCommentCount();
+        postRepository.save(post);
+
         return savedComment.getId();
     }
 
@@ -46,7 +50,7 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void deleteComment(Long postId, Long commentId, Long memberId) {
+    public void deleteComment(Long postId, Long commentId, String userId, boolean isAdmin) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
 
@@ -54,10 +58,31 @@ public class CommentService {
             throw new IllegalArgumentException("해당 게시글에 속하지 않는 댓글입니다.");
         }
 
-        if(!comment.getMember().getId().equals(memberId)) {
+        if (!isAdmin && !comment.getMember().getUserId().equals(userId)) {
             throw new IllegalArgumentException("삭제 권한이 없습니다.");
         }
 
+        // 댓글수 감소
+        post.decrementCommentCount();
+        postRepository.save(post);
+
         commentRepository.delete(comment);
     }
+
+    // 댓글 수정
+    public void updateComment(Long postId, Long commentId, String content, Member member) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        if(!comment.getPost().getId().equals(post.getId())) {
+            throw new IllegalArgumentException("해당 게시글에 속하지 않는 댓글입니다.");
+        }
+        if(!comment.getMember().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("수정 권한이 없습니다.");
+        }
+        comment.updateComment(content);
+        commentRepository.save(comment);
+    }
 }
+

@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.service;
 
+import com.beancontainer.domain.like.repository.LikeRepository;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
@@ -26,6 +27,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostImgService postImgService;
+    private final LikeRepository likeRepository;
 
     // 게시글 작성
     @Transactional
@@ -71,8 +73,8 @@ public class PostService {
                         post.getId(),
                         post.getTitle(),
                         post.getMember().getNickname(),
-                        // 댓글 수
-                        // 좋아요 수
+                        post.getCommentCount(), // 댓글 수
+                        likeRepository.countByPostId(post.getId()),   // 좋아요 수
                         post.getCreatedAt(),
                         post.getUpdatedAt(),
                         post.getViews()
@@ -80,11 +82,17 @@ public class PostService {
     }
 
     // 게시글 상세 보기
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDetailsResponseDto postDetails(Long postId, String userId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        post.incrementViews();  // 조회수 증가
+        postRepository.save(post);
+
+        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
+
         boolean isAuthor = post.getMember().getUserId().equals(userId);
-        return new PostDetailsResponseDto(post, isAuthor);
+        return new PostDetailsResponseDto(post, likesCount, isAuthor);
     }
 
     // 게시글 존재 여부 확인
@@ -95,8 +103,12 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, String userId, boolean isAdmin) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (!isAdmin && !post.getMember().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
 
         // S3에서 이미지 삭제
         if (post.getImages() != null && !post.getImages().isEmpty()) {
@@ -140,7 +152,8 @@ public class PostService {
         }
 
         Post updatedPost = postRepository.save(post);
+        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
         boolean isAuthor = post.getMember().getUserId().equals(post.getMember().getUserId());
-        return new PostDetailsResponseDto(updatedPost, isAuthor);
+        return new PostDetailsResponseDto(updatedPost, likesCount, isAuthor);
     }
 }
