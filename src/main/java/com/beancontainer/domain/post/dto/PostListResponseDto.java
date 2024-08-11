@@ -20,17 +20,12 @@ public class PostListResponseDto {
     private LocalDateTime updatedAt;
     private int views;  // 조회수
 
-    public PostListResponseDto(Post post, int likeCount) {
+    public PostListResponseDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.nickname = post.getMember().getNickname();
         this.commentCount = post.getCommentCount();
-//        if (post.getLikes().isEmpty()) {
-//            this.likeCount = 0;
-//        } else {
-//            this.likeCount = post.getLikes().size();
-//        }
-        this.likeCount = likeCount;
+        this.likeCount = post.getLikeCount();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
         this.views = post.getViews();
