@@ -139,7 +139,7 @@
                     <a href="/create/map">지도 만들기</a>
                 </li>
                 <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a href="#" onclick="logout(); return false;">logout</a>
+                    <a href="#" th:onclick="logout()">logout</a>
                 </li>
             </ul>
         </div>
@@ -209,10 +209,30 @@
                 <li><a href="#">게시글 3</a></li>
             </ul>
         </div>
-        <div class="chat-room">채팅방</div>
     </div>
 </div>
 
+<script>
+    function logout() {
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'same-origin'
+        })
+            .then(response => {
+                if (response.ok) {
+                    // 로그아웃 성공 시 메인으로
+                    window.location.href = '/';
+                } else {
+                    console.error('로그아웃 실패');
+                }
+            })
+            .catch(error => {
+                console.error('로그아웃 중 오류 발생:', error);
+            });
+    }
+</script>
+
+<!--지도 관련 Js-->
 <script>
     let map, ps, infowindow, markers = {};
     let lastCenter = null;
