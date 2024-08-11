@@ -32,7 +32,11 @@ public class Post {
     @Column(nullable = false)
     private String content; // 내용
 
+    @Column(name = "comment_count")
+    private int commentCount = 0;   // 댓글수
+
     private int views = 0;  // 조회수
+
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();  // 작성일
@@ -54,5 +58,20 @@ public class Post {
         this.title = title;
         this.content = content;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // 조회수 증가
+    public void incrementViews() {
+        this.views++;
+    }
+
+    // 댓글수 증가
+    public void incrementCommentCount() {
+        this.commentCount++;
+    }
+
+    // 댓글수 감소
+    public void decrementCommentCount() {
+        this.commentCount--;
     }
 }
