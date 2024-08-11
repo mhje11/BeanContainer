@@ -27,12 +27,21 @@ public class MemberAPIController {
 
 
     @PostMapping("/mypage/{userId}/updateNickname")
-    public ResponseEntity<?> updateNickname(@RequestParam String userId, @RequestParam String newNickname, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        if(!customUserDetails.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    public ResponseEntity<?> updateNickname(@PathVariable String userId, @RequestBody Map<String, String> payload, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        String newNickname = payload.get("newNickname");
+        if (newNickname == null || newNickname.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "새 닉네임을 입력해주세요"));
         }
-        memberService.updateNickname(userId, newNickname);
-        return ResponseEntity.ok().build();
+
+        try {
+            memberService.updateNickname(userId, newNickname);
+            return ResponseEntity.ok()
+                    .body(Map.of("success", true, "message", "닉네임 변경 완료"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "닉네임 변경 중 오류가 발생했습니다." + e.getMessage()));
+        }
     }
 
     @PostMapping("/mypage/{userId}/uploadProfileImage")
@@ -50,11 +59,8 @@ public class MemberAPIController {
 
 
     @PostMapping("/mypage/{userId}/deleteAccount")
-    public ResponseEntity<?> deleteAccount(@PathVariable String userId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        if (!customUserDetails.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to delete this account.");
-        }
+    public ResponseEntity<?> deleteAccount(@PathVariable String userId) {
         memberService.deleteAccount(userId);
-        return ResponseEntity.ok().body("Account successfully deleted.");
+        return ResponseEntity.ok().body("계정이 삭제되었습니다.");
     }
 }
