@@ -2,10 +2,10 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>PostCreateForm</title>
+    <title>게시글 작성</title>
 </head>
 <body>
-<form id="postForm">
+<form id="postForm" enctype="multipart/form-data">
     <div>
         <label for="title">제목</label>
         <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
@@ -14,27 +14,36 @@
         <label for="content">내용</label>
         <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
     </div>
+    <div>
+        <label for="images">이미지</label>
+        <input type="file" id="images" name="images" accept="image/*" multiple>
+    </div>
     <button type="submit">게시글 작성</button>
 </form>
 <script>
     document.getElementById('postForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        const formData = {
-            title: document.getElementById('title').value,
-            content: document.getElementById('content').value,
-            uuid: "testUUID" // 여기에서 적절한 UUID 생성 로직 추가 가능
-        };
+        const formData = new FormData();    // this
+
+        formData.append('title', document.getElementById('title').value);
+        formData.append('content', document.getElementById('content').value);
+
+        const images = document.getElementById('images').files;
+
+        for (let i = 0; i < images.length && i < 5; i++) {  // 이미지 최대 5장
+            formData.append('images', images[i]);
+        }
 
         fetch('/api/post/create', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+            body: formData
         })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            window.location.href = '/postList/' + data.postId;
+        })
+        .catch(error => console.error('Error:', error));
     });
 </script>
 </body>

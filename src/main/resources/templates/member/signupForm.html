@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>signUpForm</title>
-    <link rel="stylesheet" href="/css/signUpForm.css">
+    <link rel="stylesheet" href="/css/member/signUpForm.css">
 </head>
 <body>
-<form id="signupForm" th:action="@{/signup}" method="post">
+<form id="signupForm" method="POST">
     <h2>회원가입</h2>
 
     <label for="userId">아이디:</label>
@@ -36,13 +36,13 @@
 </form>
 
 <script>
-    document.getElementById('signUpForm').addEventListener('submit', function(e) {
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
         const data = Object.fromEntries(formData);
 
-        fetch('/signup', {
+        fetch('/api/auth/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,23 +51,18 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    return response.json().then(err => { throw err; });
+                    throw new Error('HTTP error ' + response.status);
                 }
-                return response.json();
+                return response.text();
             })
             .then(data => {
-                alert('회원가입이 완료되었습니다.');
-                window.location.href = '/login'; // 로그인 페이지로 리다이렉트
+                alert('회원가입이 성공적으로 완료되었습니다.');
+                window.location.href = '/login';
             })
             .catch(error => {
                 console.error('Error:', error);
-                // 에러 메시지 표시
-                if (error.userId) document.getElementById('userIdError').textContent = error.userId;
-                if (error.password) document.getElementById('passwordError').textContent = error.password;
-                if (error.nickname) document.getElementById('nicknameError').textContent = error.nickname;
-                if (error.name) document.getElementById('nameError').textContent = error.name;
+                alert('회원가입 중 오류가 발생했습니다.');
             });
-        //console.log("sending data : ", JSON.stringify(data));
     });
 </script>
 </body>
