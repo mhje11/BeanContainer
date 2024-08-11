@@ -24,23 +24,13 @@
             height: 100%;
         }
 
-        #sidebar {
-            width: 30%;
-            margin: 10px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #map-title, #district-select, #search-box, .filter-container {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-
         #cafe-cards {
+            position: absolute;
+            top: 10px;
+            right: 10px;
             max-height: 80%;
             overflow-y: auto;
-            margin-bottom: 10px;
+            z-index: 1;
         }
 
         .cafe-card {
@@ -65,6 +55,19 @@
             margin-top: 5px;
             padding: 2px 5px;
             font-size: 12px;
+        }
+
+        #sidebar {
+            width: 30%;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #map-title, #district-select, #search-box, .filter-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
         }
 
         .category-selection {
@@ -110,6 +113,7 @@
 <body>
 <div id="map-container">
     <div id="map"></div>
+    <div id="cafe-cards"></div>
 </div>
 
 <div id="sidebar">
@@ -348,7 +352,7 @@
         });
     }
 
-    async function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, district) {
+    function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, district) {
         const data = {
             kakaoId: kakaoId,
             name: name,
@@ -361,52 +365,49 @@
 
         console.log("Sending data:", data);
 
-        try {
-            const response = await fetch(`/review/${kakaoId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
+        fetch(`/review/${kakaoId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
             if (!response.ok) {
-                const text = await response.text();
-                throw new Error(text);
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
             }
-
-            const responseData = await response.json();
-            addCafeToSet(responseData, kakaoId);
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error: ' + error.message);
-        }
+            return response.json();
+        })
+            .then(data => {
+                console.log("Cafe saved or found:", data);
+                const cafeCardsContainer = document.getElementById('cafe-cards');
+                if (cafeCardsContainer) {
+                    addCafeToSet(data);  // 카페 정보를 세트에 추가
+                } else {
+                    console.error('Error: Cannot find cafe-cards container');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            });
     }
 
-    function addCafeToSet(cafe, kakaoId) {
-        const cafeData = JSON.stringify({
-            kakaoId: kakaoId,
-            name: cafe.name,
-            address: cafe.address,
-            latitude: cafe.latitude,
-            longitude: cafe.longitude,
-            city: cafe.city,
-            district: cafe.district
-        });
-
-        if (!addedCafes.has(cafeData)) {
-            addedCafes.add(cafeData);
+    function addCafeToSet(cafe) {
+        if (!addedCafes.has(cafe.kakaoId)) {
+            addedCafes.add(cafe.kakaoId);  // 카페 ID만 세트에 추가
 
             const card = document.createElement('div');
             card.className = 'cafe-card';
             card.innerHTML = `
             <h4>${cafe.name}</h4>
             <p>${cafe.address}</p>
-            <button onclick="removeCafe('${kakaoId}')">삭제</button>
+            <button onclick="removeCafe('${cafe.kakaoId}')">삭제</button>
         `;
 
             card.addEventListener('click', () => {
-                const marker = markers[kakaoId];
+                const marker = markers[cafe.kakaoId];
                 if (marker) {
                     map.setCenter(marker.getPosition());
                     if (infowindow.getMap()) {
@@ -417,7 +418,7 @@
 
             document.getElementById('cafe-cards').appendChild(card);
 
-            const marker = markers[kakaoId];
+            const marker = markers[cafe.kakaoId];
             if (marker) {
                 const markerImageUrl = "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
                 const markerImage = new kakao.maps.MarkerImage(
@@ -433,11 +434,7 @@
     }
 
     function removeCafe(kakaoId) {
-        addedCafes.forEach(cafe => {
-            if (JSON.parse(cafe).kakaoId === kakaoId) {
-                addedCafes.delete(cafe);
-            }
-        });
+        addedCafes.delete(kakaoId);
 
         const cafeCards = document.getElementById('cafe-cards');
         const cards = cafeCards.getElementsByClassName('cafe-card');
@@ -642,14 +639,15 @@
             position: new kakao.maps.LatLng(cafe.latitude, cafe.longitude)
         });
 
-        markers[cafe.id] = marker;
+        markers[cafe.kakaoId] = marker;
 
         kakao.maps.event.addListener(marker, 'click', function () {
             var content = `
         <div style="padding:10px; font-size:14px;">
             <strong>${cafe.name}</strong><br>
             ${cafe.address}<br>
-            <a href="#" onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 페이지로 이동</a>
+            <button onclick="checkAndSaveCafe('${cafe.kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude}, '${cafe.city}', '${cafe.district}')">지도에 추가하기</button>
+            <a href="#" onclick="window.open('/review/${cafe.kakaoId}', '_blank')">리뷰 페이지로 이동</a>
         </div>
     `;
             infowindow.setContent(content);
@@ -669,7 +667,7 @@
 
             const mapData = {
                 mapName: mapName,
-                kakaoIds: Array.from(addedCafes).map(cafe => JSON.parse(cafe).kakaoId)
+                kakaoIds: Array.from(addedCafes)
             };
 
             console.log("Sending map data:", mapData);
