@@ -1,26 +1,44 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>게시글 작성</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-create.css}">
 </head>
 <body>
-<form id="postForm" enctype="multipart/form-data">
-    <div>
-        <label for="title">제목</label>
-        <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
-    </div>
-    <div>
-        <label for="content">내용</label>
-        <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
-    </div>
-    <div>
-        <label for="images">이미지</label>
-        <input type="file" id="images" name="images" accept="image/*" multiple>
-    </div>
-    <button type="submit">게시글 작성</button>
-</form>
+<div th:replace="fragments/header :: header"></div>
+<div class="container">
+    <form id="postForm" enctype="multipart/form-data">
+        <div>
+            <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
+        </div>
+        <div>
+            <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
+        </div>
+        <div class="button-container">
+            <label for="images">이미지</label>
+            <input type="file" id="images" name="images" accept="image/*" multiple>
+            <span id="fileName">선택된 파일 없음</span>
+            <button type="submit">게시글 작성</button>
+        </div>
+    </form>
+</div>
 <script>
+    document.getElementById('images').addEventListener('change', function() {
+        const fileInput = document.getElementById('images');
+        const fileNameDisplay = document.getElementById('fileName');
+
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = Array.from(fileInput.files).map(file => file.name).join(', ');
+        } else {
+            fileNameDisplay.textContent = '선택된 파일 없음';
+        }
+    });
+
     document.getElementById('postForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const formData = new FormData();    // this
