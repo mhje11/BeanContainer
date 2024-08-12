@@ -64,7 +64,7 @@ public class PostRestController {
     }
 
     @GetMapping("/postList")    // 게시글 전체 조회
-    public ResponseEntity<Page<PostListResponseDto>> getAllPosts(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size,
+    public ResponseEntity<Page<PostListResponseDto>> getAllPosts(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size,
                                                                  @RequestParam(defaultValue = "createdAt") String sortBy) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sortBy));
 
