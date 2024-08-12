@@ -6,6 +6,7 @@ import com.beancontainer.domain.post.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,5 +14,7 @@ public interface LikeRepository extends JpaRepository<Likes, Long> {
     Optional<Likes> findByPostAndMember(Post post, Member member);
 
     int countByPostId(Long postId);
+
+    List<Likes> findAllByPostId(Long postId);
 
 }

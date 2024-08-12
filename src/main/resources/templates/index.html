@@ -10,88 +10,7 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
-    <style>
-        .container {
-            display: flex;
-        }
 
-        .left-section, .right-section {
-            width: 50%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .map {
-            height: 400px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .filter-container {
-            margin-bottom: 20px;
-        }
-
-        .category-selection {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .available-categories, .selected-categories {
-            width: 48%;
-            border: 1px solid #ddd;
-            padding: 10px;
-            min-height: 100px;
-            margin-bottom: 10px;
-        }
-
-        .category-item {
-            padding: 5px;
-            border: 1px solid #ccc;
-            margin-bottom: 5px;
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-
-        .board-list, .chat-room {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        .chat-room {
-            height: 200px;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        #district-select {
-            margin-bottom: 20px;
-        }
-
-        #search-box {
-            margin-bottom: 20px;
-        }
-
-        #search-results {
-            max-height: 150px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        #search-results div {
-            cursor: pointer;
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        #search-results div:hover {
-            background-color: #f0f0f0;
-        }
-    </style>
 </head>
 <body>
 <div class="header">
@@ -180,13 +99,15 @@
         </div>
 
         <div id="map" class="map"></div>
-    </div>
-    <div class="right-section">
+
         <div id="search-box">
             <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
             <button id="search-btn">검색</button>
             <div id="search-results"></div>
         </div>
+    </div>
+    <div class="right-section">
+
         <div class="filter-container">
             <div class="category-selection">
                 <div class="available-categories">
@@ -197,8 +118,8 @@
                 </div>
             </div>
             <div class="button-container">
-                <button onclick="onCategorySelect()">검색</button>
-                <button onclick="resetCategories()">카테고리 초기화</button>
+                <button class="category-reset" onclick="resetCategories()">카테고리 초기화</button>
+                <button class="category-search" onclick="onCategorySelect()">검색</button>
             </div>
         </div>
         <div class="board-list">
@@ -237,6 +158,8 @@
     let map, ps, infowindow, markers = {};
     let lastCenter = null;
     let selectedCategories = new Set();
+    let isCategorySearch = false; // isCategorySearch 변수를 선언하고 초기화
+
 
     const categories = [
         "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
@@ -293,16 +216,18 @@
 
         kakao.maps.event.addListener(map, 'dragend', function () {
             const center = map.getCenter();
-            if (lastCenter && center.equals(lastCenter)) return;
-            lastCenter = center;
-            searchPlacesByCenter(center);
+            if (!isCategorySearch && (!lastCenter || !center.equals(lastCenter))) {
+                lastCenter = center;
+                searchPlacesByCenter(center);
+            }
         });
 
         kakao.maps.event.addListener(map, 'zoom_changed', function () {
             const center = map.getCenter();
-            if (lastCenter && center.equals(lastCenter)) return;
-            lastCenter = center;
-            searchPlacesByCenter(center);
+            if (!isCategorySearch && (!lastCenter || !center.equals(lastCenter))) {
+                lastCenter = center;
+                searchPlacesByCenter(center);
+            }
         });
 
         document.getElementById('districts').addEventListener('change', function () {
@@ -325,24 +250,26 @@
     function searchPlacesByCenter(center) {
         const keyword = '카페';
 
-        if (selectedCategories.size > 0) {
-            searchPlacesByCategory(selectedCategories);
-        } else {
-            ps.keywordSearch(keyword, function (data, status, pagination) {
-                if (status === kakao.maps.services.Status.OK) {
-                    for (var i = 0; i < data.length; i++) {
-                        if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
-                            displayMarker(data[i]);
-                        }
-                    }
+        // 카테고리가 선택된 상태이지만, 카테고리 검색 버튼을 누르지 않은 경우에는 검색하지 않음
+        if (selectedCategories.size > 0 && !isCategorySearch) {
+            return; // 카테고리가 선택된 상태에서는 자동 검색을 막음
+        }
 
-                    if (pagination.hasNextPage) {
-                        pagination.nextPage();
+        ps.keywordSearch(keyword, function (data, status, pagination) {
+            if (status === kakao.maps.services.Status.OK) {
+                for (var i = 0; i < data.length; i++) {
+                    if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
+                        displayMarker(data[i]);
                     }
                 }
-            }, {location: center, radius: 2000});
-        }
+
+                if (pagination.hasNextPage) {
+                    pagination.nextPage();
+                }
+            }
+        }, {location: center, radius: 2000});
     }
+
 
     function isExcludedCategory(categoryName) {
         const excludedCategories = ['보드게임카페', '룸카페', '방탈출카페', '테마카페', '고양이카페', '북카페', '레드버튼', '벌툰', '키즈'];
@@ -466,6 +393,7 @@
 
     function onCategorySelect() {
         if (selectedCategories && selectedCategories.size > 0) {
+            isCategorySearch = true;  // 카테고리 검색이 활성화됨
             searchPlacesByCategory(selectedCategories);
         } else {
             alert("최소 한 개의 카테고리를 선택해주세요.");
@@ -508,6 +436,7 @@
     function resetCategories() {
         selectedCategories.clear();
         createCategoryButtons();
+        isCategorySearch = false;  // 카테고리 검색이 비활성화됨
         searchPlacesByCenter(map.getCenter());
     }
 
