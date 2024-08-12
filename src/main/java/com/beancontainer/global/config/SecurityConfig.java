@@ -41,7 +41,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**", "/images/**").permitAll() // 모든 사용자에게 허용
+                        .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**", "/images/**", "/static/**").permitAll() // 모든 사용자에게 허용
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
                         .requestMatchers("/post/create").permitAll()

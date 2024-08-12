@@ -17,29 +17,35 @@
             </div>
 
             <div class="uk-navbar-right">
+                <div th:if="${#authorization.expression('!isAuthenticated()')}">
+                    <a href="/login" class="uk-button uk-button-default uk-margin-small-right">로그인</a>
+                </div>
                 <a href="#" class="hamburger" uk-toggle="target: #offcanvas-menu">☰</a>
 
-                <div id="offcanvas-menu" uk-offcanvas="flip: true; overlay: true">
-                    <div class="uk-offcanvas-bar">
-                        <ul class="uk-nav uk-nav-default">
-                            <li><a href="/login">Login</a></li>
-                            <li><a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a></li>
-                            <li><a href="#">채팅방</a></li>
-                            <li><a th:href="@{/post/create}">게시글 작성</a></li>
-                            <li><a href="/mymap">저장 된 지도 목록</a></li>
-                            <li><a href="/create/map">지도 만들기</a></li>
-                            <li><a href="#" onclick="logout()">logout</a></li>
-                        </ul>
-                    </div>
-                </div>
+        <div id="offcanvas-menu" uk-offcanvas="flip: true; overlay: true">
+            <div class="uk-offcanvas-bar">
+                <!--   유저 로그인 안되어 있을 때   -->
+                <ul th:if="${#authorization.expression('!isAuthenticated()')}">
+                    <li><a href="/login">Login</a></li>
+                </ul>
+
+                <!--   유저 로그인 성공 후  -->
+                <ul th:if="${#authorization.expression('isAuthenticated()')}" class="uk-nav uk-nav-default">
+                    <li><a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">내 정보 관리</a></li>
+
+                    <li><a th:href="@{/post/create}">게시글 작성</a></li>
+                    <li><a href="/mymap">저장 된 지도 목록</a></li>
+                    <li><a href="/create/map">지도 만들기</a></li>
+                    <li><a href="#">채팅방</a></li>
+                    <li><a href="#" onclick="logout(); return false;">logout</a></li>
+                </ul>
             </div>
-        </nav>
+        </div>
     </div>
 </header>
 
-<script src="/js/header.js">
 
-</script>
+<script th:src="@{/js/member/header.js}"></script>
 </body>
 
 </html>
