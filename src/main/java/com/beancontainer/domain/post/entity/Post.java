@@ -48,7 +48,6 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "post_id")
     private List<PostImg> images = new ArrayList<>();
-
     private int likeCount = 0;
 
     public Post(Member member, String title, String content) {  // 게시글 작성
