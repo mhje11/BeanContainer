@@ -1,30 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Review</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/review/review.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
 </head>
 <body>
+<div th:replace="fragments/header :: header"></div>
 
+<div class="container">
 <div id="cafe-info"></div>
 <h2>Review</h2>
 
 <div class="review-form">
     <div class="star-rating">
-        <input type="radio" id="5-stars" name="rating" value="5" /><label for="5-stars">&#9733;</label>
-        <input type="radio" id="4.5-stars" name="rating" value="4.5" /><label for="4.5-stars">&#9733;</label>
-        <input type="radio" id="4-stars" name="rating" value="4" /><label for="4-stars">&#9733;</label>
-        <input type="radio" id="3.5-stars" name="rating" value="3.5" /><label for="3.5-stars">&#9733;</label>
-        <input type="radio" id="3-stars" name="rating" value="3" /><label for="3-stars">&#9733;</label>
-        <input type="radio" id="2.5-stars" name="rating" value="2.5" /><label for="2.5-stars">&#9733;</label>
-        <input type="radio" id="2-stars" name="rating" value="2" /><label for="2-stars">&#9733;</label>
-        <input type="radio" id="1.5-stars" name="rating" value="1.5" /><label for="1.5-stars">&#9733;</label>
-        <input type="radio" id="1-stars" name="rating" value="1" /><label for="1-stars">&#9733;</label>
-        <input type="radio" id="0.5-stars" name="rating" value="0.5" /><label for="0.5-stars">&#9733;</label>
+        <input type="radio" id="star1" name="rating" value="1">
+        <label for="star1" title="1 star"></label>
+
+        <input type="radio" id="star2" name="rating" value="2">
+        <label for="star2" title="2 stars"></label>
+
+        <input type="radio" id="star3" name="rating" value="3">
+        <label for="star3" title="3 stars"></label>
+
+        <input type="radio" id="star4" name="rating" value="4">
+        <label for="star4" title="4 stars"></label>
+
+        <input type="radio" id="star5" name="rating" value="5">
+        <label for="star5" title="5 stars"></label>
     </div>
 
-    <h3>Categories</h3>
+    <h3>카테고리</h3>
     <div class="categories">
         <label><input type="checkbox" value="대형카페" /> 대형카페</label>
         <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
@@ -45,14 +55,14 @@
         <label><input type="checkbox" value="조용한" /> 조용한</label>
     </div>
 
-    <h3>Review Content</h3>
     <textarea id="review-content" rows="4" cols="50"></textarea>
     <button id="submit-review">Submit Review</button>
 </div>
 
-<h3>Reviews</h3>
+<h3>리뷰</h3>
 <div id="review-list"></div>
 
 <script src="/js/review/review.js"></script>
+</div>
 </body>
 </html>

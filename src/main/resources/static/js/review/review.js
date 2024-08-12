@@ -104,9 +104,9 @@ function displayCafeInfo(cafe) {
     const cafeInfoDiv = document.createElement('div');
     cafeInfoDiv.innerHTML = `
         <h3>${cafe.name}</h3>
-        <p>Address: ${cafe.address}</p>
-        <p>Top Categories: ${Array.from(cafe.topCategories).join(', ')}</p>
-        <p>Average Score: ${cafe.averageScore ? cafe.averageScore.toFixed(2) : '0.0'}</p>
+        <p>${cafe.address}</p>
+        <p>카테고리 : ${Array.from(cafe.topCategories).join(', ')}</p>
+        <p>별점 : ${cafe.averageScore ? cafe.averageScore.toFixed(2) : '0.0'}</p>
     `;
     document.getElementById('cafe-info').appendChild(cafeInfoDiv);
 }
@@ -119,10 +119,9 @@ function displayReviews(reviews) {
         const div = document.createElement('div');
         div.className = 'review-item';
         div.innerHTML = `
-            <p><strong>Rating:</strong> ${review.score}</p>
-            <p><strong>Content:</strong> ${review.content}</p>
-            <p><strong>Categories:</strong> ${review.categoryNames ? Array.from(review.categoryNames).join(', ') : 'None'}</p>
-            <p><strong>Author:</strong> ${review.nickName}</p>
+            <p><strong>별점 : </strong> ${review.score}</p>
+            <p><strong>${review.nickName}:</strong> ${review.content}</p>
+            <p><strong>카테고리 : </strong> ${review.categoryNames ? Array.from(review.categoryNames).join(', ') : 'None'}</p>
             <button onclick="showEditForm(${review.id})">Edit</button>
             <button onclick="deleteReview(${review.id})">Delete</button>
         `;
