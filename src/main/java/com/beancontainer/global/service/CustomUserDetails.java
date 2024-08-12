@@ -14,7 +14,6 @@ public class CustomUserDetails implements UserDetails {
     private String userId;
     private String role;
 
-    private String nickName;
 
     public CustomUserDetails(String userId, String role) {
         this.userId = userId;
@@ -24,7 +23,7 @@ public class CustomUserDetails implements UserDetails {
     //ROLE 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     @Override
