@@ -81,6 +81,14 @@ body {
     margin-bottom: 20px;
 }
 
+#district-select, #search-box, .filter-container, .board-list {
+    margin-bottom: 20px;
+}
+/* 불필요한 border 제거 */
+.left-section, .right-section, .map, .filter, .board-list {
+    border: none;
+}
+
 .filter-container {
     margin-bottom: 20px;
 }

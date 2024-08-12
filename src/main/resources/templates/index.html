@@ -4,147 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Bean Container</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
-    <style>
-        .container {
-            display: flex;
-        }
-
-        .left-section, .right-section {
-            width: 50%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .map {
-            height: 400px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .filter-container {
-            margin-bottom: 20px;
-        }
-
-        .category-selection {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .available-categories, .selected-categories {
-            width: 48%;
-            border: 1px solid #ddd;
-            padding: 10px;
-            min-height: 100px;
-            margin-bottom: 10px;
-        }
-
-        .category-item {
-            padding: 5px;
-            border: 1px solid #ccc;
-            margin-bottom: 5px;
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-
-        .board-list, .chat-room {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        .chat-room {
-            height: 200px;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        #district-select {
-            margin-bottom: 20px;
-        }
-
-        #search-box {
-            margin-bottom: 20px;
-        }
-
-        #search-results {
-            max-height: 150px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        #search-results div {
-            cursor: pointer;
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        #search-results div:hover {
-            background-color: #f0f0f0;
-        }
-    </style>
 </head>
 <body>
-<div class="header">
-    <nav class="uk-navbar-container" uk-navbar>
-        <div class="uk-navbar-left">
-            <ul class="uk-navbar-nav">
-                <li class="uk-active">
-                    <a href="/" class="uk-navbar-item uk-logo">
-                        <img src="/images/BeanContainer.png" alt="Bean Container Logo" width="80" height="80" class="uk-margin-small-right">
-                        Bean Container
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="uk-navbar-right">
-            <ul class="uk-navbar-nav">
-                <li>
-                    <a href="#" class="hamburger" uk-toggle="target: #offcanvas-menu">☰</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+<div th:replace="fragments/header :: header"></div>
 
-    <!-- 오프캔버스 메뉴 -->
-    <div id="offcanvas-menu" uk-offcanvas="flip: true; overlay: true">
-        <div class="uk-offcanvas-bar">
-            <button class="uk-offcanvas-close" type="button" uk-close></button>
-            <ul class="uk-nav uk-nav-default">
-                <li th:unless="${#authorization.expression('isAuthenticated()')}">
-                    <a href="/login" class="non-auth-only">Login</a>
-                </li>
-                <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a>
-                </li>
-                <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a href="#">채팅방</a>
-                </li>
-                <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a th:href="@{/post/create}" >게시글 작성</a>
-                </li>
-                <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a href="/mymap">저장 된 지도 목록</a>
-                </li>
-                <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a href="/create/map">지도 만들기</a>
-                </li>
-                <li th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a href="#" th:onclick="logout()">logout</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
 <div class="container">
     <div class="left-section">
         <div id="district-select">
@@ -212,26 +82,6 @@
     </div>
 </div>
 
-<script>
-    function logout() {
-        fetch('/api/auth/logout', {
-            method: 'POST',
-            credentials: 'same-origin'
-        })
-            .then(response => {
-                if (response.ok) {
-                    // 로그아웃 성공 시 메인으로
-                    window.location.href = '/';
-                } else {
-                    console.error('로그아웃 실패');
-                }
-            })
-            .catch(error => {
-                console.error('로그아웃 중 오류 발생:', error);
-            });
-    }
-</script>
-
 <!--지도 관련 Js-->
 <script>
     let map, ps, infowindow, markers = {};
@@ -240,7 +90,7 @@
 
     const categories = [
         "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
-        "와이파이", "데이트 하기 좋은", "혼자가기 좋은", "공부하기 좋은",         "비즈니스 미팅", "애견 동반", "분위기 좋은", "인스타 감성", "풍경이 좋은", "새로 오픈", "조용한"
+        "와이파이", "데이트 하기 좋은", "혼자가기 좋은", "공부하기 좋은", "비즈니스 미팅", "애견 동반", "분위기 좋은", "인스타 감성", "풍경이 좋은", "새로 오픈", "조용한"
     ];
 
     const districts = {
@@ -287,7 +137,7 @@
         infowindow = new kakao.maps.InfoWindow({zIndex: 1});
 
         // 지도 클릭 시 인포창 닫기
-        kakao.maps.event.addListener(map, 'click', function() {
+        kakao.maps.event.addListener(map, 'click', function () {
             infowindow.close();
         });
 
@@ -452,7 +302,7 @@
     function searchPlacesByCategory(categories) {
         clearMarkers();
 
-        fetch('/api/map/category?' + new URLSearchParams({ categories: Array.from(categories).join(',') }))
+        fetch('/api/map/category?' + new URLSearchParams({categories: Array.from(categories).join(',')}))
             .then(response => response.json())
             .then(data => {
                 data.forEach(cafe => {
@@ -518,7 +368,7 @@
             return;
         }
 
-        ps.keywordSearch(keyword, function(data, status, pagination) {
+        ps.keywordSearch(keyword, function (data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
                 if (data.length === 1) {
                     const place = data[0];
