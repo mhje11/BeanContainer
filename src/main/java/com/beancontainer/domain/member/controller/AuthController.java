@@ -23,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -101,7 +103,7 @@ public class AuthController {
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
         log.info("Received signup request for user: " + signUpRequestDTO.getUserId());
         authService.signUp(signUpRequestDTO);
-        return ResponseEntity.ok("회원가입이 성공적으로 완료되었습니다.");
+        return ResponseEntity.ok(Collections.singletonMap("message", "회원가입이 성공적으로 완료되었습니다.")); //JSON 형태로 응답
     }
 
     @PostMapping("/logout")

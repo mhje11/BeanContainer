@@ -94,6 +94,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function validateName() {
+        const nameValue = name.value.trim();
+        if (nameValue === '') {
+            nameError.textContent = '이름을 입력해주세요.';
+            return false;
+        } else {
+            nameError.textContent = '';
+            return true;
+        }
+    }
+
 
     function updateSignupButtonState() {
         signupButton.disabled = !isUserIdValid;
@@ -119,11 +130,37 @@ document.addEventListener('DOMContentLoaded', function() {
         const isNameValid = validateName();
 
         if (isUserIdValid && isPasswordValid && isConfirmPasswordValid && isNicknameValid && isNameValid) {
-            // 모든 유효성 검사를 통과했을 때만 폼을 제출합니다.
-            console.log('폼 제출 성공');
-            // 여기에 실제 폼 제출 로직을 추가하세요 (예: fetch를 사용한 서버 요청)
+            const formData = {
+                userId: userId.value,
+                password: password.value,
+                nickname: nickname.value,
+                name: name.value
+            };
+
+            fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('회원가입 성공:', data);
+                    alert('회원가입이 성공적으로 완료되었습니다.');
+                    window.location.href = '/login';  // 로그인 페이지로 리다이렉트
+                })
+                .catch((error) => {
+                    console.error('회원가입 오류:', error);
+                    alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+                });
         } else {
-            console.log('폼 제출 실패: 유효성 검사 오류');
+            alert('모든 필드를 올바르게 입력해주세요.');
         }
     });
 });
