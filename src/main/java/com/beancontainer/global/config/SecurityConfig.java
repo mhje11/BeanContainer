@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**", "/images/**", "/static/**").permitAll() // 모든 사용자에게 허용
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
-                        .requestMatchers("/post/create").permitAll()
+                        .requestMatchers("/post/post-list").permitAll()
                         .requestMatchers("/api/post/create").authenticated()
                         .requestMatchers("/mypage/{userId}", "/api/profileImage/**", "/mymap","/mymap/update/{mapId}").authenticated() // 인증된 사용자만 접근 가능
                         .requestMatchers("/admin/**", "/api/admin/**").hasAuthority("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능 ROLE 접두사 제거

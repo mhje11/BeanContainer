@@ -55,18 +55,18 @@ document.getElementById('submit-review').addEventListener('click', async () => {
         });
 
         if (response.ok) {
-            alert('Review submitted successfully!');
+            alert('리뷰가 등록 됐습니다.');
             fetchReviews();
             document.getElementById('review-content').value = '';
             document.querySelector('.review-form input[name="rating"]:checked').checked = false;
             selectedCategories.clear();
             updateSelectedCategories('review', []);
         } else {
-            alert('Failed to submit review.');
+            alert('리뷰 작성에 실패 했습니다.');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to submit review.');
+        alert('리뷰 작성에 실패 했습니다.');
     }
 });
 
@@ -82,7 +82,7 @@ async function fetchReviews() {
         displayReviews(reviews);
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to fetch reviews.');
+        alert('리뷰 정보를 불러오는데 실패 했습니다.');
     }
 }
 
@@ -96,7 +96,7 @@ async function fetchCafeInfo() {
         displayCafeInfo(cafe);
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to fetch cafe info.');
+        alert('카페 정보를 불러오는데 실패 했습니다.');
     }
 }
 
@@ -104,9 +104,9 @@ function displayCafeInfo(cafe) {
     const cafeInfoDiv = document.createElement('div');
     cafeInfoDiv.innerHTML = `
         <h3>${cafe.name}</h3>
-        <p>Address: ${cafe.address}</p>
-        <p>Top Categories: ${Array.from(cafe.topCategories).join(', ')}</p>
-        <p>Average Score: ${cafe.averageScore ? cafe.averageScore.toFixed(2) : '0.0'}</p>
+        <p>${cafe.address}</p>
+        <p>카테고리 : ${Array.from(cafe.topCategories).join(', ')}</p>
+        <p>별점 : ${cafe.averageScore ? cafe.averageScore.toFixed(2) : '0.0'}</p>
     `;
     document.getElementById('cafe-info').appendChild(cafeInfoDiv);
 }
@@ -119,10 +119,9 @@ function displayReviews(reviews) {
         const div = document.createElement('div');
         div.className = 'review-item';
         div.innerHTML = `
-            <p><strong>Rating:</strong> ${review.score}</p>
-            <p><strong>Content:</strong> ${review.content}</p>
-            <p><strong>Categories:</strong> ${review.categoryNames ? Array.from(review.categoryNames).join(', ') : 'None'}</p>
-            <p><strong>Author:</strong> ${review.nickName}</p>
+            <p><strong>별점 : </strong> ${review.score}</p>
+            <p><strong>${review.nickName}:</strong> ${review.content}</p>
+            <p><strong>카테고리 : </strong> ${review.categoryNames ? Array.from(review.categoryNames).join(', ') : 'None'}</p>
             <button onclick="showEditForm(${review.id})">Edit</button>
             <button onclick="deleteReview(${review.id})">Delete</button>
         `;
@@ -228,14 +227,14 @@ async function submitEditReview(reviewId) {
         });
 
         if (response.ok) {
-            alert('Review updated successfully!');
+            alert('리뷰를 수정했습니다.');
             fetchReviews();
         } else {
-            alert('Failed to update review.');
+            alert('리뷰를 수정하는데 실패 했습니다.');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to update review.');
+        alert('리뷰를 수정하는데 실패 했습니다.');
     }
 }
 

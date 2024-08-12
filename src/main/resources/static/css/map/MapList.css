@@ -1,0 +1,118 @@
+/* Container styling */
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 20px;
+    background-color: #EDE3D5;
+    min-height: calc(100vh - 100px);
+    box-sizing: border-box;
+}
+
+.left-section, .right-section {
+    width: 45%;
+    background-color: #F7F3EB;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 600px;
+    box-sizing: border-box;
+}
+
+.right-section {
+    overflow-y: auto;
+}
+
+.left-section h3, .right-section h3 {
+    color: #7B6155;
+    margin-bottom: 20px;
+}
+
+.create-map-btn {
+    background-color: #7B6155;
+    color: #ffffff !important;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    text-align: center;
+    display: block;
+    max-width: 250px;
+    margin: 0 auto;
+    text-decoration: none;
+}
+
+.create-map-btn:hover {
+    background-color: #5e493d;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+#map-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+#map-list li {
+    background-color: #ffffff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#map-list li a {
+    color: #7B6155;
+    text-decoration: none;
+    font-weight: bold;
+    flex-grow: 1;
+    margin-right: 10px; /* 버튼과 간격을 유지 */
+}
+
+#map-list li .btn-primary,
+#map-list li .btn-danger {
+    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    width: 70px; /* 버튼 너비를 동일하게 설정 */
+    height: 36px; /* 버튼 높이 동일하게 설정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box; /* 패딩을 포함한 크기 계산 */
+}
+
+#map-list li .btn-primary {
+    background-color: #F4B844;
+    color: #ffffff;
+}
+
+#map-list li .btn-danger {
+    background-color: #884D33;
+    color: #ffffff;
+}
+
+#map-list li .btn-primary:hover {
+    background-color: #d89b34;
+}
+
+#map-list li .btn-danger:hover {
+    background-color: #6e3b29;
+}
+
+#map-list li .button-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px; /* 버튼 간의 간격을 고정 */
+    flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
+}
