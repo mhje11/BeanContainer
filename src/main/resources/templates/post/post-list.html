@@ -8,11 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-list.css}">
-
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
-
 <div class="container">
     <div class="sort-div">
         <label for="sort-select">정렬 기준:</label>
@@ -40,6 +38,7 @@
         <tbody id="post-list">
         </tbody>
     </table>
+
     <div id="pagination">
     </div>
 </div>
