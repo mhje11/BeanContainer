@@ -16,18 +16,22 @@
         <div>
             <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
         </div>
+
         <div>
             <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
         </div>
+
         <div id="existing-images" class="existing-images">
             <!--기존 이미지-->
         </div>
+
         <div class="box">
             <div class="new-images">
                 <label for="images">새 이미지</label>
                 <input type="file" id="images" name="images" accept="image/*" multiple>
                 <span id="fileName">선택된 파일 없음</span>
             </div>
+
             <div class="button-container">
                 <button type="submit" id="update-button">게시글 수정</button>
                 <button type="button" id="cancel-button">취소</button>
@@ -35,6 +39,7 @@
         </div>
     </form>
 </div>
+
 <script>
     document.getElementById('images').addEventListener('change', function() {
         const fileInput = document.getElementById('images');
@@ -107,5 +112,6 @@
         window.history.back();  // 이전 페이지로 돌아가기
     });
 </script>
+
 </body>
 </html>

@@ -66,7 +66,7 @@ textarea#content {
 
 .box {
     display: flex;
-    justify-content: space-between; /* 좌우 정렬 */
+    justify-content: space-between;
     align-items: center;
     margin-top: 20px;
 }

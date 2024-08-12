@@ -11,25 +11,28 @@
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
-
 <div class="container">
     <div id="post-box">
         <h1 id="title"></h1>
+
         <div id="meta-info">
             <strong>작성자: </strong><span id="nickname"></span>
             <strong>작성일: </strong><span id="createdAt"></span>
-    <!--        <strong>수정일: </strong><span id="updatedAt"></span><br>-->
             <strong>조회수: </strong><span id="views"></span>
         </div>
+
         <div class="images" id="images"></div>
-        <!--        <strong>내용: </strong>-->
+
         <div class="content" id="content"></div>
     </div>
+
     <div class="likes">
         <button id="like-button" class="like-button">좋아요</button>
         <span id="like-count">0</span>명이 좋아합니다.
     </div>
+
     <p id="btn-list"></p>
+
     <div>
         <h4>댓글</h4>
         <div id="comments"></div>
@@ -37,6 +40,7 @@
         <button type="submit" id="submit-comment">댓글 등록</button>
     </div>
 </div>
+
 <script>
 class PostOperations {
     constructor(postId) {
@@ -277,5 +281,6 @@ document.addEventListener('DOMContentLoaded', () =>  {
 });
 document.getElementById('submit-comment').addEventListener('click', () => postOps.saveOrUpdateComment(false))
 </script>
+
 </body>
 </html>
