@@ -59,7 +59,6 @@ class PostOperations {
             document.getElementById('title').innerText = post.title;
             document.getElementById('nickname').innerText = post.nickname;
             document.getElementById('createdAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() + ' (수정됨)' : new Date(post.createdAt).toLocaleString();
-            // document.getElementById('updatedAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() : new Date(post.createdAt).toLocaleString();
             document.getElementById('content').innerText = post.content;
             document.getElementById('views').innerText = post.views;
 
@@ -85,7 +84,7 @@ class PostOperations {
                 <button type="button" onclick="postOps.deletePost()">삭제</button>
             `;  /*GET이 아닌 DELETE 요청이기 때문에 함수로 호출*/
             } else {
-                btnList.innerHTML = `<a href="/post/post-list">목록</a>`;
+                btnList.innerHTML = `<button type="button" onclick="location.href='/post/post-list'">목록</button>`;
             }
 
             // 댓글 불러오기
@@ -253,11 +252,13 @@ class PostOperations {
         const saveBtn = document.createElement('button');
         saveBtn.innerText = '저장';
         saveBtn.id = `#save-button-${commentId}`;
+        saveBtn.className = 'save-button';
         saveBtn.onclick = () => this.saveOrUpdateComment(true, commentId);
 
         const cancelBtn = document.createElement('button');
         cancelBtn.innerText = '취소';
         cancelBtn.id = `#cancel-button-${commentId}`;
+        cancelBtn.className = 'cancel-button';
         cancelBtn.onclick = () => {
             commentContentSpan.innerHTML = currentContent;
 
