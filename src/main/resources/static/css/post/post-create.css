@@ -50,11 +50,16 @@ textarea#content {
     color: #B0B0B0;
 }
 
-.button-container {
+.box {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 20px;
+}
+
+.img-container {
+    display: flex;
+    align-items: center;
 }
 
 #images {
@@ -81,4 +86,5 @@ button:hover {
 #fileName {
     color: #7B6155;
     font-size: 14px;
+    margin-left: 10px;
 }

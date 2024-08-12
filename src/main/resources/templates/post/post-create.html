@@ -21,11 +21,15 @@
             <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
         </div>
 
-        <div class="button-container">
-            <label for="images">이미지</label>
-            <input type="file" id="images" name="images" accept="image/*" multiple>
-            <span id="fileName">선택된 파일 없음</span>
-            <button type="submit">게시글 작성</button>
+        <div class="box">
+            <div class="img-container">
+                <label for="images">이미지</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple>
+                <span id="fileName">선택된 파일 없음</span>
+            </div>
+            <div class="button-container">
+                <button type="submit">게시글 작성</button>
+            </div>
         </div>
     </form>
 </div>
