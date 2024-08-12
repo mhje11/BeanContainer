@@ -23,6 +23,8 @@ public class MemberService implements UserDetailsService {
 
 
 
+
+
     //ID로 유저 찾기
     public Member findByUserId(String userId) {
         return memberRepository.findByUserId(userId)
