@@ -28,7 +28,7 @@
                             <li><a th:href="@{/post/create}">게시글 작성</a></li>
                             <li><a href="/mymap">저장 된 지도 목록</a></li>
                             <li><a href="/create/map">지도 만들기</a></li>
-                            <li><a href="#" onclick="logout()">logout</a></li>
+                            <li><a href="#" onclick="logout(); return false;">logout</a></li>
                         </ul>
                     </div>
                 </div>
@@ -37,9 +37,8 @@
     </div>
 </header>
 
-<script src="/js/header.js">
 
-</script>
+<script th:src="@{/js/member/header.js}"></script>
 </body>
 
 </html>
