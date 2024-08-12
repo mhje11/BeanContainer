@@ -23,7 +23,7 @@ body {
 
 label {
     font-weight: bold;
-    color: #7B6155; /* 갈색 */
+    color: #7B6155;
 }
 
 select {
@@ -31,7 +31,7 @@ select {
     border: 1px solid #884D33;
     border-radius: 5px;
     background-color: #F5F5F5;
-    color: #7B6155; /* 고동색 */
+    color: #7B6155;
     margin-right: 10px;
 }
 
@@ -45,7 +45,7 @@ select {
 }
 
 #write-button:hover {
-    background-color: #7B6155; /* 고동색 */
+    background-color: #7B6155;
 }
 
 table {
@@ -62,21 +62,21 @@ td {
 }
 
 th {
-    background-color: #EDE3D5; /* 노랑 */
-    color: #7B6155; /* 고동색 */
+    background-color: #EDE3D5;
+    color: #7B6155;
 }
 
 td {
-    background-color: #FFFFFF; /* 흰색 */
+    background-color: #FFFFFF;
 }
 
 a {
-    color: #7B6155; /* 고동색 */
+    color: #7B6155;
     text-decoration: none;
 }
 
 a:hover {
-    color: #884D33; /* 갈색 */
+    color: #884D33;
     text-decoration: underline;
 }
 
@@ -87,7 +87,7 @@ a:hover {
 
 #pagination span a {
     margin: 0 5px;
-    color: #7B6155; /* 고동색 */
+    color: #7B6155;
     font-size: 18px;
     padding: 5px 10px;
     border-radius: 5px;
@@ -95,14 +95,14 @@ a:hover {
 }
 
 #pagination span a:hover {
-    background-color: #EDE3D5; /* 노랑 */
-    color: #884D33; /* 흰색 */
+    background-color: #EDE3D5;
+    color: #884D33;
 }
 
 #pagination span a.active {
     font-weight: bold;
-    background-color: #7B6155; /* 고동색 */
-    color: #FFFFFF; /* 흰색 */
+    background-color: #7B6155;
+    color: #FFFFFF;
 }
 
 @media (max-width: 600px) {
