@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.service;
 
+import com.beancontainer.domain.comment.repository.CommentRepository;
 import com.beancontainer.domain.like.entity.Likes;
 import com.beancontainer.domain.like.repository.LikeRepository;
 import com.beancontainer.domain.member.entity.Member;
@@ -33,6 +34,7 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostImgService postImgService;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
     // 게시글 작성
     @Transactional
@@ -112,6 +114,8 @@ public class PostService {
                 postImgService.deleteImage(img.getPath());
             }
         }
+        commentRepository.deleteByPostId(postId);
+        likeRepository.deleteByPostId(postId);
         postRepository.deleteById(postId);
     }
 
