@@ -1,17 +1,20 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #EDE3D5;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .left-section, .right-section {
-    padding: 10px;
-    width: 45%;
+    width: 48%;
 }
 
 .left-section {
@@ -21,201 +24,28 @@ body {
 
 .map {
     border: 1px solid #7B6155;
-    height: 400px; /* 지도 높이를 카테고리 섹션과 동일하게 설정 */
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.filter, .board-list {
-    border: 1px solid #000;
-    margin-top: 10px;
-    padding: 10px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.hamburger {
-    cursor: pointer;
-    padding: 10px;
-}
-
-.menu {
-    display: none;
-    position: absolute;
-    right: 10px;
-    top: 50px;
-    border: 1px solid #000;
-    background-color: #fff;
-    padding: 10px;
-}
-
-.menu a {
-    display: block;
-    margin: 5px 0;
-}
-
-.chat-room {
-    margin-top: 10px;
-    border: 1px solid #000;
-    padding: 10px;
-}
-
-.container {
-    display: flex;
-}
-
-.left-section, .right-section {
-    width: 50%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-.right-section {
-    margin-top: 78px;
-}
-
-.map {
     height: 400px;
     width: 100%;
     margin-bottom: 20px;
 }
 
-#district-select, #search-box, .filter-container, .board-list {
-    margin-bottom: 20px;
-}
-/* 불필요한 border 제거 */
-.left-section, .right-section, .map, .filter, .board-list {
-    border: none;
-}
-
-.filter-container {
-    margin-bottom: 20px;
-}
-
-.category-selection {
-    display: flex;
-    justify-content: space-between;
-}
-
-.available-categories {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 각 줄에 3개의 항목을 배치 */
-    grid-gap: 10px; /* 항목 간 간격 */
-    height: 400px; /* 지도와 동일한 높이로 설정 */
-    box-sizing: border-box;
-    overflow-y: auto; /* 스크롤 가능하게 설정 */
-    border: 1px solid #7B6155; /* 전체 테두리 설정 */
-    border-right: none; /* 오른쪽 테두리를 제거 */
-}
-
-.selected-categories {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 각 줄에 3개의 항목을 배치 */
-    grid-gap: 10px; /* 항목 간 간격 */
-    height: 400px; /* 지도와 동일한 높이로 설정 */
-    box-sizing: border-box;
-    overflow-y: auto; /* 스크롤 가능하게 설정 */
-    border: 1px solid #7B6155; /* 전체 테두리 설정 */
-    border-left: none; /* 왼쪽 테두리를 제거 */
-}
-.category-item {
-    height: 70px; /* 모든 항목의 높이를 동일하게 설정 */
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 14px;
-    box-sizing: border-box;
-    padding: 5px;
-    border-radius: 10px;
-}
-
-
-.board-list, .chat-room {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.chat-room {
-    height: 200px;
-}
-
-.button-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-#district-select {
-    margin-bottom: 20px;
-    background-color: #EDE3D5; /* 메인 색상으로 배경 설정 */
-    padding: 10px;
-    border-radius: 8px; /* 모서리를 둥글게 */
-}
-
-#district-select label {
-    font-size: 16px;
-    font-weight: bold;
-    color: #7B6155; /* 고동색으로 텍스트 색상 설정 */
-    margin-right: 10px; /* 라벨과 셀렉트 박스 사이에 간격 */
-}
-
-#districts {
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 4px;
-    background-color: #FFF; /* 선택 박스 배경 흰색으로 설정 */
-    color: #7B6155; /* 텍스트 색상을 고동색으로 설정 */
-}
-
-
+/* 검색 박스 스타일 */
 #search-box {
     margin-bottom: 40px;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 검색창과 버튼이 왼쪽에 위치하도록 조정 */
-    position: relative; /* 검색창과 검색 결과의 상대 위치를 조정하기 위해 추가 */
+    justify-content: space-between;
+    position: relative;
 }
 
-#search-results {
-    position: absolute;
-    top: 50px; /* 검색창 바로 아래에 위치하도록 설정 */
-    left: 0;
-    width: 100%;
-    background-color: #EDE3D5;
-    border-radius: 0 0 8px 8px; /* 아래쪽 모서리만 둥글게 */
-    z-index: 1000;
-    box-sizing: border-box;
-    max-height: 200px;
-    overflow-y: auto; /* 스크롤 가능하게 설정 */
-}
-
-#search-results div {
+#search-input {
+    width: calc(100% - 110px);
     padding: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid #ccc;
-}
-
-#search-results div:hover {
-    background-color: #f0f0f0;
-}
-
-.available-categories .category-item, .selected-categories .category-item {
-    flex: 1 1 30%; /* 아이템이 일정 크기를 유지하면서 늘어나도록 설정 */
-    margin: 5px;
+    font-size: 16px;
+    border: 2px solid #7B6155;
+    border-radius: 8px;
+    background-color: #EDE3D5;
+    color: #333;
 }
 
 #search-btn {
@@ -226,65 +56,71 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    margin-left: 10px; /* 검색창과 버튼 사이에 간격 추가 */
 }
 
-#search-btn:hover {
-    background-color: #6A5248; /* 버튼에 마우스를 올렸을 때 약간 어두운 고동색 */
+/* 카테고리 선택 영역 */
+.filter-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* 검색 버튼 스타일 */
-.category-search {
-    padding: 8px 12px;
-    background-color: #7B6155; /* 고동색 */
-    color: white; /* 버튼 글자 색상 */
-    border: none; /* 기본 테두리 제거 */
-    border-radius: 4px; /* 버튼 모서리를 둥글게 */
+.category-selection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.available-categories, .selected-categories {
+    width: 48%;
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #7B6155;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.category-item {
+    height: 70px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.category-reset, .category-search {
+    padding: 10px 20px;
+    background-color: #7B6155;
+    color: white;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
 }
 
-/* 카테고리 초기화 버튼 스타일 */
-.category-reset {
-    padding: 8px 12px;
-    background-color: #6A5248; /* 어두운 고동색 */
-    color: white; /* 버튼 글자 색상 */
-    border: none; /* 기본 테두리 제거 */
-    border-radius: 4px; /* 버튼 모서리를 둥글게 */
-    cursor: pointer;
-    font-size: 14px;
+/* 지역 선택 드롭다운 */
+#district-select {
+    margin-bottom: 20px;
 }
 
-/* 마우스 오버 시 효과 (옵션) */
-.category-search:hover {
-    background-color: #6A5248; /* 어두운 고동색으로 변경 */
-}
-
-.category-reset:hover {
-    background-color: #5C4A41; /* 더 어두운 고동색으로 변경 */
-}
-
-#search-input {
-    width: 300px;
+#districts {
+    width: 100%;
     padding: 10px;
     font-size: 16px;
     border: 2px solid #7B6155;
-    border-radius: 8px; /* 전체 모서리를 둥글게 */
+    border-radius: 8px;
     background-color: #EDE3D5;
     color: #333;
-    box-sizing: border-box;
-    outline: none; /* 클릭 시 발생하는 브라우저 기본 테두리 제거 */
 }
-
-
-#search-input::placeholder {
-    color: #7B6155;
-    opacity: 0.7;
-}
-
-#search-input:focus {
-    outline: none;
-    border-color: #884D33;
-    box-shadow: 0 0 5px rgba(136, 77, 51, 0.5);
-}
-

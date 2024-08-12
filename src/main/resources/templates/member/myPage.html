@@ -2,49 +2,55 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>My Page</title>
-    <link rel="stylesheet" href="/css/member/mypage.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <script th:src="@{/js/member/header.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/member/myPage.css}">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<div th:if="${#authentication.isAuthenticated()}" class="container">
-    <h1>안녕하세요, <span id="userNickname" th:text="${nickname}"></span>님!</h1>
+    <div th:replace="fragments/header :: header"></div>
 
-    <div class="profile-image"
-         th:style="'background-image: url(' + (${profileImageUrl != null ? profileImageUrl : '/images/BeanContainer.png'}) + ')'"
-         onclick="document.getElementById('file-upload').click();">
+    <div class="container" th:if="${#authentication.isAuthenticated()}">
+        <h1>안녕하세요, <span id="userNickname" th:text="${nickname}"></span>님!</h1>
+
+        <div class="profile-image"
+             th:style="'background-image: url(' + (${profileImageUrl != null ? profileImageUrl : '/images/BeanContainer.png'}) + ')'"
+             onclick="document.getElementById('file-upload').click();">
+        </div>
+
+        <div class="profile-upload">
+            <form id="profileImageForm" enctype="multipart/form-data">
+                <label for="file-upload" class="custom-file-upload">
+                    프로필 이미지 업로드
+                </label>
+                <input id="file-upload" type="file" name="file" accept="image/*">
+            </form>
+        </div>
+
+
+        <button onclick="showNicknameChangeForm()">닉네임 변경</button>
+
+        <div id="nicknameChangeForm" style="display: none;">
+            <input type="text" id="newNickname" placeholder="새 닉네임 입력">
+            <button onclick="changeNickname()">변경 완료</button>
+        </div>
+
+        <div>
+            <button onclick="deleteAccount()">회원 탈퇴</button>
+        </div>
     </div>
-
-    <div class="profile-upload">
-        <form id="profileImageForm" enctype="multipart/form-data">
-            <label for="file-upload" class="custom-file-upload">
-                프로필 이미지 업로드
-            </label>
-            <input id="file-upload" type="file" name="file" accept="image/*">
-        </form>
-    </div>
-
-
-
-    <button onclick="showNicknameChangeForm()">닉네임 변경</button>
-
-    <div id="nicknameChangeForm" style="display: none;">
-        <input type="text" id="newNickname" placeholder="새 닉네임 입력">
-        <button onclick="changeNickname()">변경 완료</button>
-    </div>
-
-    <div>
-        <button onclick="deleteAccount()">회원 탈퇴</button>
-    </div>
-
-</div>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
     var userId = /*[[${userId}]]*/ 'defaultUserId';
     /*]]>*/
 
-    $(document).ready(function() {
-        $('#file-upload').change(function() {
+    $(document).ready(function () {
+        $('#file-upload').change(function () {
             var file = this.files[0];
             if (file) {
                 var formData = new FormData($('#profileImageForm')[0]);
@@ -54,15 +60,15 @@
                     data: formData,
                     processData: false,
                     contentType: false,
-                    success: function(response) {
-                        if(response.imageUrl) {
+                    success: function (response) {
+                        if (response.imageUrl) {
                             $('.profile-image').css('background-image', 'url(' + response.imageUrl + ')');
                             alert('프로필 이미지가 업데이트되었습니다.');
                         } else {
                             alert('프로필 이미지 업데이트에 실패했습니다.');
                         }
                     },
-                    error: function() {
+                    error: function () {
                         alert('프로필 이미지 업로드 중 오류가 발생했습니다.');
                     }
                 });
@@ -73,6 +79,7 @@
     function showNicknameChangeForm() {
         document.getElementById('nicknameChangeForm').style.display = 'block';
     }
+
     function changeNickname() {
         var newNickname = document.getElementById('newNickname').value;
         if (newNickname) {
@@ -81,7 +88,7 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ newNickname: newNickname })
+                body: JSON.stringify({newNickname: newNickname})
             })
                 .then(response => response.json())
                 .then(data => {
@@ -105,11 +112,11 @@
     function deleteAccount() {
         if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
             $.post('/api/mypage/' + userId + '/deleteAccount')
-                .done(function(response) {
+                .done(function (response) {
                     alert('계정이 삭제되었습니다.');
                     window.location.href = '/';
                 })
-                .fail(function(error) {
+                .fail(function (error) {
                     alert('계정 삭제에 실패했습니다: ' + error.responseText);
                 });
         }

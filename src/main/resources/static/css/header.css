@@ -24,6 +24,8 @@
 
 .uk-navbar-right {
     margin-left: auto;
+    display: flex;
+    align-items: center;
 }
 
 .uk-navbar-right .hamburger {
@@ -31,6 +33,7 @@
     font-size: 24px;
     cursor: pointer;
     padding: 10px;
+    margin-left: auto;
 }
 
 .uk-navbar-item img {
