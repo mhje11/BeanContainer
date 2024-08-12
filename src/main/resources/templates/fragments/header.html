@@ -27,13 +27,15 @@
                 <!--   유저 로그인 안되어 있을 때   -->
                 <ul th:if="${#authorization.expression('!isAuthenticated()')}">
                     <li><a href="/login">Login</a></li>
+                    <li><a href="/post/post-list">게시판</a></li>
                 </ul>
 
                 <!--   유저 로그인 성공 후  -->
                 <ul th:if="${#authorization.expression('isAuthenticated()')}" class="uk-nav uk-nav-default">
                     <li><a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">내 정보 관리</a></li>
 
-                    <li><a th:href="@{/post/create}">게시글 작성</a></li>
+                    <li><a href="/post/create">게시글 작성</a></li>
+                    <li><a href="/post/post-list">게시판</a></li>
                     <li><a href="/mymap">저장 된 지도 목록</a></li>
                     <li><a href="/create/map">지도 만들기</a></li>
                     <li><a href="#">채팅방</a></li>
