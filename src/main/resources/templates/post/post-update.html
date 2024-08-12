@@ -1,43 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 수정</title>
-    <style>
-        .existing-images {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .existing-images img {
-            max-width: 100%;
-            height: auto;
-            width: 300px;
-            object-fit: cover;
-        }
-    </style>
+    <title>게시글 상세보기</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-update.css}">
 </head>
 <body>
-<form id="updateForm" enctype="multipart/form-data">
-    <div>
-        <label for="title">제목</label>
-        <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
-    </div>
-    <div>
-        <label for="content">내용</label>
-        <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
-    </div>
-    <div id="existing-images" class="existing-images">
-        <!--기존 이미지-->
-    </div>
-    <div>
-        <label for="images">새 이미지</label>
-        <input type="file" id="images" name="images" accept="image/*" multiple>
-    </div>
-    <button type="submit">게시글 수정</button>
-</form>
+<div th:replace="fragments/header :: header"></div>
+<div class="container">
+    <form id="updateForm" enctype="multipart/form-data">
+        <div>
+            <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
+        </div>
+        <div>
+            <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
+        </div>
+        <div id="existing-images" class="existing-images">
+            <!--기존 이미지-->
+        </div>
+        <div class="box">
+            <div class="new-images">
+                <label for="images">새 이미지</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple>
+                <span id="fileName">선택된 파일 없음</span>
+            </div>
+            <div class="button-container">
+                <button type="submit" id="update-button">게시글 수정</button>
+                <button type="button" id="cancel-button">취소</button>
+            </div>
+        </div>
+    </form>
+</div>
 <script>
+    document.getElementById('images').addEventListener('change', function() {
+        const fileInput = document.getElementById('images');
+        const fileNameDisplay = document.getElementById('fileName');
+
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = Array.from(fileInput.files).map(file => file.name).join(', ');
+        } else {
+            fileNameDisplay.textContent = '선택된 파일 없음';
+        }
+    });
+
     async function fetchPost() {
         try {
             const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
@@ -64,6 +73,7 @@
             console.error('게시글을 불러오는 중 오류가 발생하였습니다.', error);
         }
     };
+
     document.addEventListener('DOMContentLoaded', fetchPost);
 
     document.getElementById('updateForm').addEventListener('submit', function (event) {
@@ -92,6 +102,10 @@
                 window.location.href = `/postList/${postId}`; // 수정 후 게시글 상세 페이지로 리다이렉트
             })
             .catch(error => console.error('Error: ', error));});
+
+    document.getElementById('cancel-button').addEventListener('click', function() {
+        window.history.back();  // 이전 페이지로 돌아가기
+    });
 </script>
 </body>
 </html>
