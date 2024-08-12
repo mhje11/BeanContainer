@@ -90,7 +90,10 @@ body {
     justify-content: space-between;
 
 }
-
+.category-selection {
+    display: flex;
+    justify-content: space-between;
+}
 .available-categories, .selected-categories {
     width: 100%;
     padding: 10px;

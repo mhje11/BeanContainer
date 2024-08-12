@@ -84,7 +84,7 @@ body {
 }
 
 .category-item {
-    height: 70px;
+    height: 70px; / 모든 항목의 높이를 동일하게 설정 */
     border: 1px solid #ccc;
     background-color: #f9f9f9;
     cursor: pointer;
@@ -97,6 +97,7 @@ body {
     padding: 5px;
     border-radius: 10px;
 }
+
 
 #search-results div {
     cursor: pointer;
