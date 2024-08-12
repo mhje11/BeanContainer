@@ -134,7 +134,7 @@ strong {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.comment button {
+.comment button, .save-button, .cancel-button {
     background-color: #7B6155;
     color: #FFFFFF;
     border: none;
