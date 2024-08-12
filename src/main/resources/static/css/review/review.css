@@ -1,6 +1,29 @@
+/* 전체 배경색 설정 */
+body {
+    background-color: #EDE3D5; /* 바디 배경색 */
+    /*background-color: #f9f9f9;*/
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* 컨테이너 배경색 설정 */
+.container {
+    /*background-color: #EDE3D5; !* 컨테이너 배경색을 바디 배경색과 동일하게 설정 *!*/
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 8px;
+    border: 1px solid #7B6155;
+    max-width: 800px;
+}
+
+/* 별점 스타일 */
 .star-rating {
-    direction: rtl;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: row-reverse; /* 역순으로 배치 */
+    font-size: 2rem;
 }
 
 .star-rating input {
@@ -8,18 +31,24 @@
 }
 
 .star-rating label {
+    cursor: pointer;
     font-size: 2rem;
     color: #ddd;
-    cursor: pointer;
+    margin: 0;
 }
 
-.star-rating input:checked ~ label,
-.star-rating input:hover ~ label,
 .star-rating label:hover,
-.star-rating label:hover ~ label {
+.star-rating label:hover ~ label,
+.star-rating input:checked + label,
+.star-rating input:checked + label ~ label {
     color: #f5c518;
 }
 
+.star-rating label::before {
+    content: '\2605';
+}
+
+/* 카테고리 스타일 */
 .selected-categories {
     margin-top: 10px;
 }
@@ -37,6 +66,7 @@
     border-radius: 3px;
 }
 
+/* 리뷰 항목 스타일 */
 .review-item {
     margin-bottom: 20px;
     padding: 10px;
@@ -44,6 +74,7 @@
     border-radius: 5px;
 }
 
+/* 편집 폼 스타일 */
 .edit-form {
     margin-top: 20px;
     padding: 10px;
