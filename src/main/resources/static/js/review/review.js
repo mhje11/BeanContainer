@@ -55,18 +55,18 @@ document.getElementById('submit-review').addEventListener('click', async () => {
         });
 
         if (response.ok) {
-            alert('Review submitted successfully!');
+            alert('리뷰가 등록 됐습니다.');
             fetchReviews();
             document.getElementById('review-content').value = '';
             document.querySelector('.review-form input[name="rating"]:checked').checked = false;
             selectedCategories.clear();
             updateSelectedCategories('review', []);
         } else {
-            alert('Failed to submit review.');
+            alert('리뷰 작성에 실패 했습니다.');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to submit review.');
+        alert('리뷰 작성에 실패 했습니다.');
     }
 });
 
@@ -82,7 +82,7 @@ async function fetchReviews() {
         displayReviews(reviews);
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to fetch reviews.');
+        alert('리뷰 정보를 불러오는데 실패 했습니다.');
     }
 }
 
@@ -96,7 +96,7 @@ async function fetchCafeInfo() {
         displayCafeInfo(cafe);
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to fetch cafe info.');
+        alert('카페 정보를 불러오는데 실패 했습니다.');
     }
 }
 
@@ -227,14 +227,14 @@ async function submitEditReview(reviewId) {
         });
 
         if (response.ok) {
-            alert('Review updated successfully!');
+            alert('리뷰를 수정했습니다.');
             fetchReviews();
         } else {
-            alert('Failed to update review.');
+            alert('리뷰를 수정하는데 실패 했습니다.');
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to update review.');
+        alert('리뷰를 수정하는데 실패 했습니다.');
     }
 }
 
