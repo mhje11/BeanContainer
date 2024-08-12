@@ -26,6 +26,7 @@
                             <li><a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a></li>
                             <li><a href="#">채팅방</a></li>
                             <li><a th:href="@{/post/create}">게시글 작성</a></li>
+                            <li><a th:href="@{/post/post-list}">게시판</a></li>
                             <li><a href="/mymap">저장 된 지도 목록</a></li>
                             <li><a href="/create/map">지도 만들기</a></li>
                             <li><a href="#" onclick="logout(); return false;">logout</a></li>

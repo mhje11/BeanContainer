@@ -90,12 +90,12 @@ class PostOperations {
             const btnList = document.getElementById('btn-list');
             if (post.author) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
                 btnList.innerHTML = `
-                <a href="/post/postList">목록</a>
+                <a href="/post/post-list">목록</a>
                 <a href="/postList/update/${this.postId}">수정</a>
                 <a href="#" onclick="postOps.deletePost()">삭제</a>
             `;  /*GET이 아닌 DELETE 요청이기 때문에 함수로 호출*/
             } else {
-                btnList.innerHTML = `<a href="/post/postList">목록</a>`;
+                btnList.innerHTML = `<a href="/post/post-list">목록</a>`;
             }
 
             // 댓글 불러오기

@@ -1,65 +1,45 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>게시판</title>
-    <style>
-        body {
-            font-family: "Arial", sans-serif;
-            margin: 40px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th,
-        td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        a {
-            color: #337ab7;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-list.css}">
+
 </head>
 <body>
-<table>
-    <thead>
-    <tr>
-        <th>번호</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>댓글수</th>
-        <th>좋아요수</th>
-        <th>작성일 / 수정일</th>
-        <th>조회수</th>
-    </tr>
-    </thead>
-    <tbody id="post-list">
-    </tbody>
-</table>
-<div>
-    <label for="sort-select">정렬 기준:</label>
-    <select id="sort-select">
-        <option value="createdAt" selected>최신순</option>
-        <option value="views">조회수순</option>
-        <option value="likeCount">좋아요순</option>
-        <option value="commentCount">댓글수순</option>
-    </select>
-</div>
-<div id="pagination">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>댓글수</th>
+            <th>좋아요수</th>
+            <th>작성일 / 수정일</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody id="post-list">
+        </tbody>
+    </table>
+    <div>
+        <label for="sort-select">정렬 기준:</label>
+        <select id="sort-select">
+            <option value="createdAt" selected>최신순</option>
+            <option value="views">조회수순</option>
+            <option value="likeCount">좋아요순</option>
+            <option value="commentCount">댓글수순</option>
+        </select>
+    </div>
+    <div id="pagination">
+    </div>
 </div>
 
 <script>
