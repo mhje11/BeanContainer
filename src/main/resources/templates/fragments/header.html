@@ -7,33 +7,33 @@
 <body>
 <header th:fragment="header" style="width: 100%">
     <div th:fragment="header" class="header">
-        <nav class="uk-navbar-left">
+        <nav class="uk-navbar-container">
             <div class="uk-navbar-left">
                 <a href="/" class="uk-navbar-item uk-logo">
-                    <img src="/images/BeanContainer.png" alt="Bean Container Logo" class="uk-margin-small-right" width="40" height="40">
+                    <img src="/images/BeanContainer.png" alt="Bean Container Logo" class="uk-margin-small-right"
+                         width="40" height="40">
                     Bean Container
                 </a>
             </div>
-        </nav>
-        <nav class="uk-navbar-right">
+
             <div class="uk-navbar-right">
                 <a href="#" class="hamburger" uk-toggle="target: #offcanvas-menu">☰</a>
+
+                <div id="offcanvas-menu" uk-offcanvas="flip: true; overlay: true">
+                    <div class="uk-offcanvas-bar">
+                        <ul class="uk-nav uk-nav-default">
+                            <li><a href="/login">Login</a></li>
+                            <li><a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a></li>
+                            <li><a href="#">채팅방</a></li>
+                            <li><a th:href="@{/post/create}">게시글 작성</a></li>
+                            <li><a href="/mymap">저장 된 지도 목록</a></li>
+                            <li><a href="/create/map">지도 만들기</a></li>
+                            <li><a href="#" onclick="logout()">logout</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </nav>
-
-        <div id="offcanvas-menu" uk-offcanvas="flip: true; overlay: true">
-            <div class="uk-offcanvas-bar">
-                <ul class="uk-nav uk-nav-default">
-                    <li><a href="/login">Login</a></li>
-                    <li><a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">my page</a></li>
-                    <li><a href="#">채팅방</a></li>
-                    <li><a th:href="@{/post/create}">게시글 작성</a></li>
-                    <li><a href="/mymap">저장 된 지도 목록</a></li>
-                    <li><a href="/create/map">지도 만들기</a></li>
-                    <li><a href="#" onclick="logout()">logout</a></li>
-                </ul>
-            </div>
-        </div>
     </div>
 </header>
 
