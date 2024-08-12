@@ -1,4 +1,4 @@
-body {
+body, html {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
     color: #333;
@@ -6,6 +6,8 @@ body {
     max-height: 1500px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
+
     background-color: #EDE3D5;
 }
 .container {
