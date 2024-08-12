@@ -1,13 +1,51 @@
+html {
+    /*min-height: 100vh; !* 전체 페이지 높이 *!*/
+    background-color: #F2EFE8;
+}
+
 body {
     font-family: "Arial", sans-serif;
-    background-color: #EDE3D5;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
-    background-color: #EDE3D5;
-    padding: 40px;
+    padding: 5px;
     margin: 20px auto;
     max-width: 800px;
+    border-radius: 10px;
+}
+
+.sort-div {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    color: #7B6155; /* 갈색 */
+}
+
+select {
+    padding: 5px;
+    border: 1px solid #884D33;
+    border-radius: 5px;
+    background-color: #F5F5F5;
+    color: #7B6155; /* 고동색 */
+    margin-right: 10px;
+}
+
+#write-button {
+    background-color: #7B6155;
+    color: #F5F5F5;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 10px;
+    margin-left: 10px;
+}
+
+#write-button:hover {
+    background-color: #7B6155; /* 고동색 */
 }
 
 table {
@@ -24,29 +62,59 @@ td {
 }
 
 th {
-    background-color: #F5F5F5;
+    background-color: #EDE3D5; /* 노랑 */
+    color: #7B6155; /* 고동색 */
 }
 
-tr:nth-child(even) {
-    background-color: #F5F5F5;
+td {
+    background-color: #FFFFFF; /* 흰색 */
 }
 
 a {
-    color: #7B6155;
+    color: #7B6155; /* 고동색 */
     text-decoration: none;
 }
 
 a:hover {
-    color: #7B6155;
+    color: #884D33; /* 갈색 */
     text-decoration: underline;
+}
+
+#pagination {
+    text-align: center;
+    margin-top: 20px;
 }
 
 #pagination span a {
     margin: 0 5px;
-    color: #7B6155; /* Page number color */
+    color: #7B6155; /* 고동색 */
     font-size: 18px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
 #pagination span a:hover {
-    color: #F5F5F5; /* Hover color for page numbers */
+    background-color: #EDE3D5; /* 노랑 */
+    color: #884D33; /* 흰색 */
+}
+
+#pagination span a.active {
+    font-weight: bold;
+    background-color: #7B6155; /* 고동색 */
+    color: #FFFFFF; /* 흰색 */
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    th, td {
+        font-size: 14px;
+    }
+
+    #pagination span a {
+        font-size: 14px;
+    }
 }

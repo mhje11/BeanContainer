@@ -14,6 +14,17 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container">
+    <div class="sort-div">
+        <label for="sort-select">정렬 기준:</label>
+        <select id="sort-select">
+            <option value="createdAt" selected>최신순</option>
+            <option value="views">조회수순</option>
+            <option value="likeCount">좋아요순</option>
+            <option value="commentCount">댓글순</option>
+        </select>
+        <button type="button" onclick="location.href='/post/create'" id="write-button" class="uk-button uk-button-primary">글쓰기</button>
+    </div>
+
     <table>
         <thead>
         <tr>
@@ -29,22 +40,13 @@
         <tbody id="post-list">
         </tbody>
     </table>
-    <div>
-        <label for="sort-select">정렬 기준:</label>
-        <select id="sort-select">
-            <option value="createdAt" selected>최신순</option>
-            <option value="views">조회수순</option>
-            <option value="likeCount">좋아요순</option>
-            <option value="commentCount">댓글수순</option>
-        </select>
-    </div>
     <div id="pagination">
     </div>
 </div>
 
 <script>
     let currentPage = 0;
-    const pageSize = 5;
+    const pageSize = 15;
     let sortBy = 'createdAt';
 
     document.getElementById('sort-select').addEventListener('change', function() {
