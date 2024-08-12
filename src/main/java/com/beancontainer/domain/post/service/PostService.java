@@ -1,5 +1,6 @@
 package com.beancontainer.domain.post.service;
 
+import com.beancontainer.domain.like.entity.Likes;
 import com.beancontainer.domain.like.repository.LikeRepository;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
@@ -72,9 +73,7 @@ public class PostService {
     // 게시글 목록 조회
     @Transactional(readOnly = true)
     public Page<PostListResponseDto> getAllPosts(Pageable pageable) {
-
         Page<Post> postList = postRepository.findAll(pageable);
-
         return postList.map(PostListResponseDto::new);
     }
 
