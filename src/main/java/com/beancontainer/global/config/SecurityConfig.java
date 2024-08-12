@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/mypage/{userId}", "/api/profileImage/**", "/mymap","/mymap/update/{mapId}").authenticated() // 인증된 사용자만 접근 가능
                         .requestMatchers("/admin/**", "/api/admin/**").hasAuthority("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능 ROLE 접두사 제거
                         .requestMatchers("/review/{kakaoId}").permitAll()
+                        .requestMatchers("/chat/**").permitAll()
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
                 )
                 .logout(logout -> logout
