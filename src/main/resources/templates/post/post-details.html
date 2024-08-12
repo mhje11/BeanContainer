@@ -1,55 +1,41 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>게시글 상세보기</title>
-    <style>
-        strong {
-            font-size: 17px;
-            font-weight: bold;
-            padding-bottom: 8px;
-        }
-
-        a {
-            color: #337ab7;
-            text-decoration: none;
-        }
-
-        /* 이미지 스타일 */
-        .images {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .images img {
-            max-width: 100%;
-            height: auto;
-            width: 300px;
-            object-fit: cover;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-details.css}">
 </head>
 <body>
-<div id="post-box">
-    <h1 id="title"></h1>
-    <strong>작성자: </strong><span id="nickname"></span><br>
-    <strong>작성일: </strong><span id="createdAt"></span><br>
-    <strong>수정일: </strong><span id="updatedAt"></span><br>
-    <strong>내용: </strong><span id="content"></span><br>
-    <strong>조회수: </strong><span id="views"></span><br>
-    <div class="images" id="images"></div>
-</div>
-<div>
-    <button id="like-button" class="like-button">좋아요</button>
-    <span id="like-count">0</span>명이 좋아합니다.
-</div>
-<p id="btn-list"></p>
-<div>
-    <h3>댓글</h3>
-    <div id="comments"></div>
-    <textarea id="comment-input" placeholder="내용을 입력하세요." rows="3" required></textarea>
-    <button type="submit" id="submit-comment">댓글 등록</button>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div id="post-box">
+        <h1 id="title"></h1>
+        <div id="meta-info">
+            <strong>작성자: </strong><span id="nickname"></span>
+            <strong>작성일: </strong><span id="createdAt"></span>
+    <!--        <strong>수정일: </strong><span id="updatedAt"></span><br>-->
+            <strong>조회수: </strong><span id="views"></span>
+        </div>
+        <div class="images" id="images"></div>
+        <!--        <strong>내용: </strong>-->
+        <div class="content" id="content"></div>
+    </div>
+    <div class="likes">
+        <button id="like-button" class="like-button">좋아요</button>
+        <span id="like-count">0</span>명이 좋아합니다.
+    </div>
+    <p id="btn-list"></p>
+    <div>
+        <h4>댓글</h4>
+        <div id="comments"></div>
+        <textarea id="comment-input" placeholder="내용을 입력하세요." rows="3" required></textarea>
+        <button type="submit" id="submit-comment">댓글 등록</button>
+    </div>
 </div>
 <script>
 class PostOperations {
@@ -68,8 +54,8 @@ class PostOperations {
             // HTML 요소에 값 설정
             document.getElementById('title').innerText = post.title;
             document.getElementById('nickname').innerText = post.nickname;
-            document.getElementById('createdAt').innerText = new Date(post.createdAt).toLocaleString();
-            document.getElementById('updatedAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() : new Date(post.createdAt).toLocaleString();
+            document.getElementById('createdAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() + ' (수정됨)' : new Date(post.createdAt).toLocaleString();
+            // document.getElementById('updatedAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() : new Date(post.createdAt).toLocaleString();
             document.getElementById('content').innerText = post.content;
             document.getElementById('views').innerText = post.views;
 
@@ -90,9 +76,9 @@ class PostOperations {
             const btnList = document.getElementById('btn-list');
             if (post.author) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
                 btnList.innerHTML = `
-                <a href="/post/post-list">목록</a>
-                <a href="/postList/update/${this.postId}">수정</a>
-                <a href="#" onclick="postOps.deletePost()">삭제</a>
+                <button type="button" onclick="location.href='/post/post-list'">목록</button>
+                <button type="button" onclick="location.href='/postList/update/${this.postId}'">수정</button>
+                <button type="button" onclick="postOps.deletePost()">삭제</button>
             `;  /*GET이 아닌 DELETE 요청이기 때문에 함수로 호출*/
             } else {
                 btnList.innerHTML = `<a href="/post/post-list">목록</a>`;
@@ -157,8 +143,8 @@ class PostOperations {
                 const div = document.createElement('div');
                 div.className = 'comment';
                 div.innerHTML = `
-                    <strong>${comment.nickname}</strong>: <span id="comment-content-${comment.id}">${comment.content}</span>
-                    <em>${new Date(comment.createdAt).toLocaleString()}</em>
+                    <strong>${comment.nickname}</strong>: <span class="comment-content" id="comment-content-${comment.id}">${comment.content}</span>
+                    <em class="comment-date">${new Date(comment.createdAt).toLocaleString()}</em>
                     `;
                 if (comment.author) {
                     const updateButton = document.createElement('button');
