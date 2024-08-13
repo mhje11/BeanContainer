@@ -9,7 +9,7 @@
 <br>
 
 ## :calendar:제작 기간
-* IDEATON 1차 : 2024.007.23. - 2024.07.29.
+* IDEATON 1차 : 2024.07.23. - 2024.07.29.
 * HACKATHON 1차 : 2024.07.30. - 2024.08.14.
 
 <br>
@@ -22,7 +22,7 @@
 >html, js, css, thymeleaf
 
 ### 🧑‍💻Back-end
->Spring Security, Spring Framework, MySQL, JWT, Docker
+>SpringBoot, Spring Security, JWT, MySQL, Docker
 
 ### :globe_with_meridians:형상 관리 및 배포 도구
 >GitHub, AWS
