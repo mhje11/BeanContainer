@@ -94,7 +94,7 @@
             .then(data => {
                 document.getElementById('map-name').value = data.mapName;
                 data.cafes.forEach(cafe => {
-                    addCafeToSet(cafe.kakaoId, cafe.name, cafe.address);
+                    addCafeToSet(cafe.kakaoId, cafe.name, cafe.address, cafe.latitude, cafe.longitude);
                 });
             })
             .catch(error => {
@@ -179,17 +179,20 @@
     }
 
     function displayMarker(place) {
-        let markerImageUrl = addedCafes.has(place.id) ?
-            "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png" :
-            null;
+        // 기존의 addedCafes 세트에 카페가 있는지 확인
+        const isAddedCafe = [...addedCafes].some(cafe => cafe.kakaoId === place.id);
 
-        let markerImage = markerImageUrl ?
-            new kakao.maps.MarkerImage(markerImageUrl, new kakao.maps.Size(24, 35), { offset: new kakao.maps.Point(12, 35) }) :
-            null;
+        let markerImageUrl = isAddedCafe
+            ? "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"
+            : null;
+
+        let markerImage = markerImageUrl
+            ? new kakao.maps.MarkerImage(markerImageUrl, new kakao.maps.Size(24, 35), { offset: new kakao.maps.Point(12, 35) })
+            : null;
 
         const marker = new kakao.maps.Marker({
             map: map,
-            position: new kakao.maps.LatLng(place.latitude || place.y, place.longitude || place.x),
+            position: new kakao.maps.LatLng(place.y, place.x),
             image: markerImage
         });
 
@@ -199,6 +202,7 @@
             openInfoWindow(marker, place);
         });
     }
+
 
     function openInfoWindow(marker, place) {
         const parsedAddress = parseAddress(place.road_address_name || place.address_name);
@@ -214,24 +218,18 @@
         infowindow.open(map, marker);
     }
 
-    function addCafeToSet(kakaoId, name, address) {
+    function addCafeToSet(kakaoId, name, address, latitude, longitude) {
         if (!addedCafes.has(kakaoId)) {
-            addedCafes.add(kakaoId);
+            addedCafes.add({ kakaoId, name, address, latitude, longitude });
             console.log(`Added cafe to set: ${kakaoId}, Current set size: ${addedCafes.size}`);
-
-            // 세트에 저장된 모든 카페 정보 출력
-            console.log("Current cafes in set:");
-            addedCafes.forEach(cafeId => {
-                console.log(`Cafe ID: ${cafeId}`);
-            });
 
             const card = document.createElement('div');
             card.className = 'cafe-card';
             card.setAttribute('data-id', kakaoId);
             card.innerHTML = `
-        <h4>${name}</h4>
-        <p>${address}</p>
-        <button onclick="removeCafe('${kakaoId}')">삭제</button>
+            <h4>${name}</h4>
+            <p>${address}</p>
+            <button onclick="removeCafe('${kakaoId}')">삭제</button>
         `;
 
             card.addEventListener('click', () => handleCardClick(kakaoId));
@@ -252,22 +250,29 @@
 
 
     function handleCardClick(kakaoId) {
-        const marker = markers[kakaoId];
-        if (marker) {
-            // 1. 마커 위치로 지도를 이동
-            map.setCenter(marker.getPosition());
+        const cafe = [...addedCafes].find(c => c.kakaoId === kakaoId);
+        if (cafe) {
+            const position = new kakao.maps.LatLng(cafe.latitude, cafe.longitude);
+            map.setCenter(position);
 
-            // 2. 지도를 이동한 후 마커를 재검색하고 로드
-            setTimeout(() => {
-                // 검색을 통해 해당 위치에 있는 카페들을 다시 로드
-                searchPlacesByCenter(marker.getPosition());
+            if (!markers[kakaoId]) {
+                // 선택된 카페의 마커를 생성
+                displayMarker({
+                    id: kakaoId,
+                    place_name: cafe.name,
+                    road_address_name: cafe.address,
+                    y: cafe.latitude,
+                    x: cafe.longitude
+                });
+            } else {
+                // 이미 있는 마커라면, 인포윈도우를 다시 열어줍니다.
+                openInfoWindow(markers[kakaoId], cafe);
+            }
 
-                // 마커를 다시 설정해서 잘 보이도록 함
-                infowindow.close();
-                openInfoWindow(marker, marker.getPosition());
-            }, 500); // 500ms 딜레이 후 마커 재검색
+            // 주변 카페들도 함께 로딩
+            searchPlacesByCenter(position);
         } else {
-            console.error(`Marker for cafe with ID ${kakaoId} not found.`);
+            console.error(`Cafe with ID ${kakaoId} not found in set.`);
         }
     }
 
