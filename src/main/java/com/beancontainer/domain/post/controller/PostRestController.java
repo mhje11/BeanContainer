@@ -6,7 +6,6 @@ import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
-import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.service.PostService;
 import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
 import com.beancontainer.global.service.CustomUserDetails;

@@ -1,6 +1,5 @@
 package com.beancontainer.domain.comment.entity;
 
-
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.post.entity.Post;
 import jakarta.persistence.*;

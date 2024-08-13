@@ -51,7 +51,6 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-
     // 댓글 삭제
     public void deleteComment(Long postId, Long commentId, String userId, boolean isAdmin) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));

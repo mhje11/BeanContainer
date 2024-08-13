@@ -6,7 +6,6 @@ import com.beancontainer.domain.comment.dto.CommentRequestDto;
 import com.beancontainer.domain.comment.service.CommentService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
-import com.beancontainer.domain.post.service.PostService;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +55,6 @@ public class CommentRestController {
         return ResponseEntity.ok(comments);
     }
 
-
     // 댓글 삭제
     @DeleteMapping("/{postId}/delete/{commentId}")
     @RequireAdmin
@@ -71,6 +69,7 @@ public class CommentRestController {
         return ResponseEntity.ok("댓글 삭제가 완료되었습니다.");
     }
 
+    // 댓글 수정
     @PutMapping("/{postId}/update/{commentId}")
     public ResponseEntity<String> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
                                                 @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {

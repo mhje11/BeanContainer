@@ -1,6 +1,5 @@
 package com.beancontainer.domain.post.entity;
 
-import com.beancontainer.domain.like.entity.Likes;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import jakarta.persistence.*;
@@ -11,7 +10,6 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "posts")
@@ -37,7 +35,6 @@ public class Post {
     private int commentCount = 0;   // 댓글수
 
     private int views = 0;  // 조회수
-
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();  // 작성일
