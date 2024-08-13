@@ -44,12 +44,18 @@ public class CommentRestController {
     // 댓글 조회
     @GetMapping("/comments/{postId}")
     public ResponseEntity<List<CommentListResponseDto>> getAllComments(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Long currentUserId = null;
 
-        List<CommentListResponseDto> comments = commentService.getAllComments(postId, member.getId());
+        if (userDetails != null) {
+            Member member = memberRepository.findByUserId(userDetails.getUserId())
+                    .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+            currentUserId = member.getId();
+        }
+
+        List<CommentListResponseDto> comments = commentService.getAllComments(postId, currentUserId);
         return ResponseEntity.ok(comments);
     }
+
 
     // 댓글 삭제
     @DeleteMapping("/{postId}/delete/{commentId}")

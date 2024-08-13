@@ -74,7 +74,8 @@ public class PostRestController {
 
     @GetMapping("/postList/{postId}")   // 게시글 상세 정보
     public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        PostDetailsResponseDto post = postService.postDetails(postId, userDetails.getUserId());
+        String userId = (userDetails != null) ? userDetails.getUserId() : null;
+        PostDetailsResponseDto post = postService.postDetails(postId, userId);
         return ResponseEntity.ok(post);
     }
 
