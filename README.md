@@ -22,7 +22,7 @@
 >html, js, css, thymeleaf
 
 ### 🧑‍💻Back-end
->Spring Security, Spring Framework, MySQL, JWT, Docker
+>SpringBoot, Spring Security, JWT, MySQL, Docker
 
 ### :globe_with_meridians:형상 관리 및 배포 도구
 >GitHub, AWS
