@@ -131,18 +131,23 @@ function displayReviews(reviews) {
         editForm.style.display = 'none';
         editForm.innerHTML = `
             <textarea id="edit-content-${review.id}" rows="4" cols="50"></textarea>
-            <div class="star-rating">
-                <input type="radio" id="edit-5-stars-${review.id}" name="edit-rating-${review.id}" value="5" /><label for="edit-5-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-4.5-stars-${review.id}" name="edit-rating-${review.id}" value="4.5" /><label for="edit-4.5-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-4-stars-${review.id}" name="edit-rating-${review.id}" value="4" /><label for="edit-4-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-3.5-stars-${review.id}" name="edit-rating-${review.id}" value="3.5" /><label for="edit-3.5-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-3-stars-${review.id}" name="edit-rating-${review.id}" value="3" /><label for="edit-3-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-2.5-stars-${review.id}" name="edit-rating-${review.id}" value="2.5" /><label for="edit-2.5-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-2-stars-${review.id}" name="edit-rating-${review.id}" value="2" /><label for="edit-2-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-1.5-stars-${review.id}" name="edit-rating-${review.id}" value="1.5" /><label for="edit-1.5-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-1-stars-${review.id}" name="edit-rating-${review.id}" value="1" /><label for="edit-1-stars-${review.id}">&#9733;</label>
-                <input type="radio" id="edit-0.5-stars-${review.id}" name="edit-rating-${review.id}" value="0.5" /><label for="edit-0.5-stars-${review.id}">&#9733;</label>
-            </div>
+    <div class="star-rating">
+        <input type="radio" id="edit-5-stars-${review.id}" name="edit-rating-${review.id}" value="5">
+        <label for="edit-5-stars-${review.id}"></label>
+
+        <input type="radio" id="edit-4-stars-${review.id}" name="edit-rating-${review.id}" value="4">
+        <label for="edit-4-stars-${review.id}"></label>
+
+        <input type="radio" id="edit-3-stars-${review.id}" name="edit-rating-${review.id}" value="3">
+        <label for="edit-3-stars-${review.id}"></label>
+
+        <input type="radio" id="edit-2-stars-${review.id}" name="edit-rating-${review.id}" value="2">
+        <label for="edit-2-stars-${review.id}"></label>
+
+        <input type="radio" id="edit-1-stars-${review.id}" name="edit-rating-${review.id}" value="1">
+        <label for="edit-1-stars-${review.id}"></label>
+    </div>
+
             <div class="categories edit-categories">
                 <label><input type="checkbox" value="대형카페" /> 대형카페</label>
                 <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
@@ -161,6 +166,9 @@ function displayReviews(reviews) {
                 <label><input type="checkbox" value="풍경이 좋은" /> 풍경이 좋은</label>
                 <label><input type="checkbox" value="새로 오픈" /> 새로 오픈</label>
                 <label><input type="checkbox" value="조용한" /> 조용한</label>
+                <label><input type="checkbox" value="커피가 맛있는" /> 커피가 맛있는</label>
+        <label><input type="checkbox" value="디저트가 맛있는" /> 디저트가 맛있는</label>
+        <label><input type="checkbox" value="직원이 친절한" /> 직원이 친절한</label>
             </div>
             <button onclick="submitEditReview(${review.id})">Submit</button>
             <button onclick="cancelEditReview(${review.id})">Cancel</button>
