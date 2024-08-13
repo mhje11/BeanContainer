@@ -45,7 +45,7 @@
 </div>
 
 <script>
-    let map, ps, infowindow, markers = {}, addedCafes = new Set(), isCategorySearch = false;
+    let map, ps, infowindow, markers = {}, addedCafes = new Map(), isCategorySearch = false;
     const categories = [
         "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
         "와이파이", "데이트 하기 좋은", "혼자가기 좋은", "공부하기 좋은", "비즈니스 미팅",
@@ -179,8 +179,7 @@
     }
 
     function displayMarker(place) {
-        // 기존의 addedCafes 세트에 카페가 있는지 확인
-        const isAddedCafe = [...addedCafes].some(cafe => cafe.kakaoId === place.id);
+        const isAddedCafe = addedCafes.has(String(place.id));
 
         let markerImageUrl = isAddedCafe
             ? "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"
@@ -203,15 +202,14 @@
         });
     }
 
-
     function openInfoWindow(marker, place) {
         const parsedAddress = parseAddress(place.road_address_name || place.address_name);
         const content = `
             <div style="padding:10px; font-size:14px;">
                 <strong>${place.place_name}</strong><br>
                 ${place.road_address_name || place.address_name}<br>
-                <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.latitude || place.y}, ${place.longitude || place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-                <button onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.latitude || place.y}, ${place.longitude || place.x})">리뷰 페이지로 이동</button>
+                <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+                <button onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 페이지로 이동</button>
             </div>
         `;
         infowindow.setContent(content);
@@ -219,18 +217,21 @@
     }
 
     function addCafeToSet(kakaoId, name, address, latitude, longitude) {
+        kakaoId = String(kakaoId);
+
         if (!addedCafes.has(kakaoId)) {
-            addedCafes.add({ kakaoId, name, address, latitude, longitude });
-            console.log(`Added cafe to set: ${kakaoId}, Current set size: ${addedCafes.size}`);
+            const cafeObj = { kakaoId, name, address, latitude, longitude };
+            addedCafes.set(kakaoId, cafeObj);
+            console.log(`Added cafe to map: ${kakaoId}, Current map size: ${addedCafes.size}`);
 
             const card = document.createElement('div');
             card.className = 'cafe-card';
             card.setAttribute('data-id', kakaoId);
             card.innerHTML = `
-            <h4>${name}</h4>
-            <p>${address}</p>
-            <button onclick="removeCafe('${kakaoId}')">삭제</button>
-        `;
+                <h4>${name}</h4>
+                <p>${address}</p>
+                <button onclick="removeCafe('${kakaoId}')">삭제</button>
+            `;
 
             card.addEventListener('click', () => handleCardClick(kakaoId));
             document.getElementById('cafe-cards').appendChild(card);
@@ -245,18 +246,20 @@
                 );
                 marker.setImage(markerImage);
             }
+        } else {
+            console.log(`Cafe with ID ${kakaoId} already exists in map.`);
         }
     }
 
-
     function handleCardClick(kakaoId) {
-        const cafe = [...addedCafes].find(c => c.kakaoId === kakaoId);
+        kakaoId = String(kakaoId);
+        console.log(`Handling click for Cafe ID: ${kakaoId}`);
+        const cafe = addedCafes.get(kakaoId);
         if (cafe) {
             const position = new kakao.maps.LatLng(cafe.latitude, cafe.longitude);
             map.setCenter(position);
 
             if (!markers[kakaoId]) {
-                // 선택된 카페의 마커를 생성
                 displayMarker({
                     id: kakaoId,
                     place_name: cafe.name,
@@ -265,23 +268,21 @@
                     x: cafe.longitude
                 });
             } else {
-                // 이미 있는 마커라면, 인포윈도우를 다시 열어줍니다.
                 openInfoWindow(markers[kakaoId], cafe);
             }
 
-            // 주변 카페들도 함께 로딩
             searchPlacesByCenter(position);
         } else {
-            console.error(`Cafe with ID ${kakaoId} not found in set.`);
+            console.error(`Cafe with ID ${kakaoId} not found in map.`);
         }
     }
 
-
-
     function removeCafe(kakaoId) {
-
+        kakaoId = String(kakaoId);
         if (addedCafes.delete(kakaoId)) {
-            console.log(`Removed cafe from set: ${kakaoId}, Current set size: ${addedCafes.size}`);
+            console.log(`Removed cafe from map: ${kakaoId}, Current map size: ${addedCafes.size}`);
+        } else {
+            console.error(`Cafe with ID ${kakaoId} not found in map.`);
         }
 
         const card = document.querySelector(`.cafe-card[data-id="${kakaoId}"]`);
@@ -291,14 +292,15 @@
 
         const marker = markers[kakaoId];
         if (marker) {
-            marker.setImage(null);
+            marker.setMap(null);
+            delete markers[kakaoId];
         }
     }
 
     function saveMap() {
         const mapId = window.location.pathname.split("/").pop();
         const mapName = document.getElementById('map-name').value;
-        const kakaoIds = Array.from(addedCafes);
+        const kakaoIds = Array.from(addedCafes.keys());
 
         const mapData = {
             mapId: mapId,
@@ -383,8 +385,8 @@
                             id: cafe.kakaoId,
                             place_name: cafe.name,
                             road_address_name: cafe.address,
-                            latitude: cafe.latitude,
-                            longitude: cafe.longitude
+                            y: cafe.latitude,
+                            x: cafe.longitude
                         });
                     });
                 })
@@ -410,12 +412,6 @@
         }
         markers = {};
     }
-
-    document.getElementById('save-btn').addEventListener('click', saveMap);
-
-    document.getElementById('search-btn').addEventListener('click', searchCafeByName);
-
-    document.addEventListener('DOMContentLoaded', initMap);
 
     function parseAddress(address) {
         const parts = address.split(' ');
@@ -459,7 +455,7 @@
         })
             .then(data => {
                 console.log("Cafe saved or found:", data);
-                addCafeToSet(kakaoId, name, address);
+                addCafeToSet(kakaoId, name, address, latitude, longitude);
             }).catch(error => {
             console.error('Error:', error);
             alert('Error: ' + error.message);
@@ -503,8 +499,11 @@
             alert('Error: ' + error.message);
         });
     }
+
+    document.getElementById('save-btn').addEventListener('click', saveMap);
+    document.getElementById('search-btn').addEventListener('click', searchCafeByName);
+    document.addEventListener('DOMContentLoaded', initMap);
 </script>
 
 </body>
 </html>
-
