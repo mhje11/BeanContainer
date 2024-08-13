@@ -9,6 +9,7 @@ import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
@@ -40,14 +42,15 @@ public class CommentService {
     // 댓글 조회
     @Transactional(readOnly = true)
     public List<CommentListResponseDto> getAllComments(Long postId, Long currentUserId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         List<Comment> comments = commentRepository.findByPost(post);
 
-
         return comments.stream()
-                .map(comment -> new CommentListResponseDto(comment, currentUserId))
+                .map(comment -> new CommentListResponseDto(comment, (currentUserId != null) && comment.getMember().getId().equals(currentUserId)))
                 .collect(Collectors.toList());
     }
+
 
     // 댓글 삭제
     public void deleteComment(Long postId, Long commentId, String userId, boolean isAdmin) {

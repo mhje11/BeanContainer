@@ -17,11 +17,11 @@ public class CommentListResponseDto {
     private LocalDateTime createdAt;
     private boolean isAuthor;
 
-    public CommentListResponseDto(Comment comment, Long currentUserId) {
+    public CommentListResponseDto(Comment comment, boolean isAuthor) {
         this.id = comment.getId();
         this.nickname = comment.getMember().getNickname();
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
-        this.isAuthor = comment.getMember().getId().equals(currentUserId);
+        this.isAuthor = isAuthor;
     }
 }

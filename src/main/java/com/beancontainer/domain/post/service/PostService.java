@@ -89,7 +89,7 @@ public class PostService {
 
         int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
 
-        boolean isAuthor = post.getMember().getUserId().equals(userId);
+        boolean isAuthor = (userId != null) && post.getMember().getUserId().equals(userId);
         return new PostDetailsResponseDto(post, likesCount, isAuthor);
     }
 
