@@ -35,7 +35,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: relative;
+    position: relative; /* 검색 결과를 검색창 아래에 위치시키기 위한 설정 */
 }
 
 #search-input {
@@ -56,6 +56,28 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+}
+
+/* 검색 결과 스타일 */
+#search-results {
+    position: absolute;
+    top: 100%; /* 검색창 바로 아래에 위치 */
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#search-results div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#search-results div:hover {
+    background-color: #f0f0f0;
 }
 
 /* 카테고리 선택 영역 */
