@@ -1,43 +1,51 @@
 package com.beancontainer.domain.chatroom.controller;
 
 
-import com.beancontainer.domain.chatroom.dto.ChatRoomDto;
-import com.beancontainer.domain.chatroom.service.ChatRoomService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.beancontainer.domain.chatroom.dto.ChatRoom;
+import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api")
+@RequiredArgsConstructor
+@Slf4j
+@Controller
+@RequestMapping("/chat")
 public class ChatRoomController {
 
-    private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
-    @Autowired
-    public ChatRoomController(ChatRoomService chatRoomService) {
-        this.chatRoomService = chatRoomService;
+    @GetMapping("/room")
+    public String rooms(Model model) {
+        return "/chat/room";
     }
 
-    @GetMapping("/chatlist")
-    public List<ChatRoomDto> getChatRooms() {
-        return chatRoomService.getAllChatRooms();
+    @GetMapping("/rooms")
+    @ResponseBody
+    public List<ChatRoom> room() {
+        return chatRoomRepository.findAllRoom();
     }
 
-    @GetMapping("/mychatlist/{username}")
-    public List<ChatRoomDto> getUserChatRooms(@PathVariable String username) {
-        return chatRoomService.getUserChatRooms(username);
+    @PostMapping("/room")
+    @ResponseBody
+    public ChatRoom createRoom(@RequestParam String name) {
+
+        return chatRoomRepository.createChatRoom(name);
     }
 
-    @PostMapping("/chat/create")
-    public ChatRoomDto createChatRoom(@RequestBody ChatRoomDto chatRoomDto) {
-        return chatRoomService.createChatRoom(chatRoomDto);
+    @GetMapping("/room/enter/{roomId}")
+    public String roomDetail(Model model, @PathVariable String roomId) {
+        model.addAttribute("roomId", roomId);
+        return "/chat/roomdetail";
     }
 
-    @DeleteMapping("/chat/delete/{chatId}")
-    public ResponseEntity<?> deleteChatRoom(@PathVariable Long chatId) {
-        chatRoomService.deleteChatRoom(chatId);
-        return ResponseEntity.ok().body("방 삭제가 완료되었습니다.");
+    @GetMapping("/room/{roomId}")
+    @ResponseBody
+    public ChatRoom roomInfo(@PathVariable String roomId) {
+        return chatRoomRepository.findRoomById(roomId);
     }
 }

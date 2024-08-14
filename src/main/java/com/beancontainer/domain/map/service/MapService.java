@@ -11,7 +11,9 @@ import com.beancontainer.domain.map.entity.Map;
 import com.beancontainer.domain.map.repository.MapRepository;
 import com.beancontainer.domain.mapcafe.entity.MapCafe;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
+import com.beancontainer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,19 +25,23 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MapService {
     private final MapRepository mapRepository;
     private final MapCafeRepository mapCafeRepository;
     private final CafeRepository cafeRepository;
+    private final ReviewRepository reviewRepository;
 
 
     @Transactional
     public Long createMap(MapCreateDto mapCreateDto) {
         Map map = new Map(mapCreateDto.getMapName(), mapCreateDto.getUsername());
+        log.info("kakaoIds {}", mapCreateDto.getKakaoIds());
         mapRepository.save(map);
+        Set<String> kakaoIds = mapCreateDto.getKakaoIds();
 
-        for (Long cafeId : mapCreateDto.getCafeIds()) {
-            Cafe cafe = cafeRepository.findById(cafeId)
+        for (String kakaoId : kakaoIds) {
+            Cafe cafe = cafeRepository.findByKakaoId(kakaoId)
                     .orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
             MapCafe mapCafe = new MapCafe(map, cafe);
             mapCafeRepository.save(mapCafe);
@@ -45,8 +51,8 @@ public class MapService {
     }
 
     //추후에 user 추가시 findAll -> findAllByUsername
-    public List<MapListResponseDto> getMapList() {
-        return mapRepository.findAll().stream()
+    public List<MapListResponseDto> getMapList(String username) {
+        return mapRepository.findAllByUsername(username).stream()
                 .map(map -> new MapListResponseDto(map.getMapName(), map.getUsername(), map.getId()))
                 .collect(Collectors.toList());
     }
@@ -55,9 +61,11 @@ public class MapService {
     public MapDetailResponseDto getMapDetail(Long mapId) {
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new RuntimeException("해당 지도가 존재하지 않습니다."));
         List<CafeResponseDto> cafes = mapCafeRepository.findByMapId(map.getId()).stream()
-                .map(mapCafe -> new CafeResponseDto(mapCafe.getCafe()))
+                .map(mapCafe -> {
+                    Double averageScore = reviewRepository.calculateAverageScoreByCafeId(mapCafe.getCafe().getId());
+                    return new CafeResponseDto(mapCafe.getCafe(), averageScore);
+                })
                 .collect(Collectors.toList());
-
         return new MapDetailResponseDto(map.getMapName(), map.getUsername(), cafes);
     }
 
@@ -68,28 +76,28 @@ public class MapService {
         List<MapCafe> existingMapCafes = mapCafeRepository.findByMapId(map.getId());
 
         //업데이트 할 카페목록
-        Set<Long> newCafeIds = mapUpdateDto.getCafeIds();
+        Set<String> newCafeIds = mapUpdateDto.getKakaoIds();
 
         //기존 카페 목록
-        Set<Long> existingCafeIds = existingMapCafes.stream()
-                .map(mapCafe -> mapCafe.getCafe().getId())
+        Set<String> existingCafeIds = existingMapCafes.stream()
+                .map(mapCafe -> mapCafe.getCafe().getKakaoId())
                 .collect(Collectors.toSet());
 
 
         //새로추가할 카페목록
-        Set<Long> addCafe = new HashSet<>(newCafeIds);
+        Set<String> addCafe = new HashSet<>(newCafeIds);
         addCafe.removeAll(existingCafeIds);
 
         //삭제할 카페 목록
-        Set<Long> removeCafe = new HashSet<>(existingCafeIds);
+        Set<String> removeCafe = new HashSet<>(existingCafeIds);
         removeCafe.removeAll(newCafeIds);
 
         existingMapCafes.stream()
-                .filter(mapCafe -> removeCafe.contains(mapCafe.getCafe().getId()))
+                .filter(mapCafe -> removeCafe.contains(mapCafe.getCafe().getKakaoId()))
                 .forEach(mapCafeRepository::delete);
 
-        addCafe.forEach(cafeId -> {
-            Cafe cafe = cafeRepository.findById(cafeId)
+        addCafe.forEach(kakaoId -> {
+            Cafe cafe = cafeRepository.findByKakaoId(kakaoId)
                     .orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
             MapCafe mapCafe = new MapCafe(map, cafe);
             mapCafeRepository.save(mapCafe);

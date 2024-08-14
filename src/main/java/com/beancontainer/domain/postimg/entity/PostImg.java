@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "post_images")
 @NoArgsConstructor
@@ -16,14 +14,25 @@ public class PostImg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "BINARY(16)")
-    private UUID name;  // 이미지 이름
+    private String originName;  // 이미지 파일의 본래 이름
 
-    @Column(nullable = false, columnDefinition = "BINARY(16)")
-    private UUID path;  // 이미지 경로
+    private String name;  // S3에 저장될 때 이미지 이름
 
-    private UUID type;  // 이미지 타입 (jpg, png, ...)
+    private String path;  // S3 내부 이미지에 접근할 수 있는 URL
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
     private Post post;
+
+    public PostImg(String originName, String name, Post post) {
+        this.originName = originName;
+        this.name = name;
+        this.path = "";
+        this.post = post;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
 }

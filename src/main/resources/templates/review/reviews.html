@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Review</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <script th:src="@{/js/member/header.js}"></script>
+    <link rel="stylesheet" type="text/css" href="/css/review/review.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+<div id="cafe-info"></div>
+<h2>Review</h2>
+
+<div class="review-form">
+    <div class="star-rating">
+        <input type="radio" id="star5" name="rating" value="5">
+        <label for="star5" title="5 stars"></label>
+
+        <input type="radio" id="star4" name="rating" value="4">
+        <label for="star4" title="4 stars"></label>
+
+        <input type="radio" id="star3" name="rating" value="3">
+        <label for="star3" title="3 stars"></label>
+
+        <input type="radio" id="star2" name="rating" value="2">
+        <label for="star2" title="2 stars"></label>
+
+        <input type="radio" id="star1" name="rating" value="1">
+        <label for="star1" title="1 star"></label>
+    </div>
+
+
+    <h3>카테고리</h3>
+    <div class="categories">
+        <label><input type="checkbox" value="대형카페" /> 대형카페</label>
+        <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
+        <label><input type="checkbox" value="주차가 가능한" /> 주차가 가능한</label>
+        <label><input type="checkbox" value="24시간 카페" /> 24시간 카페</label>
+        <label><input type="checkbox" value="룸" /> 룸</label>
+        <label><input type="checkbox" value="테라스" /> 테라스</label>
+        <label><input type="checkbox" value="와이파이" /> 와이파이</label>
+        <label><input type="checkbox" value="데이트 하기 좋은" /> 데이트 하기 좋은</label>
+        <label><input type="checkbox" value="혼자가기 좋은" /> 혼자가기 좋은</label>
+        <label><input type="checkbox" value="공부하기 좋은" /> 공부하기 좋은</label>
+        <label><input type="checkbox" value="비즈니스 미팅" /> 비즈니스 미팅</label>
+        <label><input type="checkbox" value="애견 동반" /> 애견 동반</label>
+        <label><input type="checkbox" value="분위기 좋은" /> 분위기 좋은</label>
+        <label><input type="checkbox" value="인스타 감성" /> 인스타 감성</label>
+        <label><input type="checkbox" value="풍경이 좋은" /> 풍경이 좋은</label>
+        <label><input type="checkbox" value="새로 오픈" /> 새로 오픈</label>
+        <label><input type="checkbox" value="조용한" /> 조용한</label>
+        <label><input type="checkbox" value="커피가 맛있는" /> 커피가 맛있는</label>
+        <label><input type="checkbox" value="디저트가 맛있는" /> 디저트가 맛있는</label>
+        <label><input type="checkbox" value="직원이 친절한" /> 직원이 친절한</label>
+    </div>
+
+    <textarea id="review-content" rows="4" cols="50"></textarea>
+    <button id="submit-review">Submit Review</button>
+</div>
+
+<h3>리뷰</h3>
+<div id="review-list"></div>
+
+<script src="/js/review/review.js"></script>
+</div>
+</body>
+</html>

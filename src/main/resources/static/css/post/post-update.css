@@ -1,0 +1,104 @@
+html {
+    background-color: #F2EFE8;
+}
+
+body {
+    font-family: "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 40px auto;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#title {
+    width: 100%;
+    padding: 20px 0;
+    font-size: 36px;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #E0E0E0;
+    color: #7B6155;
+}
+
+#title::placeholder {
+    color: #B0B0B0;
+}
+
+textarea#content {
+    width: 100%;
+    min-height: 300px;
+    padding: 20px 0;
+    font-size: 18px;
+    line-height: 1.6;
+    border: none;
+    outline: none;
+    resize: none;
+    border-bottom: 1px solid #E0E0E0;
+    color: #7B6155;
+}
+
+#content::placeholder {
+    color: #B0B0B0;
+}
+
+.existing-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.existing-images img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.new-images {
+    display: flex;
+    align-items: center;
+}
+
+#images {
+    display: none;
+}
+
+label[for="images"], button {
+    display: inline-block;
+    background-color: #7B6155;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: none;
+}
+
+label[for="images"]:hover,
+button:hover {
+    background-color: #884D33;
+}
+
+#fileName {
+    color: #7B6155;
+    font-size: 14px;
+    margin-left: 10px;
+}

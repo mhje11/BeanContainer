@@ -1,14 +1,22 @@
 package com.beancontainer.domain.review.entity;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
-import com.beancontainer.domain.category.Category;
+import com.beancontainer.domain.category.entity.Category;
 import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "reviews")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +33,30 @@ public class Review {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
-    private String uuid;
-
     private Double score;
 
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = Category.class)
-    private List<Category> categories;
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ReviewCategory> reviewCategories = new HashSet<>();
 
+    public Review(Member member, Cafe cafe, String content, Double score, Set<ReviewCategory> reviewCategories) {
+        this.member = member;
+        this.cafe = cafe;
+        this.content = content;
+        this.score = score;
+        this.reviewCategories = reviewCategories;
+    }
 
+    public void addReviewCategory(Category category) {
+        ReviewCategory reviewCategory = new ReviewCategory(this, category);
+        this.reviewCategories.add(reviewCategory);
+    }
+
+    public Review(Long id, Member member, Cafe cafe, String content, Double score, Set<ReviewCategory> reviewCategories) {
+        this.id = id;
+        this.member = member;
+        this.cafe = cafe;
+        this.content = content;
+        this.score = score;
+        this.reviewCategories = reviewCategories;
+    }
 }
