@@ -1,10 +1,11 @@
 package com.beancontainer.domain.map.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -13,11 +14,13 @@ import java.util.Set;
 public class MapCreateDto {
     private String mapName;
     private String username;
-    private Set<Long> cafeIds;
 
-    public MapCreateDto(String mapName, String username, Set<Long> cafeIds) {
+    @NotEmpty(message = "최소 하나의 카페가 추가 돼야 합니다.")
+    private Set<String> kakaoIds = new HashSet<>();
+
+    public MapCreateDto(String mapName, String username, Set<String> kakaoIds) {
         this.mapName = mapName;
         this.username = username;
-        this.cafeIds = cafeIds;
+        this.kakaoIds = kakaoIds;
     }
 }

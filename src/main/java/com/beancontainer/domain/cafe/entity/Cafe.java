@@ -1,11 +1,17 @@
 package com.beancontainer.domain.cafe.entity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "cafes")
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Cafe {
     @Id
@@ -34,10 +40,12 @@ public class Cafe {
     @Column(nullable = false)
     private String district;
 
-    @Column(nullable = false)
-    private String neighborhood;
+    @ElementCollection
+    @Column(name = "categories")
+    private Set<String> topCategories = new HashSet<>();
 
-    public Cafe(String kakaoId, String name, String address, double latitude, double longitude, String city, String district, String neighborhood) {
+
+    public Cafe(String kakaoId, String name, String address, double latitude, double longitude, String city, String district) {
         this.kakaoId = kakaoId;
         this.name = name;
         this.address = address;
@@ -45,8 +53,6 @@ public class Cafe {
         this.longitude = longitude;
         this.city = city;
         this.district = district;
-        this.neighborhood = neighborhood;
     }
 
-    protected Cafe() {}
 }

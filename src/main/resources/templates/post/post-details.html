@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세보기</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <script th:src="@{/js/member/header.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-details.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <div id="post-box">
+        <h1 id="title"></h1>
+
+        <div id="meta-info">
+            <strong>작성자: </strong><span id="nickname"></span>
+            <strong>작성일: </strong><span id="createdAt"></span>
+            <strong>조회수: </strong><span id="views"></span>
+        </div>
+
+        <div class="images" id="images"></div>
+
+        <div class="content" id="content"></div>
+    </div>
+
+    <div class="likes">
+        <button id="like-button" class="like-button">좋아요</button>
+        <span id="like-count">0</span>명이 좋아합니다.
+    </div>
+
+    <p id="btn-list"></p>
+
+    <div>
+        <h4>댓글</h4>
+        <div id="comments"></div>
+        <textarea id="comment-input" placeholder="내용을 입력하세요." rows="3" required></textarea>
+        <button type="submit" id="submit-comment">댓글 등록</button>
+    </div>
+</div>
+
+<script src="/js/post/post-details.js"></script>
+
+</body>
+</html>

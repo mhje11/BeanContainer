@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 작성</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <script th:src="@{/js/member/header.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-create.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container">
+    <form id="postForm" enctype="multipart/form-data">
+        <div>
+            <input type="text" id="title" name="title" placeholder="제목을 입력하세요." required>
+        </div>
+
+        <div>
+            <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
+        </div>
+
+        <div class="box">
+            <div class="img-container">
+                <label for="images">이미지</label>
+                <input type="file" id="images" name="images" accept="image/*" multiple>
+                <span id="fileName">선택된 파일 없음</span>
+            </div>
+            <div class="button-container">
+                <button type="submit">게시글 작성</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="/js/post/post-create.js"></script>
+
+</body>
+</html>

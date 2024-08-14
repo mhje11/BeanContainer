@@ -1,112 +1,148 @@
-:root {
-    --primary-color: #4a90e2;
-    --secondary-color: #f8f9fa;
-    --text-color: #333;
-    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
 body {
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--secondary-color);
+    font-family: Arial, sans-serif;
+    background-color: #EDE3D5;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
 }
 
 .container {
-    width: 80%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-header {
-    background-color: #fff;
-    box-shadow: var(--shadow);
-    padding: 20px 0;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 2.5em;
-    color: var(--primary-color);
-    text-align: center;
-}
-
-nav {
     display: flex;
-    justify-content: center;
-    padding: 20px 0;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 20px;
+.left-section, .right-section {
+    width: 48%;
 }
 
-.btn {
-    display: inline-block;
-    padding: 12px 24px;
-    background-color: var(--primary-color);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: bold;
-}
-
-.btn:hover {
-    background-color: #3a7bca;
-    transform: translateY(-2px);
-}
-
-main {
-    flex-grow: 1;
+.left-section {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+}
+
+.map {
+    border: 1px solid #7B6155;
+    height: 400px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* 검색 박스 스타일 */
+#search-box {
+    margin-bottom: 40px;
+    display: flex;
     align-items: center;
-    padding: 50px 0;
+    justify-content: space-between;
+    position: relative; /* 검색 결과를 검색창 아래에 위치시키기 위한 설정 */
+}
+
+#search-input {
+    width: calc(100% - 110px);
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #7B6155;
+    border-radius: 8px;
+    background-color: #EDE3D5;
+    color: #333;
+}
+
+#search-btn {
+    padding: 10px 20px;
+    background-color: #7B6155;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* 검색 결과 스타일 */
+#search-results {
+    position: absolute;
+    top: 100%; /* 검색창 바로 아래에 위치 */
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#search-results div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#search-results div:hover {
+    background-color: #f0f0f0;
+}
+
+/* 카테고리 선택 영역 */
+.filter-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.category-selection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.available-categories, .selected-categories {
+    width: 48%;
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #7B6155;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.category-item {
+    height: 70px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border-radius: 8px;
 }
 
-main p {
-    max-width: 800px;
-    margin: 10px 0;
-    font-size: 1.2em;
+.button-container {
+    display: flex;
+    justify-content: space-between;
 }
 
-footer {
-    background-color: var(--primary-color);
-    color: #fff;
-    text-align: center;
-    padding: 20px 0;
-    margin-top: auto;
+.category-reset, .category-search {
+    padding: 10px 20px;
+    background-color: #7B6155;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
-@media (max-width: 768px) {
-    .container {
-        width: 90%;
-    }
+/* 지역 선택 드롭다운 */
+#district-select {
+    margin-bottom: 20px;
+}
 
-    header h1 {
-        font-size: 2em;
-    }
-
-    nav ul {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    main p {
-        font-size: 1em;
-    }
+#districts {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #7B6155;
+    border-radius: 8px;
+    background-color: #EDE3D5;
+    color: #333;
 }

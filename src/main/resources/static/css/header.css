@@ -1,0 +1,55 @@
+/* Header styles */
+.header {
+    background-color: #EDE3D5;
+    width: 100%;
+    height: 100px;
+    padding: 0;
+}
+
+.uk-navbar-container {
+    background-color: #EDE3D5 !important;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.uk-navbar-left .uk-logo {
+    color: #7B6155;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.uk-navbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.uk-navbar-right .hamburger {
+    color: #7B6155;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    margin-left: auto;
+}
+
+.uk-navbar-item img {
+    height: 40px;
+    width: auto;
+    margin-right: 10px;
+}
+
+.uk-offcanvas-bar {
+    background-color: #C69A6B;
+}
+
+.uk-nav-default > li > a {
+    color: #1F4935;
+}
+
+.uk-nav-default > li > a:hover {
+    color: #5BAA88;
+}

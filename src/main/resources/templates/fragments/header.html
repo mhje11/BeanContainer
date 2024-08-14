@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<header th:fragment="header" style="width: 100%">
+    <div th:fragment="header" class="header">
+        <nav class="uk-navbar-container">
+            <div class="uk-navbar-left">
+                <a href="/" class="uk-navbar-item uk-logo">
+                    <img src="/images/BeanContainer.png" alt="Bean Container Logo" class="uk-margin-small-right"
+                         width="40" height="40">
+                    Bean Container
+                </a>
+            </div>
+
+            <div class="uk-navbar-right">
+                <div th:if="${#authorization.expression('!isAuthenticated()')}">
+                    <a href="/login" class="uk-button uk-button-default uk-margin-small-right">로그인</a>
+                </div>
+                <a href="#" class="hamburger" uk-toggle="target: #offcanvas-menu">☰</a>
+
+        <div id="offcanvas-menu" uk-offcanvas="flip: true; overlay: true">
+            <div class="uk-offcanvas-bar">
+                <!--   유저 로그인 안되어 있을 때   -->
+                <ul th:if="${#authorization.expression('!isAuthenticated()')}">
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/post/post-list">게시판</a></li>
+                </ul>
+
+                <!--   유저 로그인 성공 후  -->
+                <ul th:if="${#authorization.expression('isAuthenticated()')}" class="uk-nav uk-nav-default">
+                    <li><a th:href="@{/mypage/{userId}(userId=${#authentication.name})}">내 정보 관리</a></li>
+
+                    <li><a href="/post/create">게시글 작성</a></li>
+                    <li><a href="/post/post-list">게시판</a></li>
+                    <li><a href="/mymap">지도 관리</a></li>
+<!--                    <li><a href="#">채팅방</a></li>-->
+                    <li><a href="#" onclick="logout(); return false;">logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<script th:src="@{/js/member/header.js}"></script>
+</body>
+
+</html>
