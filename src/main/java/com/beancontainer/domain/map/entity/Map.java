@@ -1,6 +1,7 @@
 package com.beancontainer.domain.map.entity;
 
 import com.beancontainer.domain.mapcafe.entity.MapCafe;
+import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,10 @@ public class Map {
 
     @Column(nullable = false)
     private String username;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "member_id")
+//    private Member member;
 
 
     public Map(String mapName, String username) {
