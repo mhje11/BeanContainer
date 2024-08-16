@@ -11,6 +11,7 @@ import com.beancontainer.domain.map.entity.Map;
 import com.beancontainer.domain.map.repository.MapRepository;
 import com.beancontainer.domain.mapcafe.entity.MapCafe;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
+import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +35,8 @@ public class MapService {
 
 
     @Transactional
-    public Long createMap(MapCreateDto mapCreateDto) {
-        Map map = new Map(mapCreateDto.getMapName(), mapCreateDto.getUsername());
+    public Long createMap(MapCreateDto mapCreateDto, Member member) {
+        Map map = new Map(mapCreateDto.getMapName(), member);
         log.info("kakaoIds {}", mapCreateDto.getKakaoIds());
         mapRepository.save(map);
         Set<String> kakaoIds = mapCreateDto.getKakaoIds();
@@ -51,9 +52,9 @@ public class MapService {
     }
 
     //추후에 user 추가시 findAll -> findAllByUsername
-    public List<MapListResponseDto> getMapList(String username) {
-        return mapRepository.findAllByUsername(username).stream()
-                .map(map -> new MapListResponseDto(map.getMapName(), map.getUsername(), map.getId()))
+    public List<MapListResponseDto> getMapList(Member member) {
+        return mapRepository.findAllByMember(member).stream()
+                .map(map -> new MapListResponseDto(map.getMapName(), map.getMember().getNickname(), map.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -66,7 +67,7 @@ public class MapService {
                     return new CafeResponseDto(mapCafe.getCafe(), averageScore);
                 })
                 .collect(Collectors.toList());
-        return new MapDetailResponseDto(map.getMapName(), map.getUsername(), cafes);
+        return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes);
     }
 
     @Transactional

@@ -3,11 +3,14 @@ package com.beancontainer.domain.mapcafe.entity;
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.map.entity.Map;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Table(name = "map_cafes")
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MapCafe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +29,4 @@ public class MapCafe {
         this.cafe = cafe;
     }
 
-    protected MapCafe() {
-    }
 }
