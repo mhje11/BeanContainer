@@ -28,10 +28,10 @@ public class MapRestController {
     @PostMapping("/api/mymap")
     public ResponseEntity<String> createMap(@Valid @RequestBody MapCreateDto mapCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
         Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
-        mapCreateDto.setUsername(member.getNickname());
+        mapCreateDto.setMemberId(member.getId());
         log.info("Received Map Data: {}", mapCreateDto.getKakaoIds()); // 로그 추가
 
-        Long mapId = mapService.createMap(mapCreateDto);
+        Long mapId = mapService.createMap(mapCreateDto, member);
         return ResponseEntity.ok("지도 생성 성공 : ID : " + mapId);
     }
 
@@ -40,7 +40,7 @@ public class MapRestController {
     @GetMapping("/api/mymap")
     public ResponseEntity<List<MapListResponseDto>> myMapList(@AuthenticationPrincipal UserDetails userDetails) {
         Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
-        List<MapListResponseDto> mapList = mapService.getMapList(member.getNickname());
+        List<MapListResponseDto> mapList = mapService.getMapList(member);
         return ResponseEntity.ok(mapList);
     }
 

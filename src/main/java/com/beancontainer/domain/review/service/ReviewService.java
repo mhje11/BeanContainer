@@ -31,7 +31,6 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final CafeRepository cafeRepository;
-    private final ReviewCategoryRepository reviewCategoryRepository;
     private final CategoryRepository categoryRepository;
     private final CafeService cafeService;
 
