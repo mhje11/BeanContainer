@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,26 +32,11 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
 
-    // 게시글 작성
-    @Transactional
-    public Long createPost(PostRequestDto postRequestDto, String nickname) throws IOException {
-
-        Member member = memberRepository.findByNickname(nickname);
-
-        Post post = new Post(
-                member,
-                postRequestDto.getTitle(),
-                postRequestDto.getContent()
-        );
-
-        Post savedPost = postRepository.save(post); // 게시글 먼저 저장해서 id 생성
-
-        // 이미지
-        if (postRequestDto.getImages() != null && !postRequestDto.getImages().isEmpty()) {
-            for(PostImgSaveDto image : postRequestDto.getImages()) {
-                if(image.getImg().isEmpty()) continue;  // 이미지 없음 건너뜀
-
-                image.setPostId(post.getId());  // 게시글 연결
+    // 이미지 처리
+    private void createImages(Post post, List<PostImgSaveDto> images) throws IOException {
+        if(images != null && !images.isEmpty()) {
+            for (PostImgSaveDto image : images) {
+                if(image.getImg().isEmpty()) continue;
 
                 // S3에 이미지 저장 및 url 생성
                 String imgUrl = postImgService.saveImage(image.getImg());
@@ -64,6 +50,32 @@ public class PostService {
                 post.getImages().add(postImg);  // post의 images 리스트에 추가
             }
         }
+    }
+
+    // 이미지 삭제
+    private void deleteExistImages(Post post) {
+        for(PostImg postImg : post.getImages()) {
+            postImgService.deleteImage(postImg.getPath());
+        }
+        post.getImages().clear();
+    }
+
+    // 게시글 작성
+    @Transactional
+    public Long createPost(PostRequestDto postRequestDto, String nickname) throws IOException {
+
+        Member member = memberRepository.findByNickname(nickname);
+
+        Post post = new Post(
+                member,
+                postRequestDto.getTitle(),
+                postRequestDto.getContent()
+        );
+
+        Post savedPost = postRepository.save(post);
+
+        createImages(savedPost, postRequestDto.getImages());
+
         return savedPost.getId();
     }
 
@@ -88,12 +100,6 @@ public class PostService {
         return new PostDetailsResponseDto(post, likesCount, isAuthor);
     }
 
-    // 게시글 존재 여부 확인
-    @Transactional(readOnly = true)
-    public boolean existsById(Long postId) {
-        return postRepository.existsById(postId);
-    }
-
     // 게시글 삭제
     @Transactional
     public void deletePost(Long postId, String userId, boolean isAdmin) {
@@ -104,11 +110,8 @@ public class PostService {
         }
 
         // S3에서 이미지 삭제
-        if (post.getImages() != null && !post.getImages().isEmpty()) {
-            for (PostImg img : post.getImages()) {
-                postImgService.deleteImage(img.getPath());
-            }
-        }
+        deleteExistImages(post);
+
         commentRepository.deleteByPostId(postId);
         likeRepository.deleteByPostId(postId);
         postRepository.deleteById(postId);
@@ -124,26 +127,9 @@ public class PostService {
         // 새로운 이미지가 있는 경우
         if (postRequestDto.getImages() != null && !postRequestDto.getImages().isEmpty()) {
             // 기존 이미지 삭제
-            for(PostImg postImg : post.getImages()) {
-                postImgService.deleteImage(postImg.getPath());
-            }
-            post.getImages().clear();
-
+            deleteExistImages(post);
             // 새 이미지 저장
-            for(PostImgSaveDto image : postRequestDto.getImages()) {
-                if(image.getImg().isEmpty()) continue;  // 이미지 없음 건너뜀
-
-                // S3에 이미지 저장 및 url 생성
-                String imgUrl = postImgService.saveImage(image.getImg());
-                String originalName = image.getImg().getOriginalFilename();
-                String name = postImgService.getFileName(originalName);
-
-                PostImg postImg = new PostImg(originalName, name, post);
-                postImg.setPath(imgUrl);    // url 저장
-
-                postImgService.save(postImg);
-                post.getImages().add(postImg);  // post의 images 리스트에 추가
-            }
+            createImages(post, postRequestDto.getImages());
         }
 
         Post updatedPost = postRepository.save(post);

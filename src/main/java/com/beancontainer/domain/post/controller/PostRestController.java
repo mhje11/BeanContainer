@@ -35,20 +35,28 @@ public class PostRestController {
     private final PostService postService;
     private final MemberRepository memberRepository;
 
-    @PostMapping("/post/create")    // 게시글 작성
-    public ResponseEntity<Map<String, String>> createPost(@RequestParam("title") String title, @RequestParam("content") String content,
-                                                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
-                                                          @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+    // 게시글 작성 및 수정 시
+    private PostRequestDto createPostRequestDto(String title, String content, List<MultipartFile> images) {
         PostRequestDto postRequestDto = new PostRequestDto();
         postRequestDto.setTitle(title);
         postRequestDto.setContent(content);
 
-        if (images != null && !images.isEmpty()) {
+        if (images != null) {
             List<PostImgSaveDto> postImgSaveDtos = images.stream()
-                    .map(image -> new PostImgSaveDto(image))
+                    .map(PostImgSaveDto::new)
                     .collect(Collectors.toList());
             postRequestDto.setImages(postImgSaveDtos);
         }
+
+        return postRequestDto;
+    }
+
+    @PostMapping("/post/create")    // 게시글 작성
+    public ResponseEntity<Map<String, String>> createPost(@RequestParam("title") String title, @RequestParam("content") String content,
+                                                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                                                          @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+
+        PostRequestDto postRequestDto = createPostRequestDto(title, content, images);
 
         Member member = memberRepository.findByUserId(userDetails.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
@@ -81,32 +89,22 @@ public class PostRestController {
     @DeleteMapping("/post/delete/{postId}") // 게시글 삭제
     @RequireAdmin
     public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (!postService.existsById(postId)) {
-            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
-        }
-
         boolean isAdmin = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN"));
 
-        postService.deletePost(postId,  userDetails.getUserId(), isAdmin);
-        return ResponseEntity.ok("글 삭제가 완료되었습니다");
+        try {
+            postService.deletePost(postId, userDetails.getUserId(), isAdmin);
+            return ResponseEntity.ok("글 삭제가 완료되었습니다");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/post/update/{postId}")    // 게시글 수정
     public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestParam("title") String title, @RequestParam("content") String content,
                                                              @RequestParam(value = "images", required = false) List<MultipartFile> images) throws IOException{
 
-        PostRequestDto postRequestDto = new PostRequestDto();
-
-        postRequestDto.setTitle(title);
-        postRequestDto.setContent(content);
-
-        if (images != null && !images.isEmpty()) {
-            List<PostImgSaveDto> postImgSaveDtos = images.stream()
-                    .map(image -> new PostImgSaveDto(image))
-                    .collect(Collectors.toList());
-            postRequestDto.setImages(postImgSaveDtos);
-        }
+        PostRequestDto postRequestDto = createPostRequestDto(title, content, images);
 
         PostDetailsResponseDto updatedPost = postService.updatePost(postId, postRequestDto);
         return ResponseEntity.ok(updatedPost);
