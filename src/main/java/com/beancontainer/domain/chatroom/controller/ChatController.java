@@ -1,4 +1,4 @@
-package com.beancontainer.controller;
+package com.beancontainer.domain.chatroom.controller;
 
 import com.beancontainer.domain.chatroom.dto.ChatRoomDto;
 import com.beancontainer.domain.chatroom.service.ChatService;
