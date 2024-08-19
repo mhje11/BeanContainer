@@ -36,8 +36,9 @@
 * **민차현**: 데이터 분석 및 관리
 
 <br>
+
 ## :clipboard:ERD 설계
-<img src = "src/main/resources/static/readme/BeanContainer_ERD.png">
+<img src="/src/main/resources/static/readme/BeanContainer_ERD.png">
 
 
 <br>
