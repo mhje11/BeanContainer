@@ -1,10 +1,11 @@
 package com.beancontainer.domain.chatroom.entity;
 
+
+
 import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 
 @Entity
 @NoArgsConstructor
@@ -18,11 +19,12 @@ public class ChatList {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-
-
+    public ChatList(ChatRoom chatRoom, Member member) {
+        this.chatRoom = chatRoom;
+        this.member = member;
+    }
 }
