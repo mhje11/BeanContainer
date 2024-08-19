@@ -27,8 +27,7 @@ public class ReviewRestController {
     public ResponseEntity<Long> createReview(@RequestBody ReviewCreateDto reviewCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
 
         Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
-        reviewCreateDto.setUsername(member.getNickname());
-        Long id = reviewService.createReview(reviewCreateDto);
+        Long id = reviewService.createReview(reviewCreateDto, userDetails.getUsername());
 
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }

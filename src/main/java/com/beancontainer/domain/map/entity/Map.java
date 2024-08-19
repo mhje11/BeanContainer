@@ -24,8 +24,6 @@ public class Map {
     @Column(name = "map_name", nullable = false)
     private String mapName;
 
-
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

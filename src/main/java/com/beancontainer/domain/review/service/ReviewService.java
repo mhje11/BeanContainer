@@ -16,6 +16,7 @@ import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
 import com.beancontainer.domain.reviewcategory.repository.ReviewCategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +36,8 @@ public class ReviewService {
     private final CafeService cafeService;
 
     @Transactional
-    public Long createReview(ReviewCreateDto reviewCreateDto) {
-        Member member = memberRepository.findByNickname(reviewCreateDto.getUsername());
+    public Long createReview(ReviewCreateDto reviewCreateDto, String userLoginId) {
+        Member member = memberRepository.findByUserId(userLoginId).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
         Cafe cafe = cafeRepository.findById(reviewCreateDto.getCafeId()).orElseThrow(() -> new EntityNotFoundException("카페를 찾을 수 없습니다."));
 
         Review review = new Review(member, cafe, reviewCreateDto.getContent(), reviewCreateDto.getScore(), new HashSet<>());

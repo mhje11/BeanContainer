@@ -11,7 +11,6 @@ public class ReviewCreateDto {
 
     private String content;
     private Double score;
-    private String username;
     private Long cafeId;
     private Set<String> categoryNames;
 }
