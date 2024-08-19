@@ -36,7 +36,7 @@ public class ReviewService {
     private final CafeService cafeService;
 
     @Transactional
-    public Long createReview(ReviewCreateDto reviewCreateDto, String userLoginId) {
+    public void createReview(ReviewCreateDto reviewCreateDto, String userLoginId) {
         Member member = memberRepository.findByUserId(userLoginId).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
         Cafe cafe = cafeRepository.findById(reviewCreateDto.getCafeId()).orElseThrow(() -> new EntityNotFoundException("카페를 찾을 수 없습니다."));
 
@@ -55,7 +55,6 @@ public class ReviewService {
         reviewRepository.save(review);
 
         cafeService.updatedCafeCategories(reviewCreateDto.getCafeId());
-        return review.getId();
     }
 
 
