@@ -1,6 +1,6 @@
 package com.beancontainer.domain.member.controller;
 
-import com.beancontainer.domain.member.dto.LoginDTO;
+import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.RefreshToken;
@@ -13,7 +13,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,7 @@ import java.util.Collections;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
-public class AuthController {
+public class AuthRestController {
     private final AuthService authService;
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
@@ -39,7 +38,7 @@ public class AuthController {
     private final ProfileImageService profileImageService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO userLoginDto,
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO userLoginRequestDto,
                                    BindingResult bindingResult, HttpServletResponse response) {
         log.info("==login==");
         //username, password가 null 일 때
@@ -50,9 +49,9 @@ public class AuthController {
 
         // username 과 password 값을 잘 받아왔다면
         // 우리 서버의 저장되어 있는 유저인지 확인
-        Member member = memberService.findByUserId(userLoginDto.getUserId());
+        Member member = memberService.findByUserId(userLoginRequestDto.getUserId());
         //요청 정보에서 얻어온 비밀번호와 서버의 비밀번호가 일치하는지 확인
-        if (!passwordEncoder.matches(userLoginDto.getPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches(userLoginRequestDto.getPassword(), member.getPassword())) {
             //비밀번호가 일치하지 않을 때
             return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
@@ -72,10 +71,10 @@ public class AuthController {
         refreshTokenService.addRefreshToken(refreshTokenEntity);
 
         // 로그인 성공 로그 출력
-        log.info("User {} logged in successfully.", userLoginDto.getUserId());
+        log.info("User {} logged in successfully.", userLoginRequestDto.getUserId());
 
         //응답으로 보낼 값들을 준비해요.
-        LoginDTO loginResponseDto = LoginDTO.builder()
+        LoginRequestDTO loginResponseDto = LoginRequestDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(String.valueOf(member.getId()))

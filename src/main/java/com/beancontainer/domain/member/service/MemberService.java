@@ -1,5 +1,6 @@
 package com.beancontainer.domain.member.service;
 
+import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
@@ -22,9 +23,6 @@ public class MemberService implements UserDetailsService {
     private final ProfileImageService profileImageService;
 
 
-
-
-
     //ID로 유저 찾기
     public Member findByUserId(String userId) {
         return memberRepository.findByUserId(userId)
@@ -32,15 +30,15 @@ public class MemberService implements UserDetailsService {
                         new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
+    //닉네임 변경
     @Transactional
     public void updateNickname(String userId, String newNickname) {
-        Member member = findByUserId(userId);
+        Member member = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
         member.updateNickname(newNickname);
         memberRepository.save(member);
+        log.info("사용자 {} 의 닉네임이 {}로 변경되었습니다.", userId, newNickname);
     }
-
-
-
 
 
     @Transactional
