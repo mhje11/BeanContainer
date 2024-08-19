@@ -1,7 +1,7 @@
 ---
 name: bug_report
 about: 에러 로그
-title: "[Bug_Fix]"
+title: "🐛[Bug_Fix]"
 labels: "\U0001F41E BugFix"
 assignees: ''
 
