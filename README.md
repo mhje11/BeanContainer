@@ -36,6 +36,11 @@
 * **민차현**: 데이터 분석 및 관리
 
 <br>
+## :clipboard:ERD 설계
+<img src = "src/main/resources/static/readme/BeanContainer_ERD.png">
+
+
+<br>
 
 ## :point_right:핵심기능
 >Admin ( 게시글 관리 )
