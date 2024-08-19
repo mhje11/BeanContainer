@@ -1,7 +1,7 @@
 ---
 name: update_feature
 about: 기능 수정
-title: "🛠️[Update]"
+title: "[Update]"
 labels: "✨ Feature"
 assignees: ''
 
