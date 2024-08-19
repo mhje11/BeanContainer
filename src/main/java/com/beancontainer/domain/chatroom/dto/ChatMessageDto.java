@@ -9,9 +9,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatMessageCreateDto {
-    //생성
+public class ChatMessageDto {
+    private Long id;
     private String content;
     private Long chatRoomId;
+    private LocalDateTime createdAt;
 }
 
