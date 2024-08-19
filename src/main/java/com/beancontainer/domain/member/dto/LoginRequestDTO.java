@@ -1,7 +1,6 @@
 package com.beancontainer.domain.member.dto;
 
 import com.beancontainer.domain.member.entity.Role;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Getter
@@ -9,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDTO {
+public class LoginRequestDTO {
     private String userId;
 
     //@Pattern(regexp=  "^(?=.[a-zA-Z])(?=.\d)(?=.*\W).{8,20}$")
