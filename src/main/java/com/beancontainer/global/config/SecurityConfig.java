@@ -29,8 +29,8 @@ public class SecurityConfig {
             "/", "/login", "/signup", //메인, 로그인, 회원가입
             "/js/**", "/css/**", "/images/**", "/static/**", //resources
             "/api/auth/login", "/api/auth/signup", //로그인, 회원가입 API 요청
-            "post/post-list", "/api/post/post-list", "/postList/{postId}", //게시글 조회는 모두 가능
-            "/review/{kakaoId}", "api/reviewlist/{cafeId}" //리뷰도 모두 조회 가능
+            "/post/post-list", "/api/postList", "/api/postList/{postId}", "/postList/{postId}", //게시글 조회, 게시글 상세보기는 모두 가능
+            "/review/{kakaoId}", "/api/reviewlist/{cafeId}" //리뷰도 모두 조회 가능
     };
 
     //관리자 페이지
