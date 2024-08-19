@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/js/**", "/css/**", "/images/**", "/static/**", //resources
             "/api/auth/login", "/api/auth/signup", //로그인, 회원가입 API 요청
             "/post/post-list", "/api/postList", "/api/postList/{postId}", "/postList/{postId}", //게시글 조회, 게시글 상세보기는 모두 가능
+            "/api/postlist/comments/{postId}",  // 댓글 목록
             "/review/{kakaoId}", "/api/reviewlist/{cafeId}" //리뷰도 모두 조회 가능
     };
 
