@@ -31,7 +31,8 @@ public class SecurityConfig {
             "/api/auth/login", "/api/auth/signup", //로그인, 회원가입 API 요청
             "/post/post-list", "/api/postList", "/api/postList/{postId}", "/postList/{postId}", //게시글 조회, 게시글 상세보기는 모두 가능
             "/api/postlist/comments/{postId}",  // 댓글 목록
-            "/review/{kakaoId}", "/api/reviewlist/{cafeId}" //리뷰도 모두 조회 가능
+            "/review/{kakaoId}", "/api/reviewlist/{cafeId}", "/reviewlist/{cafeId}", //리뷰도 모두 조회 가능
+            "/api/cafe/{cafeId}" // 카페정보
     };
 
     //관리자 페이지
@@ -45,7 +46,7 @@ public class SecurityConfig {
             "/mypage/{userId}", "/api/profileImage/**", //마이페이지, 프로필 변경
             "/mymap","/mymap/update/{mapId}",
             "/api/mymap/delete/{mapId}", "/api/mymap/update/{mapId}", "/api/mymap", //나만의 지도
-            "/api/review/delete/{reviewId}", "/api/review/update/{reviewId}", "/api/review/create" //리뷰
+            "/api/review/delete/{reviewId}", "/api/review/update/{reviewId}", "/api/review/create" //리뷰 작성, 수정, 삭제
     };
 
 
