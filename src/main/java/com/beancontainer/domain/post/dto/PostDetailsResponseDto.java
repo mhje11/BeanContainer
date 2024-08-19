@@ -2,15 +2,14 @@
 
     import com.beancontainer.domain.post.entity.Post;
     import com.beancontainer.domain.postimg.entity.PostImg;
-    import lombok.AllArgsConstructor;
-    import lombok.Data;
-    import lombok.NoArgsConstructor;
+    import lombok.*;
 
     import java.time.LocalDateTime;
     import java.util.List;
     import java.util.stream.Collectors;
 
-    @Data
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public class PostDetailsResponseDto {

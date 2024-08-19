@@ -62,9 +62,7 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public Long createPost(PostRequestDto postRequestDto, String nickname) throws IOException {
-
-        Member member = memberRepository.findByNickname(nickname);
+    public Long createPost(PostRequestDto postRequestDto, Member member) throws IOException {
 
         Post post = new Post(
                 member,

@@ -1,13 +1,12 @@
 package com.beancontainer.domain.post.dto;
 
 import com.beancontainer.domain.post.entity.Post;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostListResponseDto {

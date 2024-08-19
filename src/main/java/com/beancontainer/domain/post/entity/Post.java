@@ -42,8 +42,7 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;    // 수정일
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImg> images = new ArrayList<>();
     private int likeCount = 0;
 

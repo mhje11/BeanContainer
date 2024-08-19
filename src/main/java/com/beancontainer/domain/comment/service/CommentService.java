@@ -10,6 +10,7 @@ import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class CommentService {
     // 댓글 등록
     public Long createComment(Long postId, CommentRequestDto commentRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        Member member = memberRepository.findByNickname(commentRequestDto.getNickname());
+        Member member = memberRepository.findByUserId(commentRequestDto.getMemberLoginId()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
         Comment comment = new Comment(post, member, commentRequestDto.getContent());
         Comment savedComment = commentRepository.save(comment);
 

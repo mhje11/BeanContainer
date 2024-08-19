@@ -1,14 +1,13 @@
 package com.beancontainer.domain.post.dto;
 
 import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostRequestDto {
