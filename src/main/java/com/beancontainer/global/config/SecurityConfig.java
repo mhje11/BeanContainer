@@ -21,12 +21,29 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-//@EnableGlobalAuthentication(prePostEnabled = true)
 public class SecurityConfig {
-
-
     private final JwtTokenizer jwtTokenizer;
-    private final MemberRepository memberRepository;
+
+    //모든 유저 허용
+    String[] allAllowPage = new String[] {
+            "/", "/login", "/signup", //메인, 로그인, 회원가입
+            "/js/**", "/css/**", "/images/**", "/static/**", //resources
+            "/api/auth/login", "/api/auth/signup", //로그인, 회원가입 API 요청
+            "post/post-list", "/api/post/post-list", "/postList/{postId}", //게시글 조회는 모두 가능
+            "/review/{kakaoId}", "api/reviewlist/{cafeId}" //리뷰도 모두 조회 가능
+    };
+
+    //관리자 페이지
+    String[] adminAllowPage = new String[] {
+            "/admin/**", "/api/admin/**"
+    };
+
+    //인증받은 회원만 접근 가능
+    String[] authPage = new String[] {
+            "/api/post/create", //글 작성은 인증된 회원만
+            "/mypage/{userId}", "/api/profileImage/**", //마이페이지, 프로필 변경
+            "/mymap","/mymap/update/{mapId}", //나만의 지도
+    };
 
 
     @Bean
@@ -41,16 +58,9 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/signup", "/js/**", "/css/**", "/images/**", "/static/**").permitAll() // 모든 사용자에게 허용
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
-                        .requestMatchers("/post/post-list", "/api/post/post-list").permitAll()
-                        .requestMatchers("/api/post/create").authenticated()
-                        .requestMatchers("/postList/{postId}").permitAll()
-                        .requestMatchers("/review/{kakaoId}", "/api/reviewlist/{cafeId}").permitAll()
-                        .requestMatchers("/mypage/{userId}", "/api/profileImage/**", "/mymap","/mymap/update/{mapId}").authenticated() // 인증된 사용자만 접근 가능
-                        .requestMatchers("/admin/**", "/api/admin/**").hasAuthority("ADMIN") // ROLE 이 ADMIN 인 사람만 접근 가능 ROLE 접두사 제거
-                        .requestMatchers("/chat/**").permitAll()
+                        .requestMatchers(allAllowPage).permitAll()
+                        .requestMatchers(adminAllowPage).hasAuthority("ADMIN") //접두사 제거
+                        .requestMatchers(authPage).authenticated()
                         .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
                 )
                 .logout(logout -> logout
