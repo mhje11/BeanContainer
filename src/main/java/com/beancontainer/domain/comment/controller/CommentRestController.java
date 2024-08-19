@@ -30,7 +30,7 @@ public class CommentRestController {
         Member member = memberRepository.findByUserId(userDetails.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
 
-        commentRequestDto.setNickname(member.getNickname());
+        commentRequestDto.setMemberLoginId(member.getUserId());
         Long id = commentService.createComment(postId, commentRequestDto);
 
         Map<String, String> response = new HashMap<>();

@@ -1,12 +1,14 @@
 package com.beancontainer.domain.comment.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class CommentRequestDto {
     private Long postId;
-    private String nickname;
+    private String memberLoginId;
     private String content;
 }

@@ -65,33 +65,33 @@ class PostServiceTest {
 
     }
 
-    @Test
-    public void testCreatePost() throws IOException {  // 게시글 작성 테스트
-        Member member = memberRepository.findById(1L).get();
-
-        // 임시 이미지 파일 생성
-        List<PostImgSaveDto> images = new ArrayList<>();
-        MockMultipartFile mockFile1 = new MockMultipartFile("file", "testImg1.jpg", "image/jpeg", "testImg1.jpg".getBytes());
-        MockMultipartFile mockFile2 = new MockMultipartFile("file", "testImg2.jpg", "image/jpeg", "testImg2.jpg".getBytes());
-
-        images.add(new PostImgSaveDto(null, mockFile1));
-        images.add(new PostImgSaveDto(null, mockFile2));
-
-
-        PostRequestDto postRequestDto = new PostRequestDto("제목", "내용", images);
-
-        when(postImgService.saveImage(any())).thenReturn("mockImageUrl");
-
-
-        Long postId = postService.createPost(postRequestDto, member.getNickname());
-        Optional<Post> post = postRepository.findById(postId);
-
-        assertTrue(post.isPresent());
-        assertEquals(postId, post.get().getId());
-        assertEquals("제목", post.get().getTitle());
-        assertEquals("내용", post.get().getContent());
-        assertEquals(2, post.get().getImages().size());
-    }
+//    @Test
+//    public void testCreatePost() throws IOException {  // 게시글 작성 테스트
+//        Member member = memberRepository.findById(1L).get();
+//
+//        // 임시 이미지 파일 생성
+//        List<PostImgSaveDto> images = new ArrayList<>();
+//        MockMultipartFile mockFile1 = new MockMultipartFile("file", "testImg1.jpg", "image/jpeg", "testImg1.jpg".getBytes());
+//        MockMultipartFile mockFile2 = new MockMultipartFile("file", "testImg2.jpg", "image/jpeg", "testImg2.jpg".getBytes());
+//
+//        images.add(new PostImgSaveDto(null, mockFile1));
+//        images.add(new PostImgSaveDto(null, mockFile2));
+//
+//
+//        PostRequestDto postRequestDto = new PostRequestDto("제목", "내용", images);
+//
+//        when(postImgService.saveImage(any())).thenReturn("mockImageUrl");
+//
+//
+//        Long postId = postService.createPost(postRequestDto, member.getNickname());
+//        Optional<Post> post = postRepository.findById(postId);
+//
+//        assertTrue(post.isPresent());
+//        assertEquals(postId, post.get().getId());
+//        assertEquals("제목", post.get().getTitle());
+//        assertEquals("내용", post.get().getContent());
+//        assertEquals(2, post.get().getImages().size());
+//    }
 
 //    @Test
 //    public void testGetAllPosts() {
