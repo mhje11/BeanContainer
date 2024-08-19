@@ -43,7 +43,9 @@ public class SecurityConfig {
     String[] authPage = new String[] {
             "/api/post/create", //글 작성은 인증된 회원만
             "/mypage/{userId}", "/api/profileImage/**", //마이페이지, 프로필 변경
-            "/mymap","/mymap/update/{mapId}", //나만의 지도
+            "/mymap","/mymap/update/{mapId}",
+            "/api/mymap/delete/{mapId}", "/api/mymap/update/{mapId}", "/api/mymap", //나만의 지도
+            "/api/review/delete/{reviewId}", "/api/review/update/{reviewId}", "/api/review/create" //리뷰
     };
 
 
