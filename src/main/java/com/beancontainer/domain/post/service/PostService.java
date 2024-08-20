@@ -12,6 +12,8 @@ import com.beancontainer.domain.post.repository.PostRepository;
 import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import com.beancontainer.domain.postimg.service.PostImgService;
+import com.beancontainer.global.exception.AccessDeniedException;
+import com.beancontainer.global.exception.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,7 +29,6 @@ import java.util.List;
 @Slf4j
 public class PostService {
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
     private final PostImgService postImgService;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
@@ -87,7 +88,7 @@ public class PostService {
     // 게시글 상세 보기
     @Transactional
     public PostDetailsResponseDto postDetails(Long postId, String userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 
         post.incrementViews();  // 조회수 증가
         postRepository.save(post);
@@ -101,10 +102,10 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long postId, String userId, boolean isAdmin) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 
         if (!isAdmin && !post.getMember().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
 
         // S3에서 이미지 삭제
@@ -118,7 +119,7 @@ public class PostService {
     // 게시글 수정
     @Transactional
     public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 
         post.update(postRequestDto.getTitle(), postRequestDto.getContent());
 
