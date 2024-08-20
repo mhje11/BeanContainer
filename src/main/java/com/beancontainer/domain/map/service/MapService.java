@@ -13,6 +13,8 @@ import com.beancontainer.domain.mapcafe.entity.MapCafe;
 import com.beancontainer.domain.mapcafe.repository.MapCafeRepository;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.review.repository.ReviewRepository;
+import com.beancontainer.global.exception.CafeNotFoundException;
+import com.beancontainer.global.exception.MapNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,7 +45,7 @@ public class MapService {
 
         for (String kakaoId : kakaoIds) {
             Cafe cafe = cafeRepository.findByKakaoId(kakaoId)
-                    .orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CafeNotFoundException("카페를 찾을 수 없습니다."));
             MapCafe mapCafe = new MapCafe(map, cafe);
             mapCafeRepository.save(mapCafe);
         }
@@ -51,16 +53,14 @@ public class MapService {
         return map.getId();
     }
 
-    //추후에 user 추가시 findAll -> findAllByUsername
     public List<MapListResponseDto> getMapList(Member member) {
         return mapRepository.findAllByMember(member).stream()
                 .map(map -> new MapListResponseDto(map.getMapName(), map.getMember().getNickname(), map.getId()))
                 .collect(Collectors.toList());
     }
 
-    //추후에 사용자 정의 예외 추가하기
     public MapDetailResponseDto getMapDetail(Long mapId) {
-        Map map = mapRepository.findById(mapId).orElseThrow(() -> new RuntimeException("해당 지도가 존재하지 않습니다."));
+        Map map = mapRepository.findById(mapId).orElseThrow(() -> new MapNotFoundException("해당 지도가 존재하지 않습니다."));
         List<CafeResponseDto> cafes = mapCafeRepository.findByMapId(map.getId()).stream()
                 .map(mapCafe -> {
                     Double averageScore = reviewRepository.calculateAverageScoreByCafeId(mapCafe.getCafe().getId());
@@ -72,7 +72,7 @@ public class MapService {
 
     @Transactional
     public Long updateMap(MapUpdateDto mapUpdateDto) {
-        Map map = mapRepository.findById(mapUpdateDto.getMapId()).orElseThrow(() -> new RuntimeException("해당 지도가 존재하지 않습니다."));
+        Map map = mapRepository.findById(mapUpdateDto.getMapId()).orElseThrow(() -> new MapNotFoundException("해당 지도가 존재하지 않습니다."));
 
         List<MapCafe> existingMapCafes = mapCafeRepository.findByMapId(map.getId());
 
@@ -99,7 +99,7 @@ public class MapService {
 
         addCafe.forEach(kakaoId -> {
             Cafe cafe = cafeRepository.findByKakaoId(kakaoId)
-                    .orElseThrow(() -> new RuntimeException("카페를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CafeNotFoundException("카페를 찾을 수 없습니다."));
             MapCafe mapCafe = new MapCafe(map, cafe);
             mapCafeRepository.save(mapCafe);
         });
@@ -112,7 +112,7 @@ public class MapService {
 
     @Transactional
     public void deleteMap(Long mapId) {
-        Map map = mapRepository.findById(mapId).orElseThrow(() -> new RuntimeException("해당 지도가 존재하지 않습니다."));
+        Map map = mapRepository.findById(mapId).orElseThrow(() -> new MapNotFoundException("해당 지도가 존재하지 않습니다."));
 
         List<MapCafe> mapCafes = mapCafeRepository.findByMapId(mapId);
         mapCafeRepository.deleteAll(mapCafes);

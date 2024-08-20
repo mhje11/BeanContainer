@@ -39,7 +39,9 @@
         fetch('/api/mymap')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
                 }
                 return response.json();
             })
@@ -47,9 +49,11 @@
                 displayMapList(data);
             })
             .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
+                console.error(error);
+                alert(error.message); // 백엔드에서 보낸 메시지를 그대로 사용자에게 표시
             });
     }
+
 
     function displayMapList(mapList) {
         const mapListElement = document.getElementById('map-list');

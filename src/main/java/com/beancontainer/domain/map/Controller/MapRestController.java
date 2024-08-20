@@ -9,6 +9,10 @@ import com.beancontainer.domain.map.repository.MapRepository;
 import com.beancontainer.domain.map.service.MapService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.global.exception.AccessDeniedException;
+import com.beancontainer.global.exception.MapNotFoundException;
+import com.beancontainer.global.exception.UnAuthorizedException;
+import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -36,7 +40,7 @@ public class MapRestController {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다");
         }
-        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
         mapCreateDto.setMemberId(member.getId());
         log.info("Received Map Data: {}", mapCreateDto.getKakaoIds()); // 로그 추가
 
@@ -47,7 +51,7 @@ public class MapRestController {
 
     @GetMapping("/api/mymap")
     public ResponseEntity<List<MapListResponseDto>> myMapList(@AuthenticationPrincipal UserDetails userDetails) {
-        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
         List<MapListResponseDto> mapList = mapService.getMapList(member);
         return ResponseEntity.ok(mapList);
     }
@@ -60,12 +64,12 @@ public class MapRestController {
 
     @PutMapping("/api/mymap/update/{mapId}")
     public ResponseEntity<String> updateMap(@PathVariable("mapId") Long mapId, @RequestBody MapUpdateDto mapUpdateDto, @AuthenticationPrincipal UserDetails userDetails) {
-        Map map = mapRepository.findById(mapId).orElseThrow(() -> new EntityNotFoundException("해당 지도를 찾을 수 없습니다."));
+        Map map = mapRepository.findById(mapId).orElseThrow(() -> new MapNotFoundException("해당 지도를 찾을 수 없습니다."));
 
         if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다.");
+            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         } else if (!userDetails.getUsername().equals(map.getMember().getUserId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         mapUpdateDto.setMapId(mapId);
@@ -79,9 +83,9 @@ public class MapRestController {
         log.info("userDetails {}", userDetails.getUserId());
         log.info("mapUserId {}", map.getMember().getUserId());
         if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다.");
+            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         } else if (!userDetails.getUserId().equals(map.getMember().getUserId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
+            throw new AccessDeniedException("권한이 없습니다.");
         }
         mapService.deleteMap(mapId);
         return ResponseEntity.ok("지도 삭제 성공 ID : " + mapId);
