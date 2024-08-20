@@ -3,30 +3,13 @@ package com.beancontainer.domain.post.service;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.Role;
 import com.beancontainer.domain.member.repository.MemberRepository;
-import com.beancontainer.domain.post.dto.PostRequestDto;
-import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
-import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
 import com.beancontainer.domain.postimg.service.PostImgService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
