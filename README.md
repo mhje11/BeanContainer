@@ -37,6 +37,12 @@
 
 <br>
 
+## :clipboard:ERD 설계
+<img src="/src/main/resources/static/readme/BeanContainer_ERD.png">
+
+
+<br>
+
 ## :point_right:핵심기능
 >Admin ( 게시글 관리 )
 - 모든 게시글을 관리하며 삭제할 수 있다.

@@ -9,6 +9,7 @@ import com.beancontainer.domain.map.repository.MapRepository;
 import com.beancontainer.domain.map.service.MapService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.global.service.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +65,7 @@ public class MapRestController {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다.");
         } else if (!userDetails.getUsername().equals(map.getMember().getUserId())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
         }
 
         mapUpdateDto.setMapId(mapId);
@@ -73,12 +74,14 @@ public class MapRestController {
     }
 
     @DeleteMapping("/api/mymap/delete/{mapId}")
-    public ResponseEntity<String> deleteMap(@PathVariable("mapId") Long mapId, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> deleteMap(@PathVariable("mapId") Long mapId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new EntityNotFoundException("해당 지도를 찾을 수 없습니다."));
+        log.info("userDetails {}", userDetails.getUserId());
+        log.info("mapUserId {}", map.getMember().getUserId());
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다.");
-        } else if (!userDetails.getUsername().equals(map.getMember().getUserId())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
+        } else if (!userDetails.getUserId().equals(map.getMember().getUserId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
         }
         mapService.deleteMap(mapId);
         return ResponseEntity.ok("지도 삭제 성공 ID : " + mapId);
