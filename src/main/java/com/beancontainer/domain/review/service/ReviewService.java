@@ -14,6 +14,10 @@ import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.repository.ReviewRepository;
 import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
 import com.beancontainer.domain.reviewcategory.repository.ReviewCategoryRepository;
+import com.beancontainer.global.exception.CafeNotFoundException;
+import com.beancontainer.global.exception.CategoryNotFoundException;
+import com.beancontainer.global.exception.ReviewNotFoundException;
+import com.beancontainer.global.exception.UserNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,15 +41,15 @@ public class ReviewService {
 
     @Transactional
     public void createReview(ReviewCreateDto reviewCreateDto, String userLoginId) {
-        Member member = memberRepository.findByUserId(userLoginId).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
-        Cafe cafe = cafeRepository.findById(reviewCreateDto.getCafeId()).orElseThrow(() -> new EntityNotFoundException("카페를 찾을 수 없습니다."));
+        Member member = memberRepository.findByUserId(userLoginId).orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Cafe cafe = cafeRepository.findById(reviewCreateDto.getCafeId()).orElseThrow(() -> new CafeNotFoundException("카페를 찾을 수 없습니다."));
 
         Review review = new Review(member, cafe, reviewCreateDto.getContent(), reviewCreateDto.getScore(), new HashSet<>());
 
         Set<ReviewCategory> reviewCategories = reviewCreateDto.getCategoryNames().stream()
                 .map(categoryName -> {
                     Category category = categoryRepository.findByName(categoryName)
-                            .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다: " + categoryName));
+                            .orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다: " + categoryName));
                      ReviewCategory reviewCategory = new ReviewCategory(review, category);
                      review.addReviewCategory(category);
                      return reviewCategory;
@@ -67,10 +71,10 @@ public class ReviewService {
 
     @Transactional
     public Long updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto) {
-        Review existingReview = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
+        Review existingReview = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("리뷰를 찾을 수 없습니다."));
         Set<ReviewCategory> updateCategories = reviewUpdateDto.getCategoryNames().stream()
                 .map(categoryName -> {
-                    Category category = categoryRepository.findByName(categoryName).orElseThrow(() -> new EntityNotFoundException("해당 카테고리를 찾을 수 없습니다."));
+                    Category category = categoryRepository.findByName(categoryName).orElseThrow(() -> new CategoryNotFoundException("카테고리를 찾을 수 없습니다: " + categoryName));
                     return new ReviewCategory(existingReview, category);
                 })
                 .collect(Collectors.toSet());

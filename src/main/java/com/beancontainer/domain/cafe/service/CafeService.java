@@ -5,6 +5,7 @@ import com.beancontainer.domain.cafe.dto.CafeSaveDto;
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.cafe.repository.CafeRepository;
 import com.beancontainer.domain.review.repository.ReviewRepository;
+import com.beancontainer.global.exception.CafeNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,7 @@ public class CafeService {
     //카페 db에 저장
     @Transactional
     public Long saveCafe(CafeSaveDto cafeSaveDto) {
-        log.info("dto의 주소 : {}", cafeSaveDto.getAddress());
         Cafe cafe = cafeSaveDto.toEntity();
-        log.info("엔티티의 주소 : {}", cafe.getAddress());
         cafeRepository.save(cafe);
         return cafe.getId();
     }
@@ -50,7 +49,7 @@ public class CafeService {
     }
 
     public CafeResponseDto getCafeById(Long cafeId) {
-        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new EntityNotFoundException("해당 카페를 찾을 수 없습니다."));
+        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new CafeNotFoundException("해당 카페를 찾을 수 없습니다."));
         Double average = reviewRepository.calculateAverageScoreByCafeId(cafeId);
         return new CafeResponseDto(cafe, average);
     }
@@ -66,7 +65,7 @@ public class CafeService {
                 .orElseGet(() -> {
                     Long savedCafeId = saveCafe(cafeSaveDto);
                     Cafe savedCafe = cafeRepository.findById(savedCafeId).orElseThrow(
-                            () -> new RuntimeException("카페 저장 후 조회에 실패")
+                            () -> new CafeNotFoundException("해당 카페를 찾을 수 없습니다.")
                     );
                     return new CafeResponseDto(savedCafe, 0.0);
                 });
@@ -77,22 +76,19 @@ public class CafeService {
     @Transactional
     public void updatedCafeCategories(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 카페를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CafeNotFoundException("해당 카페를 찾을 수 없습니다."));
 
-        // 리뷰에서 카테고리 빈도를 계산
         Map<String, Long> categoryFrequency = reviewRepository.findAllByCafeId(cafeId).stream()
                 .flatMap(review -> review.getReviewCategories().stream())
                 .map(reviewCategory -> reviewCategory.getCategory().getName())
                 .collect(Collectors.groupingBy(categoryName -> categoryName, Collectors.counting()));
 
-        // 상위 3개의 카테고리를 선택
         Set<String> topCategories = categoryFrequency.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                 .limit(3)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
 
-        // Cafe의 topCategories 업데이트
         cafe.getTopCategories().clear();
         cafe.getTopCategories().addAll(topCategories);
 
