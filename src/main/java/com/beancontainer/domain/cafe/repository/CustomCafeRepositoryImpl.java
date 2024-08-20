@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Set;
 
+import static com.beancontainer.domain.cafe.entity.QCafe.cafe;
+
 @Repository
 @RequiredArgsConstructor
 public class CustomCafeRepositoryImpl implements CustomCafeRepository{
@@ -22,10 +24,8 @@ public class CustomCafeRepositoryImpl implements CustomCafeRepository{
     @Override
     public List<Cafe> findByCategories(Set<String> categories) {
         queryFactory = new JPAQueryFactory(em);
-        QCafe cafe = QCafe.cafe;
         BooleanBuilder builder = new BooleanBuilder();
 
-        // 각 카테고리에 대해 조건을 추가
         categories.forEach(category -> builder.and(cafe.topCategories.contains(category)));
 
         return queryFactory.selectFrom(cafe)
