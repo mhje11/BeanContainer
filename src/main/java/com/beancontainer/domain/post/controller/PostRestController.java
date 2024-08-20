@@ -8,6 +8,8 @@ import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
 import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
+import com.beancontainer.global.exception.PostNotFoundException;
+import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +61,7 @@ public class PostRestController {
         PostRequestDto postRequestDto = createPostRequestDto(title, content, images);
 
         Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
 
         Long postId = postService.createPost(postRequestDto, member);
 
@@ -95,8 +97,8 @@ public class PostRestController {
         try {
             postService.deletePost(postId, userDetails.getUserId(), isAdmin);
             return ResponseEntity.ok("글 삭제가 완료되었습니다");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (PostNotFoundException e) {
+            throw new PostNotFoundException("해당 게시글을 찾을 수 없습니다.");
         }
     }
 
