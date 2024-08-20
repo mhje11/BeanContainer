@@ -1,11 +1,16 @@
 package com.beancontainer.domain.chatroom.controller;
 
-import com.beancontainer.domain.chatroom.dto.ChatRoomDto;
+import com.beancontainer.domain.chatroom.entity.ChatListEntity;
+import com.beancontainer.domain.chatroom.entity.ChatroomEntity;
+import com.beancontainer.domain.chatroom.entity.MessageEntity;
 import com.beancontainer.domain.chatroom.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -14,27 +19,31 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
-
     private final ChatService chatService;
 
-    @GetMapping("/chat/chatList")
-    public String chatList(Model model) {
-        List<ChatRoomDto> roomList = chatService.findAllRoom();
-        model.addAttribute("roomList", roomList);
-        return "chat/chatList";
+    @GetMapping("/chat")
+    public String chatList(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        List<ChatListEntity> chatList = chatService.getChatList(userDetails.getUsername());
+        model.addAttribute("chatList", chatList);
+        return "chatlist";
     }
 
-    @PostMapping("/chat/createRoom")
-    public String createRoom(Model model, @RequestParam String name) {
-        ChatRoomDto room = chatService.createRoom(name);
-        model.addAttribute("room", room);
-        return "chat/chatRoom";
+    @GetMapping("/chat/{id}")
+    public String chatRoom(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        ChatroomEntity chatroom = chatService.getChatroom(id);
+        if (!chatService.hasAccess(userDetails.getUsername(), chatroom)) {
+            return "redirect:/welcome";
+        }
+        List<MessageEntity> messages = chatService.getChatroomMessages(id);
+        model.addAttribute("chatroom", chatroom);
+        model.addAttribute("messages", messages);
+        model.addAttribute("username", userDetails.getUsername());
+        return "chat/chatroom";
     }
 
-    @GetMapping("/chat/chatRoom")
-    public String chatRoom(Model model, @RequestParam Long roomId) {
-        ChatRoomDto room = chatService.findRoomById(roomId);
-        model.addAttribute("room", room);
-        return "chat/chatRoom";
+    @PostMapping("/chat/new")
+    public String newChat(@RequestParam String username, @AuthenticationPrincipal UserDetails userDetails) {
+        ChatroomEntity chatroom = chatService.createChatroom(userDetails.getUsername(), username);
+        return "redirect:/chat/" + chatroom.getId();
     }
 }

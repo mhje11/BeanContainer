@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        #chat-messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .sender {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${chatroom.name}">Chat Room</h1>
+<div id="chat-messages">
+    <div th:each="message : ${messages}" class="message">
+        <span class="sender" th:text="${message.sender.name}"></span>: <span th:text="${message.message}"></span>
+    </div>
+</div>
+
+<input type="text" id="message-input" placeholder="Type your message...">
+<button id="send-button">Send</button>
+
+<script th:inline="javascript">
+    var chatroomId = [[${chatroom.id}]];
+    var username = [[${username}]];
+
+    var socket = new SockJS('/ws');
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function(frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/messages/' + chatroomId, function(message) {
+            showMessage(JSON.parse(message.body));
+        });
+    }, function(error) {
+        console.log('STOMP error ' + error);
+    });
+
+    function showMessage(message) {
+        var messageElement = document.createElement('div');
+        messageElement.className = 'message';
+        messageElement.innerHTML = '<span class="sender">' + message.sender + '</span>: ' + message.message;
+        document.getElementById('chat-messages').appendChild(messageElement);
+        var chatMessages = document.getElementById('chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function sendMessage() {
+        var content = document.getElementById('message-input').value;
+        if (content.trim() !== '') {
+            var chatMessage = {
+                chatroomId: chatroomId,
+                sender: username,
+                message: content
+            };
+            stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+            document.getElementById('message-input').value = '';
+        }
+    }
+
+    document.getElementById('send-button').onclick = sendMessage;
+
+    document.getElementById('message-input').onkeypress = function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
+</script>
+</body>
+</html>
