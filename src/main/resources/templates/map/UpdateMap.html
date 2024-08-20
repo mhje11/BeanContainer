@@ -39,6 +39,11 @@
             <button onclick="onCategorySelect()">카테고리 검색</button>
             <button onclick="resetCategories()">카테고리 초기화</button>
         </div>
+        <div id="brand-exclude">
+            <label>
+                <input type="checkbox" id="brand-exclude-checkbox" onclick="toggleExcludeBrands()"> 브랜드 카페 제외
+            </label>
+        </div>
     </div>
 
     <button id="save-btn">지도 저장</button>
@@ -46,6 +51,7 @@
 
 <script>
     let map, ps, infowindow, markers = {}, addedCafes = new Map(), isCategorySearch = false;
+    let excludeBrands = false;
     const categories = [
         "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
         "와이파이", "데이트 하기 좋은", "혼자가기 좋은", "공부하기 좋은", "비즈니스 미팅",
@@ -85,6 +91,26 @@
         searchPlacesByCenter(map.getCenter());
         createCategoryButtons();
     }
+    function toggleExcludeBrands() {
+        excludeBrands = !excludeBrands;
+        clearMarkers();
+        searchPlacesByCenter(map.getCenter());
+    }
+
+
+    function isExcludedBrand(placeName) {
+        if (!excludeBrands) return false;
+        const brandNames = [
+            "스타벅스", "메가커피", "투썸플레이스", "빽다방", "컴포즈커피",
+            "이디야", "할리스", "파스쿠찌", "더벤티", "폴바셋",
+            "커피빈", "엔제리너스", "카페베네", "하삼동커피", "감성커피",
+            "매머드커피", "달콤커피", "탐앤탐스", "커피나무", "커피베이",
+            "커피명가", "드롭탑", "커피에반하다", "커피스미스", "커피마마",
+            "더카페", "만랩커피", "셀렉토커피", "토프레소", "빈스빈스",
+            "그라찌에", "전광수커피", "카페보니또", "더착한커피"
+        ];
+        return brandNames.some(brand => placeName.includes(brand));
+    }
 
     function loadMapDetails() {
         const mapId = window.location.pathname.split("/").pop();
@@ -112,7 +138,7 @@
         ps.keywordSearch(keyword, function(data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
                 for (let i = 0; i < data.length; i++) {
-                    if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
+                    if (!isExcludedCategory(data[i].category_name) && !isExcludedBrand(data[i].place_name) && !markers[data[i].id]) {
                         displayMarker(data[i]);
                     }
                 }
@@ -122,6 +148,7 @@
             }
         }, {location: center, radius: 2000});
     }
+
 
     function searchCafeByName() {
         const keyword = document.getElementById('search-input').value;
@@ -369,7 +396,10 @@
         if (selectedCategories.size > 0) {
             isCategorySearch = true;
             const selectedCategoryArray = Array.from(selectedCategories);
-            const queryString = selectedCategoryArray.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+
+            // 브랜드 제외 여부를 쿼리 스트링에 포함
+            const queryString = selectedCategoryArray.map(category => `categories=${encodeURIComponent(category)}`).join('&')
+                + `&excludeBrands=${excludeBrands}`;
 
             fetch(`/api/map/category?${queryString}`)
                 .then(response => {
@@ -399,12 +429,17 @@
         }
     }
 
+
     function resetCategories() {
         isCategorySearch = false;
         selectedCategories.clear();
         createCategoryButtons();
+        const brandExcludeCheckbox = document.getElementById('brand-exclude-checkbox');
+        brandExcludeCheckbox.checked = false;
+        excludeBrands = false;
         searchPlacesByCenter(map.getCenter());
     }
+
 
     function clearMarkers() {
         for (let id in markers) {
