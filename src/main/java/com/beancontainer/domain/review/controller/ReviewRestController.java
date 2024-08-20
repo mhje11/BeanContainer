@@ -8,6 +8,7 @@ import com.beancontainer.domain.review.dto.ReviewUpdateDto;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.repository.ReviewRepository;
 import com.beancontainer.domain.review.service.ReviewService;
+import com.beancontainer.global.exception.UnAuthorizedException;
 import com.beancontainer.global.service.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class ReviewRestController {
     public ResponseEntity<String> deleteReview(@PathVariable("reviewId")Long reviewId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("해당 리뷰를 찾을 수 없습니다."));
         if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다.");
+            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
             log.info("userDetails {}", userDetails.getUsername());
             log.info("review {}", review.getMember().getUserId());
