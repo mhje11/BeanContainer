@@ -4,6 +4,7 @@ import com.beancontainer.domain.memberprofileimg.entity.ProfileImage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.type.descriptor.java.EnumJavaType;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +28,9 @@ public class Member {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private String email; //이메일 인증을 통한 회원가입 구현
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
