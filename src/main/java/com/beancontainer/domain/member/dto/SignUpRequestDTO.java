@@ -22,4 +22,7 @@ public class SignUpRequestDTO {
 
     //회원 닉네임
     private String nickname;
+
+    //이메일 인증
+    private String email;
 }
