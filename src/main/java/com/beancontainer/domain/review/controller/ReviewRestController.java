@@ -8,7 +8,9 @@ import com.beancontainer.domain.review.dto.ReviewUpdateDto;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.repository.ReviewRepository;
 import com.beancontainer.domain.review.service.ReviewService;
+import com.beancontainer.global.exception.AccessDeniedException;
 import com.beancontainer.global.exception.UnAuthorizedException;
+import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +36,9 @@ public class ReviewRestController {
     @PostMapping("/api/review/create")
     public ResponseEntity<String> createReview(@RequestBody ReviewCreateDto reviewCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다.");
+            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         }
-        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
         reviewService.createReview(reviewCreateDto, userDetails.getUsername());
 
         return ResponseEntity.ok("리뷰 등록 완료");
@@ -52,9 +54,9 @@ public class ReviewRestController {
     public ResponseEntity<String> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewUpdateDto reviewUpdateDto, @AuthenticationPrincipal UserDetails userDetails) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("해당 리뷰를 찾을 수 없습니다."));
         if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다.");
+            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
+            throw new AccessDeniedException("권한이 없습니다.");
         }
         reviewService.updateReview(reviewId, reviewUpdateDto);
         return ResponseEntity.ok("리뷰 수정 완료");
@@ -68,7 +70,7 @@ public class ReviewRestController {
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
             log.info("userDetails {}", userDetails.getUsername());
             log.info("review {}", review.getMember().getUserId());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
+            throw new AccessDeniedException("권한이 없습니다.");
         }
         reviewService.deleteReview(reviewId);
 
