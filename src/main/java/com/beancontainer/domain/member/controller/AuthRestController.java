@@ -4,11 +4,15 @@ import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.RefreshToken;
+import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.member.service.AuthService;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
+import com.beancontainer.global.exception.PasswordMismatchException;
+import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.RefreshTokenService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +27,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 
 
 @RestController
@@ -35,7 +40,7 @@ public class AuthRestController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
     private final RefreshTokenService refreshTokenService;
-    private final ProfileImageService profileImageService;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO userLoginRequestDto,
@@ -53,7 +58,7 @@ public class AuthRestController {
         //요청 정보에서 얻어온 비밀번호와 서버의 비밀번호가 일치하는지 확인
         if (!passwordEncoder.matches(userLoginRequestDto.getPassword(), member.getPassword())) {
             //비밀번호가 일치하지 않을 때
-            return new ResponseEntity("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
 
         //토큰 발급
@@ -95,6 +100,60 @@ public class AuthRestController {
         response.addCookie(refreshTokenCookie);
 
         return new ResponseEntity(loginResponseDto, HttpStatus.OK);
+    }
+
+
+    //RefreshToken 을 통한 토큰 재발급
+    @PostMapping("/refreshToken")
+    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) {
+
+        // 쿠키로부터 refresh Token 얻어 옴
+        String refreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        // 없으면 오류 응답
+        if (refreshToken == null) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        // 있으면 토큰으로부터 정보 얻어 옴
+        Claims claims = jwtTokenizer.parseRefreshToken(refreshToken);
+        String userId = (String) claims.get("userId");
+
+        Member member = memberService.findByUserId(userId);
+
+        if(member == null) {
+            throw new UserNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        // accessToken 생성.
+        String newAccessToken = jwtTokenizer.createAccessToken(member);
+
+
+        // 쿠키 생성 response로 보내기
+        Cookie accessTokenCookie = new Cookie("accessToken", newAccessToken);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000)); // 초 단위로 넘어오니까 밀리로 바꾸기 위해 1000으로 나눔.
+        response.addCookie(accessTokenCookie);
+
+        //응답 DTO 생성
+        LoginRequestDTO loginResponseDto = LoginRequestDTO.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(refreshToken)
+                .userId(userId)
+                .name(member.getName())
+                .build();
+
+        return ResponseEntity.ok(loginResponseDto);
     }
 
 

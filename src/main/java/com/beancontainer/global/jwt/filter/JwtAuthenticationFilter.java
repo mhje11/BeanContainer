@@ -46,24 +46,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 getAuthentication(token);
             } catch (ExpiredJwtException e) {
-                request.setAttribute("exception", JwtExceptionCode.EXPIRED_TOKEN.getCode());
                 log.error("Expired Token : {}", token);
-                throw new JwtTokenExpiredException("로그인이 만료되었습니다.");
-            } catch (UnsupportedJwtException e) {
-                request.setAttribute("exception", JwtExceptionCode.UNSUPPORTED_TOKEN.getCode());
-                log.error("Unsupported Token: {}", token, e);
-                throw new BadCredentialsException("Unsupported token exception", e);
-            } catch (MalformedJwtException e) {
-                request.setAttribute("exception", JwtExceptionCode.INVALID_TOKEN.getCode());
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("TOKEN_EXPIRED");
+                return;
+            } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
                 log.error("Invalid Token: {}", token, e);
-                throw new BadCredentialsException("Invalid token exception", e);
-            } catch (IllegalArgumentException e) {
-                request.setAttribute("exception", JwtExceptionCode.NOT_FOUND_TOKEN.getCode());
-                log.error("Token not found: {}", token, e);
-                throw new BadCredentialsException("Token not found exception", e);
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("INVALID_TOKEN");
+                return;
             } catch (Exception e) {
                 log.error("JWT Filter - Internal Error: {}", token, e);
-                throw new BadCredentialsException("JWT filter internal exception", e);
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("INTERNAL_ERROR");
+                return;
             }
         }
         filterChain.doFilter(request, response);

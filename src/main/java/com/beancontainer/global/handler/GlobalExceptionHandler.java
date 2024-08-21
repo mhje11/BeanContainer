@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    //사용자를 찾을 수 없음
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -32,9 +33,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleEmailNotMatchCodeException(EmailNotMatchCodeException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
-    //로그인 만료
+    //로그인 토큰 만료
     @ExceptionHandler(JwtTokenExpiredException.class)
-    public ResponseEntity<String> handleSessionExpiredException(JwtTokenExpiredException e) {
+    public ResponseEntity<String> handleJwtTokenExpiredException(JwtTokenExpiredException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
     //올바르지 않은 경로
