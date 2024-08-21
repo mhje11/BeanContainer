@@ -29,7 +29,7 @@ public class Map {
     private Member member;
 
     @Column(name = "is_public")
-    private boolean isPublic;
+    private Boolean isPublic;
 
 
     public Map(String mapName, Member member) {
@@ -43,10 +43,11 @@ public class Map {
         this.isPublic = isPublic;
     }
 
-    public void updateMap(String mapName) {
+    public void updateMap(String mapName, boolean isPublic) {
         if (mapName != null) {
             this.mapName = mapName;
         }
-    }
+            this.isPublic = isPublic;
 
+    }
 }

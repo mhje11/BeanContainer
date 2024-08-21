@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Map with Category Selection</title>
+    <title>지도 생성</title>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
     <link rel="stylesheet" href="/css/map/createMap.css">
@@ -605,7 +605,16 @@
 
         document.getElementById('save-btn').addEventListener('click', async function () {
             const mapName = document.getElementById('map-name').value;
-            const isPublic = document.getElementById('is-public').checked; // 공개 여부 체크박스 값 가져오기
+            const isPublicCheckbox = document.getElementById('is-public');
+
+            // 콘솔에 체크박스 상태를 출력
+            console.log('Checkbox checked:', isPublicCheckbox.checked);
+
+            // isPublic 값 설정: 체크되면 공개(false), 체크 안되면 비공개(true)
+            const isPublic = !isPublicCheckbox.checked;
+
+            // isPublic 값 출력
+            console.log('isPublic value:', isPublic);
 
             if (!mapName) {
                 alert('지도 이름을 입력하세요.');
@@ -615,7 +624,7 @@
             const mapData = {
                 mapName: mapName,
                 kakaoIds: Array.from(addedCafes),
-                isPublic: isPublic // 공개 여부 추가
+                isPublic: isPublic
             };
 
             console.log("Sending map data:", mapData);
@@ -642,7 +651,6 @@
             }
         });
     });
-
 </script>
 </body>
 </html>

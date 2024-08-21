@@ -38,7 +38,8 @@ public class MapService {
 
     @Transactional
     public Long createMap(MapCreateDto mapCreateDto, Member member) {
-        Map map = new Map(mapCreateDto.getMapName(), member, mapCreateDto.isPublic());
+        Map map = new Map(mapCreateDto.getMapName(), member, mapCreateDto.getIsPublic());
+        log.info("isPublic {}", mapCreateDto.getIsPublic());
         mapRepository.save(map);
         Set<String> kakaoIds = mapCreateDto.getKakaoIds();
 
@@ -66,7 +67,7 @@ public class MapService {
                     return new CafeResponseDto(mapCafe.getCafe(), averageScore);
                 })
                 .collect(Collectors.toList());
-        return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes);
+        return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes, map.getIsPublic());
     }
 
     @Transactional
@@ -103,7 +104,7 @@ public class MapService {
             mapCafeRepository.save(mapCafe);
         });
 
-        map.updateMap(mapUpdateDto.getMapName());
+        map.updateMap(mapUpdateDto.getMapName(), mapUpdateDto.getIsPublic());
         mapRepository.save(map);
 
         return map.getId();

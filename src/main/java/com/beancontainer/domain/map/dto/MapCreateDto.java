@@ -17,9 +17,9 @@ public class MapCreateDto {
     @NotEmpty(message = "최소 하나의 카페가 추가 돼야 합니다.")
     private Set<String> kakaoIds = new HashSet<>();
     private Long memberId;
-    private boolean isPublic;
+    private Boolean isPublic;
 
-    public MapCreateDto(String mapName, Set<String> kakaoIds, Long memberId, boolean isPublic) {
+    public MapCreateDto(String mapName, Set<String> kakaoIds, Long memberId, Boolean isPublic) {
         this.mapName = mapName;
         this.kakaoIds = kakaoIds;
         this.memberId = memberId;
