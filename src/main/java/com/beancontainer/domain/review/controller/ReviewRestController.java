@@ -2,6 +2,7 @@ package com.beancontainer.domain.review.controller;
 
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.review.dto.ReviewCreateDto;
 import com.beancontainer.domain.review.dto.ReviewResponseDto;
 import com.beancontainer.domain.review.dto.ReviewUpdateDto;
@@ -30,15 +31,14 @@ import java.util.List;
 public class ReviewRestController {
 
     private final ReviewService reviewService;
-    private final MemberRepository memberRepository;
-    private final ReviewRepository reviewRepository;
+    private final MemberService memberService;
 
     @PostMapping("/api/review/create")
     public ResponseEntity<String> createReview(@RequestBody ReviewCreateDto reviewCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         }
-        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberService.findByUserId(userDetails.getUsername());
         reviewService.createReview(reviewCreateDto, userDetails.getUsername());
 
         return ResponseEntity.ok("리뷰 등록 완료");
@@ -52,7 +52,7 @@ public class ReviewRestController {
 
     @PutMapping("/api/review/update/{reviewId}")
     public ResponseEntity<String> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewUpdateDto reviewUpdateDto, @AuthenticationPrincipal UserDetails userDetails) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("해당 리뷰를 찾을 수 없습니다."));
+        Review review = reviewService.findById(reviewId);
         if (userDetails == null) {
             throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
@@ -64,7 +64,7 @@ public class ReviewRestController {
 
     @DeleteMapping("/api/review/delete/{reviewId}")
     public ResponseEntity<String> deleteReview(@PathVariable("reviewId")Long reviewId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new EntityNotFoundException("해당 리뷰를 찾을 수 없습니다."));
+        Review review = reviewService.findById(reviewId);
         if (userDetails == null) {
             throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
