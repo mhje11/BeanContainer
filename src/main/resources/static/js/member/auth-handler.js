@@ -1,24 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // API 요청을 보내는 함수
     function makeApiRequest(url, method = 'GET', data = null) {
         return fetch(url, {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include', // 쿠키를 포함하여 요청을 보냄
+            credentials: 'include',
             body: data ? JSON.stringify(data) : null
         }).then(response => {
-            if (response.status === 401) {
-                // 액세스 토큰이 만료된 경우
-                return refreshAccessToken().then(success => {
-                    if (success) {
-                        // 토큰 갱신 성공, 원래 요청 재시도
-                        return makeApiRequest(url, method, data);
+            if (response.status === 401 || response.status === 403) {
+                return response.text().then(errorMessage => {
+                    if (errorMessage === 'TOKEN_EXPIRED') {
+                        return refreshAccessToken().then(success => {
+                            if (success) {
+                                return makeApiRequest(url, method, data);
+                            } else {
+                                handleLoginExpired();
+                                throw new Error('로그인 만료');
+                            }
+                        });
                     } else {
-                        // 토큰 갱신 실패, 로그인 페이지로 리다이렉트
                         handleLoginExpired();
-                        throw new Error('Login expired');
+                        throw new Error('Authentication failed');
                     }
                 });
             }
@@ -46,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = '/login';
     }
 
-    // 로그아웃 함수
+    // 로그아웃
     function logout() {
         return fetch('/api/auth/logout', {
             method: 'POST',
