@@ -1,6 +1,7 @@
 package com.beancontainer.global.jwt.filter;
 
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.global.exception.JwtTokenExpiredException;
 import com.beancontainer.global.jwt.exception.JwtExceptionCode;
 import com.beancontainer.global.jwt.token.JwtAuthenticationToken;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
@@ -46,8 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 getAuthentication(token);
             } catch (ExpiredJwtException e) {
                 request.setAttribute("exception", JwtExceptionCode.EXPIRED_TOKEN.getCode());
-                log.error("Expired Token : {}", token, e);
-                throw new BadCredentialsException("Expired token exception", e);
+                log.error("Expired Token : {}", token);
+                throw new JwtTokenExpiredException("로그인이 만료되었습니다.");
             } catch (UnsupportedJwtException e) {
                 request.setAttribute("exception", JwtExceptionCode.UNSUPPORTED_TOKEN.getCode());
                 log.error("Unsupported Token: {}", token, e);
