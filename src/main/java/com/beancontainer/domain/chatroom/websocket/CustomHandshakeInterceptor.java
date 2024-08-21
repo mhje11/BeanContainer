@@ -22,9 +22,10 @@ public class CustomHandshakeInterceptor extends HttpSessionHandshakeInterceptor 
         }
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }
+
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                               WebSocketHandler wsHandler, @Nullable Exception ex) {
+                               WebSocketHandler wsHandler, Exception ex) {
         super.afterHandshake(request, response, wsHandler, ex);
     }
 }

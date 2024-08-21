@@ -1,5 +1,6 @@
 package com.beancontainer.domain.chatroom.entity;
 
+import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,20 +18,13 @@ public class ChatListEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatroom_id", nullable = false)
+    @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatroomEntity chatroom;
 
-//    @Column(name = "updated_at")
-//    private LocalDateTime updatedAt;
-//
-//    @PrePersist
-//    @PreUpdate
-//    public void updateTimestamp() {
-//        updatedAt = LocalDateTime.now();
-//    }
+
 
 }

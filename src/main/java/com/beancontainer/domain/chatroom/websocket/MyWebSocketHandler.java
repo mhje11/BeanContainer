@@ -2,6 +2,7 @@ package com.beancontainer.domain.chatroom.websocket;
 
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -11,17 +12,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@Component
 public class MyWebSocketHandler extends TextWebSocketHandler {
     private static final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
         System.out.println("Connection established with session: " + session.getId());
     }
+
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-// 현재 인증된 사용자 정보를 가져옴
+
+        // 현재 인증된 사용자 정보를 가져옴
         SecurityContext securityContext = (SecurityContext) session.getAttributes().get("SPRING_SECURITY_CONTEXT");
         String username = "Unknown User";
         if (securityContext != null && securityContext.getAuthentication() != null &&
@@ -29,6 +34,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             UserDetails userDetails = (UserDetails) securityContext.getAuthentication().getPrincipal();
             username = userDetails.getUsername();
         }
+
         String formattedMessage = username + ": " + payload;
         System.out.println("Received message: " + formattedMessage);
         synchronized (sessions) {
@@ -39,6 +45,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
             }
         }
     }
+
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         sessions.remove(session);
