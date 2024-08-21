@@ -104,6 +104,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    // 좋아요 이미 누름
+    @ExceptionHandler(LikeExistException.class)
+    public ResponseEntity<String> handleLikeExistException(LikeExistException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    // 해당 글에 대한 내역을 찾을 수 없다.
+    @ExceptionHandler(HistoryNotFoundException.class)
+    public ResponseEntity<String> handleHistoryNotFoundException(HistoryNotFoundException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     //채팅방
     @ExceptionHandler(ChatRoomNotFoundException.class)
     public ResponseEntity<String> handleChatRoomNotFoundException(ChatRoomNotFoundException e) {

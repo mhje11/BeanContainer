@@ -7,7 +7,8 @@ import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
-import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
+import com.beancontainer.global.exception.PostNotFoundException;
+import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -35,31 +34,15 @@ public class PostRestController {
     private final PostService postService;
     private final MemberRepository memberRepository;
 
-    // 게시글 작성 및 수정 시
-    private PostRequestDto createPostRequestDto(String title, String content, List<MultipartFile> images) {
-        PostRequestDto postRequestDto = new PostRequestDto();
-        postRequestDto.setTitle(title);
-        postRequestDto.setContent(content);
-
-        if (images != null) {
-            List<PostImgSaveDto> postImgSaveDtos = images.stream()
-                    .map(PostImgSaveDto::new)
-                    .collect(Collectors.toList());
-            postRequestDto.setImages(postImgSaveDtos);
-        }
-
-        return postRequestDto;
-    }
-
     @PostMapping("/post/create")    // 게시글 작성
-    public ResponseEntity<Map<String, String>> createPost(@RequestParam("title") String title, @RequestParam("content") String content,
+    public ResponseEntity<Map<String, String>> createPost(@RequestPart("postRequestDto") PostRequestDto postRequestDto,
                                                           @RequestParam(value = "images", required = false) List<MultipartFile> images,
                                                           @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
-        PostRequestDto postRequestDto = createPostRequestDto(title, content, images);
+        postRequestDto.setImages(images);
 
         Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
 
         Long postId = postService.createPost(postRequestDto, member);
 
@@ -95,16 +78,15 @@ public class PostRestController {
         try {
             postService.deletePost(postId, userDetails.getUserId(), isAdmin);
             return ResponseEntity.ok("글 삭제가 완료되었습니다");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (PostNotFoundException e) {
+            throw new PostNotFoundException("해당 게시글을 찾을 수 없습니다.");
         }
     }
 
     @PutMapping("/post/update/{postId}")    // 게시글 수정
-    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestParam("title") String title, @RequestParam("content") String content,
-                                                             @RequestParam(value = "images", required = false) List<MultipartFile> images) throws IOException{
-
-        PostRequestDto postRequestDto = createPostRequestDto(title, content, images);
+    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestPart("postRequestDto") PostRequestDto postRequestDto,
+                                                             @RequestParam(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        postRequestDto.setImages(images);
 
         PostDetailsResponseDto updatedPost = postService.updatePost(postId, postRequestDto);
         return ResponseEntity.ok(updatedPost);

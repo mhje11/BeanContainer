@@ -3,21 +3,22 @@ package com.beancontainer.domain.post.service;
 import com.beancontainer.domain.comment.repository.CommentRepository;
 import com.beancontainer.domain.like.repository.LikeRepository;
 import com.beancontainer.domain.member.entity.Member;
-import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
-import com.beancontainer.domain.postimg.dto.PostImgSaveDto;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import com.beancontainer.domain.postimg.service.PostImgService;
+import com.beancontainer.global.exception.AccessDeniedException;
+import com.beancontainer.global.exception.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,27 +28,26 @@ import java.util.List;
 @Slf4j
 public class PostService {
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
     private final PostImgService postImgService;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
 
     // 이미지 처리
-    private void createImages(Post post, List<PostImgSaveDto> images) throws IOException {
-        if(images != null && !images.isEmpty()) {
-            for (PostImgSaveDto image : images) {
-                if(image.getImg().isEmpty()) continue;
+    private void createImages(Post post, List<MultipartFile> images) throws IOException {
+        if (images != null && !images.isEmpty()) {
+            for (MultipartFile image : images) {
+                if (image.isEmpty()) continue;
 
-                // S3에 이미지 저장 및 url 생성
-                String imgUrl = postImgService.saveImage(image.getImg());
-                String originalName = image.getImg().getOriginalFilename();
+                // S3에 이미지 저장 및 URL 생성
+                String imgUrl = postImgService.saveImage(image);
+                String originalName = image.getOriginalFilename();
                 String name = postImgService.getFileName(originalName);
 
                 PostImg postImg = new PostImg(originalName, name, post);
-                postImg.setPath(imgUrl);    // url 저장
+                postImg.setPath(imgUrl);  // URL 저장
 
                 postImgService.save(postImg);
-                post.getImages().add(postImg);  // post의 images 리스트에 추가
+                post.getImages().add(postImg);  // Post의 images 리스트에 추가
             }
         }
     }
@@ -87,7 +87,7 @@ public class PostService {
     // 게시글 상세 보기
     @Transactional
     public PostDetailsResponseDto postDetails(Long postId, String userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 
         post.incrementViews();  // 조회수 증가
         postRepository.save(post);
@@ -101,10 +101,10 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long postId, String userId, boolean isAdmin) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 
         if (!isAdmin && !post.getMember().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
         }
 
         // S3에서 이미지 삭제
@@ -118,7 +118,7 @@ public class PostService {
     // 게시글 수정
     @Transactional
     public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
 
         post.update(postRequestDto.getTitle(), postRequestDto.getContent());
 
