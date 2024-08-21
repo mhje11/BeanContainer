@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Set;
 
 public interface CustomCafeRepository {
-    List<Cafe> findByCategories(Set<String> categories);
+    List<Cafe> findByCategories(Set<String> categories, Boolean isBrand);
 }

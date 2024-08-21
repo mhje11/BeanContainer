@@ -36,8 +36,13 @@ public class CafeRestController {
 
 
     @GetMapping("/api/map/category")
-    public ResponseEntity<List<CafeResponseDto>> findByCategory(@RequestParam Set<String> categories) {
-        List<CafeResponseDto> cafes = cafeService.getCafesByCategories(categories);
+    public ResponseEntity<List<CafeResponseDto>> findByCategory(@RequestParam Set<String> categories,
+                                                                @RequestParam(required = false) boolean excludeBrands) {
+        List<CafeResponseDto> cafes = cafeService.getCafesByCategories(categories, excludeBrands);
         return new ResponseEntity<>(cafes, HttpStatus.OK);
     }
+
+
+
+
 }

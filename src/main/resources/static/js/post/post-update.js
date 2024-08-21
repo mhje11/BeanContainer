@@ -42,8 +42,10 @@ document.getElementById('updateForm').addEventListener('submit', function (event
     event.preventDefault();
     const formData = new FormData();
 
-    formData.append('title', document.getElementById('title').value);
-    formData.append('content', document.getElementById('content').value);
+    formData.append('postRequestDto', new Blob([JSON.stringify({
+        title: document.getElementById('title').value,
+        content: document.getElementById('content').value
+    })], { type: 'application/json' }));
 
     const images = document.getElementById('images').files;
 
