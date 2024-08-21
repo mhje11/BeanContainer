@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,8 @@ public class MapService {
 
     @Transactional
     public Long createMap(MapCreateDto mapCreateDto, Member member) {
-        Map map = new Map(mapCreateDto.getMapName(), member);
-        log.info("kakaoIds {}", mapCreateDto.getKakaoIds());
+        Map map = new Map(mapCreateDto.getMapName(), member, mapCreateDto.getIsPublic());
+        log.info("isPublic {}", mapCreateDto.getIsPublic());
         mapRepository.save(map);
         Set<String> kakaoIds = mapCreateDto.getKakaoIds();
 
@@ -67,7 +68,7 @@ public class MapService {
                     return new CafeResponseDto(mapCafe.getCafe(), averageScore);
                 })
                 .collect(Collectors.toList());
-        return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes);
+        return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes, map.getIsPublic());
     }
 
     @Transactional
@@ -104,7 +105,7 @@ public class MapService {
             mapCafeRepository.save(mapCafe);
         });
 
-        map.updateMap(mapUpdateDto.getMapName());
+        map.updateMap(mapUpdateDto.getMapName(), mapUpdateDto.getIsPublic());
         mapRepository.save(map);
 
         return map.getId();
@@ -118,5 +119,13 @@ public class MapService {
         mapCafeRepository.deleteAll(mapCafes);
 
         mapRepository.delete(map);
+    }
+
+    public Map findById(Long mapId) {
+        return mapRepository.findById(mapId).orElseThrow(() -> new MapNotFoundException("해당 지도를 찾을 수 없습니다."));
+    }
+
+    public List<MapListResponseDto> findRandomPublicMap() {
+        return mapRepository.findRandomMaps(3);
     }
 }

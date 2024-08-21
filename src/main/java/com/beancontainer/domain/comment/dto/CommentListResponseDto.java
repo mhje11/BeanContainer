@@ -14,13 +14,13 @@ public class CommentListResponseDto {
     private String nickname;
     private String content;
     private LocalDateTime createdAt;
-    private boolean isAuthor;
+    private boolean authorCheck;
 
-    public CommentListResponseDto(Comment comment, boolean isAuthor) {
+    public CommentListResponseDto(Comment comment, boolean authorCheck) {
         this.id = comment.getId();
         this.nickname = comment.getMember().getNickname();
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
-        this.isAuthor = isAuthor;
+        this.authorCheck = authorCheck;
     }
 }

@@ -22,9 +22,9 @@
         private int likes;
         private String content;
         private List<String> imageUrls;
-        private boolean isAuthor;
+        private boolean authorCheck;
 
-        public PostDetailsResponseDto(Post updatedPost, int likesCount, boolean isAuthor) {
+        public PostDetailsResponseDto(Post updatedPost, int likesCount, boolean authorCheck) {
             this.id = updatedPost.getId();
             this.title = updatedPost.getTitle();
             this.nickname = updatedPost.getMember().getNickname();
@@ -36,6 +36,6 @@
             this.imageUrls = updatedPost.getImages().stream()
                     .map(PostImg::getPath)
                     .collect(Collectors.toList());
-            this.isAuthor = isAuthor;
+            this.authorCheck = authorCheck;
         }
     }
