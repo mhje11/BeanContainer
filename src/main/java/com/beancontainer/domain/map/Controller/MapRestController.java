@@ -5,15 +5,12 @@ import com.beancontainer.domain.map.dto.MapDetailResponseDto;
 import com.beancontainer.domain.map.dto.MapListResponseDto;
 import com.beancontainer.domain.map.dto.MapUpdateDto;
 import com.beancontainer.domain.map.entity.Map;
-import com.beancontainer.domain.map.repository.MapRepository;
 import com.beancontainer.domain.map.service.MapService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.global.exception.AccessDeniedException;
-import com.beancontainer.global.exception.MapNotFoundException;
 import com.beancontainer.global.exception.UnAuthorizedException;
 import com.beancontainer.global.service.CustomUserDetails;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,5 +82,11 @@ public class MapRestController {
         }
         mapService.deleteMap(mapId);
         return ResponseEntity.ok("지도 삭제 성공 ID : " + mapId);
+    }
+
+    @GetMapping("/api/randommap")
+    public ResponseEntity<List<MapListResponseDto>> findRandomPublicMap() {
+        List<MapListResponseDto> randomMap = mapService.findRandomPublicMap();
+        return ResponseEntity.ok(randomMap);
     }
 }
