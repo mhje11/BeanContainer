@@ -6,6 +6,7 @@ import com.beancontainer.domain.comment.dto.CommentRequestDto;
 import com.beancontainer.domain.comment.service.CommentService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class CommentRestController {
     @PostMapping("/create/{postId}")
     public ResponseEntity<Map<String, String>> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
 
         commentRequestDto.setMemberLoginId(member.getUserId());
         Long id = commentService.createComment(postId, commentRequestDto);
@@ -47,7 +48,7 @@ public class CommentRestController {
 
         if (userDetails != null) {
             Member member = memberRepository.findByUserId(userDetails.getUserId())
-                    .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
             currentUserId = member.getId();
         }
 
@@ -63,7 +64,7 @@ public class CommentRestController {
                 .anyMatch(a -> a.getAuthority().equals("ADMIN"));
 
         Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
 
         commentService.deleteComment(postId, commentId, userDetails.getUserId(), isAdmin);
         return ResponseEntity.ok("댓글 삭제가 완료되었습니다.");
@@ -74,7 +75,7 @@ public class CommentRestController {
     public ResponseEntity<String> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
                                                 @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
         commentService.updateComment(postId, commentId, commentRequestDto.getContent(), member);
         return ResponseEntity.ok("댓글 수정이 완료되었습니다.");
     }

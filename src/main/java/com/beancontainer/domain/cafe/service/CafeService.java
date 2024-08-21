@@ -96,8 +96,8 @@ public class CafeService {
     }
 
 
-    public List<CafeResponseDto> getCafesByCategories(Set<String> categories) {
-        List<Cafe> cafes = cafeRepository.findByCategories(categories);
+    public List<CafeResponseDto> getCafesByCategories(Set<String> categories, Boolean excludeBrands) {
+        List<Cafe> cafes = cafeRepository.findByCategories(categories, excludeBrands);
         return cafes.stream()
                 .map(cafe -> {
                     Double averageScore = reviewRepository.calculateAverageScoreByCafeId(cafe.getId());
