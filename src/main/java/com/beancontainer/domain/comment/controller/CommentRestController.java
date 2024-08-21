@@ -6,12 +6,12 @@ import com.beancontainer.domain.comment.dto.CommentRequestDto;
 import com.beancontainer.domain.comment.service.CommentService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,13 +23,12 @@ import java.util.Map;
 @RequestMapping("/api/postlist")
 public class CommentRestController {
     private final CommentService commentService;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     // 댓글 등록
     @PostMapping("/create/{postId}")
     public ResponseEntity<Map<String, String>> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberService.findByUserId(userDetails.getUserId());
 
         commentRequestDto.setMemberLoginId(member.getUserId());
         Long id = commentService.createComment(postId, commentRequestDto);
@@ -47,8 +46,7 @@ public class CommentRestController {
         Long currentUserId = null;
 
         if (userDetails != null) {
-            Member member = memberRepository.findByUserId(userDetails.getUserId())
-                    .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+            Member member = memberService.findByUserId(userDetails.getUserId());
             currentUserId = member.getId();
         }
 
@@ -63,8 +61,7 @@ public class CommentRestController {
         boolean isAdmin = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN"));
 
-        Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberService.findByUserId(userDetails.getUserId());
 
         commentService.deleteComment(postId, commentId, userDetails.getUserId(), isAdmin);
         return ResponseEntity.ok("댓글 삭제가 완료되었습니다.");
@@ -74,8 +71,7 @@ public class CommentRestController {
     @PutMapping("/{postId}/update/{commentId}")
     public ResponseEntity<String> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
                                                 @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberService.findByUserId(userDetails.getUserId());
         commentService.updateComment(postId, commentId, commentRequestDto.getContent(), member);
         return ResponseEntity.ok("댓글 수정이 완료되었습니다.");
     }

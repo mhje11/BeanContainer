@@ -33,7 +33,8 @@ public class SecurityConfig {
             "/api/postlist/comments/{postId}",  // 댓글 목록
             "/review/{kakaoId}", "/api/reviewlist/{cafeId}", "/reviewlist/{cafeId}", //리뷰도 모두 조회 가능
             "/api/cafe/{cafeId}", // 카페정보
-            "/api/map/category" //카테고리 저장 후 검색
+            "/api/map/category", //카테고리 저장 후 검색
+            "/api/randommap"
     };
 
     //관리자 페이지
