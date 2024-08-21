@@ -2,13 +2,12 @@ package com.beancontainer.domain.post.controller;
 
 import com.beancontainer.domain.admin.RequireAdmin;
 import com.beancontainer.domain.member.entity.Member;
-import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
 import com.beancontainer.global.exception.PostNotFoundException;
-import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +31,7 @@ import java.util.Map;
 @Slf4j
 public class PostRestController {
     private final PostService postService;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @PostMapping("/post/create")    // 게시글 작성
     public ResponseEntity<Map<String, String>> createPost(@RequestPart("postRequestDto") PostRequestDto postRequestDto,
@@ -41,8 +40,7 @@ public class PostRestController {
 
         postRequestDto.setImages(images);
 
-        Member member = memberRepository.findByUserId(userDetails.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberService.findByUserId(userDetails.getUserId());
 
         Long postId = postService.createPost(postRequestDto, member);
 
