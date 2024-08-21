@@ -4,6 +4,7 @@ import com.beancontainer.domain.chatroom.entity.ChatListEntity;
 import com.beancontainer.domain.chatroom.entity.ChatroomEntity;
 import com.beancontainer.domain.chatroom.entity.MessageEntity;
 import com.beancontainer.domain.chatroom.service.ChatService;
+import com.beancontainer.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,12 +21,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
+    private final MemberService memberService; // 추가
 
     @GetMapping("/chat")
     public String chatList(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         List<ChatListEntity> chatList = chatService.getChatList(userDetails.getUsername());
         model.addAttribute("chatList", chatList);
-        return "chatlist";
+        return "chat/chatlist";
     }
 
     @GetMapping("/chat/{id}")

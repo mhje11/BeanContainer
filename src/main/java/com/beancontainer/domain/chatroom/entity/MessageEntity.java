@@ -1,5 +1,6 @@
 package com.beancontainer.domain.chatroom.entity;
 
+import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +23,7 @@ public class MessageEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
-    private UserEntity sender;
+    private Member sender;
 
     @Lob
     @Column(name = "message", nullable = false)
