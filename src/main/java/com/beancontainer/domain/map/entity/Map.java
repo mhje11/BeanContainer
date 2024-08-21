@@ -28,10 +28,19 @@ public class Map {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Column(name = "is_public")
+    private boolean isPublic;
+
 
     public Map(String mapName, Member member) {
         this.mapName = mapName;
         this.member = member;
+    }
+
+    public Map(String mapName, Member member, boolean isPublic) {
+        this.mapName = mapName;
+        this.member = member;
+        this.isPublic = isPublic;
     }
 
     public void updateMap(String mapName) {
