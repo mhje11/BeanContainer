@@ -42,7 +42,6 @@ public class MapRestController {
         }
         Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
         mapCreateDto.setMemberId(member.getId());
-        log.info("Received Map Data: {}", mapCreateDto.getKakaoIds()); // 로그 추가
 
         Long mapId = mapService.createMap(mapCreateDto, member);
         return ResponseEntity.ok("지도 생성 성공 : ID : " + mapId);

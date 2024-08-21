@@ -44,6 +44,10 @@
                 <input type="checkbox" id="brand-exclude-checkbox" onclick="toggleExcludeBrands()"> 브랜드 카페 제외
             </label>
         </div>
+        <div id="public-toggle">
+            <label for="is-public">지도 비공개:</label>
+            <input type="checkbox" id="is-public">
+        </div>
     </div>
 
     <button id="save-btn">지도 저장</button>
@@ -119,6 +123,8 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('map-name').value = data.mapName;
+                // 공개 여부가 false이면 체크박스를 체크 상태로 설정
+                document.getElementById('is-public').checked = !data.isPublic;
                 data.cafes.forEach(cafe => {
                     addCafeToSet(cafe.kakaoId, cafe.name, cafe.address, cafe.latitude, cafe.longitude);
                 });
@@ -127,6 +133,8 @@
                 console.error('지도 세부 정보 로드 오류:', error);
             });
     }
+
+
 
     function isExcludedCategory(categoryName) {
         const excludedCategories = ['보드게임카페', '룸카페', '방탈출카페', '테마카페', '고양이카페', '북카페', '레드버튼', '벌툰', '키즈'];
@@ -327,12 +335,15 @@
     function saveMap() {
         const mapId = window.location.pathname.split("/").pop();
         const mapName = document.getElementById('map-name').value;
+        // 체크박스가 체크된 경우 isPublic을 false로, 체크되지 않은 경우 true로 설정
+        const isPublic = !document.getElementById('is-public').checked;
         const kakaoIds = Array.from(addedCafes.keys());
 
         const mapData = {
             mapId: mapId,
             mapName: mapName,
-            kakaoIds: kakaoIds
+            kakaoIds: kakaoIds,
+            isPublic: isPublic // 공개 여부 포함
         };
 
         fetch(`/api/mymap/update/${mapId}`, {
@@ -359,6 +370,8 @@
                 alert('지도 업데이트 실패: ' + error.message);
             });
     }
+
+
 
     function createCategoryButtons() {
         const availableList = document.querySelector('.available-categories');
