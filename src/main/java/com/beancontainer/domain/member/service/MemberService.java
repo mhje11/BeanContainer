@@ -4,6 +4,7 @@ import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
+import com.beancontainer.global.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
@@ -27,20 +28,21 @@ public class MemberService implements UserDetailsService {
     public Member findByUserId(String userId) {
         return memberRepository.findByUserId(userId)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                        new UserNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
     //닉네임 변경
     @Transactional
     public void updateNickname(String userId, String newNickname) {
         Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         member.updateNickname(newNickname);
         memberRepository.save(member);
         log.info("사용자 {} 의 닉네임이 {}로 변경되었습니다.", userId, newNickname);
     }
 
 
+    //계정 삭제
     @Transactional
     public void deleteAccount(String userId) {
         Member member = findByUserId(userId);
@@ -51,7 +53,7 @@ public class MemberService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         log.info("Error : " , userId);
         Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
         return User.builder()
                 .username(member.getUserId())

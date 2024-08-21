@@ -18,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ProfileImageService profileImageService;
-
-
 
     @Transactional
     public void signUp(SignUpRequestDTO signUpRequestDTO) {

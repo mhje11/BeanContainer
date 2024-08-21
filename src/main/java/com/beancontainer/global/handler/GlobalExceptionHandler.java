@@ -33,8 +33,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
     //로그인 만료
-    @ExceptionHandler(SessionExpiredException.class)
-    public ResponseEntity<String> handleSessionExpiredException(SessionExpiredException e) {
+    @ExceptionHandler(JwtTokenExpiredException.class)
+    public ResponseEntity<String> handleSessionExpiredException(JwtTokenExpiredException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
     //올바르지 않은 경로
