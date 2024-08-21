@@ -52,6 +52,15 @@ public class Member {
         this.role = role;
     }
 
+    public Member(String name, String nickname, String userId, String password, String email, Role role) {
+        this.name = name;
+        this.nickname = nickname;
+        this.userId = userId;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
+
     public static Member createMember(String name, String nickname, String userId, String password) {
         Member member = new Member();
         member.name = name;
