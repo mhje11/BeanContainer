@@ -20,17 +20,19 @@ public class CustomCafeRepositoryImpl implements CustomCafeRepository{
     private final EntityManager em;
     private JPAQueryFactory queryFactory;
 
-
     @Override
-    public List<Cafe> findByCategories(Set<String> categories) {
+    public List<Cafe> findByCategories(Set<String> categories, Boolean excludeBrands) {
         queryFactory = new JPAQueryFactory(em);
         BooleanBuilder builder = new BooleanBuilder();
 
         categories.forEach(category -> builder.and(cafe.topCategories.contains(category)));
 
-        return queryFactory.selectFrom(cafe)
+        if (excludeBrands) {
+            builder.and(cafe.isBrand.eq(false));
+        }
+        return queryFactory
+                .selectFrom(cafe)
                 .where(builder)
                 .fetch();
     }
-
 }

@@ -60,10 +60,17 @@
                 <!-- 여기에 선택된 카테고리 버튼들이 동적으로 이동합니다 -->
             </div>
         </div>
+
         <div class="button-container">
             <button onclick="onCategorySelect()">검색</button>
             <button onclick="resetCategories()">카테고리 초기화</button>
         </div>
+        <div id="brand-exclude">
+            <label>
+                <input type="checkbox" id="brand-exclude-checkbox" onclick="toggleExcludeBrands()"> 브랜드 카페 제외
+            </label>
+        </div>
+
     </div>
 
     <div id="search-box">
@@ -77,6 +84,8 @@
 
 <script>
     let map, ps, infowindow, markers = {}, addedCafes = new Set(), isMoving = false, isCategorySearch = false;
+    let excludeBrands = false;
+
 
     const categories = [
         "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
@@ -172,6 +181,12 @@
         createCategoryButtons();
     }
 
+    function toggleExcludeBrands() {
+        excludeBrands = !excludeBrands;
+        clearMarkers();
+        searchPlacesByCenter(map.getCenter());
+    }
+
     function searchPlacesByCenter(center) {
         if (isMoving || isCategorySearch) return;
 
@@ -179,7 +194,7 @@
         ps.keywordSearch(keyword, function (data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
                 for (let i = 0; i < data.length; i++) {
-                    if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
+                    if (!isExcludedCategory(data[i].category_name) && !isExcludedBrand(data[i].place_name) && !markers[data[i].id]) {
                         displayMarker(data[i]);
                     }
                 }
@@ -189,6 +204,7 @@
             }
         }, {location: center, radius: 2000});
     }
+
 
     function isExcludedCategory(categoryName) {
         const excludedCategories = ['보드게임카페', '룸카페', '방탈출카페', '테마카페', '고양이카페', '북카페', '레드버튼', '벌툰', '키즈'];
@@ -420,6 +436,21 @@
         infowindow.open(map, marker);
     }
 
+    function isExcludedBrand(placeName) {
+        if (!excludeBrands) return false;
+        const brandNames = [
+            "스타벅스", "메가커피", "투썸플레이스", "빽다방", "컴포즈커피",
+            "이디야", "할리스", "파스쿠찌", "더벤티", "폴바셋",
+            "커피빈", "엔제리너스", "카페베네", "하삼동커피", "감성커피",
+            "매머드커피", "달콤커피", "탐앤탐스", "커피나무", "커피베이",
+            "커피명가", "드롭탑", "커피에반하다", "커피스미스", "커피마마",
+            "더카페", "만랩커피", "셀렉토커피", "토프레소", "빈스빈스",
+            "그라찌에", "전광수커피", "카페보니또", "더착한커피"
+        ];
+        return brandNames.some(brand => placeName.includes(brand));
+    }
+
+
     function openReviewPage(kakaoId, name, address, latitude, longitude) {
         const parsedAddress = parseAddress(address);
 
@@ -494,8 +525,12 @@
     function resetCategories() {
         isCategorySearch = false;
         createCategoryButtons();
+        const brandExcludeCheckbox = document.getElementById('brand-exclude-checkbox');
+        brandExcludeCheckbox.checked = false;
+        excludeBrands = false;
         searchPlacesByCenter(map.getCenter());
     }
+
 
     function onCategorySelect() {
         const selectedList = document.querySelector('.selected-categories');
@@ -518,17 +553,25 @@
 
     function searchPlacesByCategory(categories) {
         const categoryArray = Array.from(categories);
-        fetch('/api/map/category?' + new URLSearchParams({ categories: categoryArray.join(',') }))
+        const params = new URLSearchParams({
+            categories: categoryArray.join(','),
+            excludeBrands: excludeBrands
+        });
+
+        fetch('/api/map/category?' + params.toString())
             .then(response => response.json())
             .then(data => {
                 data.forEach(cafe => {
-                    displayDbMarker(cafe);
+                    if (!isExcludedBrand(cafe.name)) {
+                        displayDbMarker(cafe);
+                    }
                 });
             })
             .catch(error => {
                 alert('Error: ' + error.message);
             });
     }
+
 
     function displayDbMarker(cafe) {
         var marker = new kakao.maps.Marker({

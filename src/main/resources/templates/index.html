@@ -75,6 +75,12 @@
                 <button class="category-reset" onclick="resetCategories()">카테고리 초기화</button>
                 <button class="category-search" onclick="onCategorySelect()">검색</button>
             </div>
+            <!-- 브랜드 카페 제외 토글 추가 -->
+            <div class="brand-exclude">
+                <label>
+                    <input type="checkbox" id="brand-exclude-checkbox" onclick="toggleExcludeBrands()"> 브랜드 카페 제외
+                </label>
+            </div>
         </div>
     </div>
 </div>
@@ -85,7 +91,17 @@
     let lastCenter = null;
     let selectedCategories = new Set();
     let isCategorySearch = false; // isCategorySearch 변수를 선언하고 초기화
+    let excludeBrands = false; // 브랜드 제외 여부
 
+    const brandNames = [
+        "스타벅스", "메가커피", "투썸플레이스", "빽다방", "컴포즈커피",
+        "이디야", "할리스", "파스쿠찌", "더벤티", "폴바셋",
+        "커피빈", "엔제리너스", "카페베네", "하삼동커피", "감성커피",
+        "매머드커피", "달콤커피", "탐앤탐스", "커피나무", "커피베이",
+        "커피명가", "드롭탑", "커피에반하다", "커피스미스", "커피마마",
+        "더카페", "만랩커피", "셀렉토커피", "토프레소", "빈스빈스",
+        "그라찌에", "전광수커피", "카페보니또", "더착한커피"
+    ];
 
     const categories = [
         "대형카페", "편한 좌석", "주차가 가능한", "24시간 카페", "룸", "테라스",
@@ -93,7 +109,6 @@
         "애견 동반", "분위기 좋은", "인스타 감성", "풍경이 좋은", "새로 오픈", "조용한",
         "커피가 맛있는", "디저트가 맛있는", "직원이 친절한"
     ];
-
 
     const districts = {
         '강남구': {lat: 37.5172, lng: 127.0473},
@@ -120,7 +135,7 @@
         '은평구': {lat: 37.6027, lng: 126.9290},
         '종로구': {lat: 37.5733, lng: 126.9793},
         '중구': {lat: 37.5636, lng: 126.9976},
-        '중랑구': {lat: 37.6063, lng: 127.0928}
+        '중랑구': {lat: 37.6063, lng: 127.0928        }
     };
 
     function initMap() {
@@ -175,19 +190,24 @@
         createCategoryButtons();
     }
 
+    function toggleExcludeBrands() {
+        excludeBrands = !excludeBrands;
+        console.log("토글 클릭")
+        clearMarkers();
+        searchPlacesByCenter(map.getCenter());
+    }
 
     function searchPlacesByCenter(center) {
         const keyword = '카페';
 
-        // 카테고리가 선택된 상태이지만, 카테고리 검색 버튼을 누르지 않은 경우에는 검색하지 않음
         if (selectedCategories.size > 0 && !isCategorySearch) {
-            return; // 카테고리가 선택된 상태에서는 자동 검색을 막음
+            return;
         }
 
         ps.keywordSearch(keyword, function (data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
                 for (var i = 0; i < data.length; i++) {
-                    if (!isExcludedCategory(data[i].category_name) && !markers[data[i].id]) {
+                    if (!isExcludedCategory(data[i].category_name) && !isExcludedBrand(data[i].place_name) && !markers[data[i].id]) {
                         displayMarker(data[i]);
                     }
                 }
@@ -199,10 +219,14 @@
         }, {location: center, radius: 2000});
     }
 
-
     function isExcludedCategory(categoryName) {
         const excludedCategories = ['보드게임카페', '룸카페', '방탈출카페', '테마카페', '고양이카페', '북카페', '레드버튼', '벌툰', '키즈'];
         return excludedCategories.some(excluded => categoryName.includes(excluded));
+    }
+
+    function isExcludedBrand(placeName) {
+        if (!excludeBrands) return false;
+        return brandNames.some(brand => placeName.includes(brand));
     }
 
     function parseAddress(address) {
@@ -308,7 +332,12 @@
     function searchPlacesByCategory(categories) {
         clearMarkers();
 
-        fetch('/api/map/category?' + new URLSearchParams({categories: Array.from(categories).join(',')}))
+        const excludeBrands = document.getElementById('brand-exclude-checkbox').checked;
+
+        fetch(`/api/map/category?` + new URLSearchParams({
+            categories: Array.from(categories).join(','),
+            excludeBrands: excludeBrands // 브랜드 제외 파라미터 추가
+        }))
             .then(response => response.json())
             .then(data => {
                 data.forEach(cafe => {
@@ -319,6 +348,7 @@
                 alert('Error: ' + error.message);
             });
     }
+
 
     function onCategorySelect() {
         if (selectedCategories && selectedCategories.size > 0) {
@@ -363,11 +393,20 @@
     }
 
     function resetCategories() {
+        // 선택된 카테고리 초기화
         selectedCategories.clear();
         createCategoryButtons();
-        isCategorySearch = false;  // 카테고리 검색이 비활성화됨
+        isCategorySearch = false;  // 카테고리 검색 비활성화
+
+        // 브랜드 제외 체크박스 해제
+        const brandExcludeCheckbox = document.getElementById('brand-exclude-checkbox');
+        brandExcludeCheckbox.checked = false;
+        excludeBrands = false; // Boolean 값도 false로 설정
+
+        // 지도 상에서 다시 카페 검색 수행
         searchPlacesByCenter(map.getCenter());
     }
+
 
     async function searchCafeByName() {
         const keyword = document.getElementById('search-input').value;
@@ -481,4 +520,5 @@
 </script>
 </body>
 </html>
+
 
