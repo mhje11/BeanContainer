@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -118,5 +119,9 @@ public class MapService {
         mapCafeRepository.deleteAll(mapCafes);
 
         mapRepository.delete(map);
+    }
+
+    public Map findById(Long mapId) {
+        return mapRepository.findById(mapId).orElseThrow(() -> new MapNotFoundException("해당 지도를 찾을 수 없습니다."));
     }
 }
