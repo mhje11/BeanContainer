@@ -59,16 +59,6 @@ public class Cafe {
 
 
 
-    public Cafe(String kakaoId, String name, String address, double latitude, double longitude, String city, String district, Boolean isBrand) {
-        this.kakaoId = kakaoId;
-        this.name = name;
-        this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.city = city;
-        this.district = district;
-        this.isBrand = BRANDS.contains(name);
-    }
 
     public Cafe(String kakaoId, String name, String address, double latitude, double longitude, String city, String district) {
         this.kakaoId = kakaoId;
