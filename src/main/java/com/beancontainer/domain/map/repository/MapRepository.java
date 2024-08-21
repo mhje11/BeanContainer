@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface MapRepository extends JpaRepository<Map, Long> {
+public interface MapRepository extends JpaRepository<Map, Long>, CustomMapRepository{
 
     List<Map> findAllByMember(Member member);
+
+
 }

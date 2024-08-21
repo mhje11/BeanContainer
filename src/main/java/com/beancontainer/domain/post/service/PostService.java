@@ -94,8 +94,8 @@ public class PostService {
 
         int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
 
-        boolean isAuthor = (userId != null) && post.getMember().getUserId().equals(userId);
-        return new PostDetailsResponseDto(post, likesCount, isAuthor);
+        boolean authorCheck = (userId != null) && post.getMember().getUserId().equals(userId);
+        return new PostDetailsResponseDto(post, likesCount, authorCheck);
     }
 
     // 게시글 삭제
@@ -132,7 +132,7 @@ public class PostService {
 
         Post updatedPost = postRepository.save(post);
         int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
-        boolean isAuthor = post.getMember().getUserId().equals(post.getMember().getUserId());
-        return new PostDetailsResponseDto(updatedPost, likesCount, isAuthor);
+        boolean authorCheck = post.getMember().getUserId().equals(post.getMember().getUserId());
+        return new PostDetailsResponseDto(updatedPost, likesCount, authorCheck);
     }
 }

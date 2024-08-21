@@ -33,7 +33,7 @@ class PostOperations {
             document.getElementById('like-count').innerText = post.likes;
 
             const btnList = document.getElementById('btn-list');
-            if (post.author) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
+            if (post.authorCheck) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
                 btnList.innerHTML = `
                 <button type="button" onclick="location.href='/post/post-list'">목록</button>
                 <button type="button" onclick="location.href='/postList/update/${this.postId}'">수정</button>
@@ -105,7 +105,7 @@ class PostOperations {
                     <strong>${comment.nickname}</strong>: <span class="comment-content" id="comment-content-${comment.id}">${comment.content}</span>
                     <em class="comment-date">${new Date(comment.createdAt).toLocaleString()}</em>
                     `;
-                if (comment.author) {
+                if (comment.authorCheck) {
                     const updateButton = document.createElement('button');
                     updateButton.innerText = '수정';
                     updateButton.onclick = () => this.updateComment(comment.id, comment.content);
