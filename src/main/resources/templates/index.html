@@ -51,7 +51,10 @@
             </select>
         </div>
 
-        <div id="map" class="map"></div>
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="map-cards-container" class="map-cards-container"></div>
+        </div>
 
         <div id="search-box">
             <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
@@ -138,13 +141,13 @@
     };
 
     function initMap() {
-        var mapContainer = document.getElementById('map'),
+        const mapContainer = document.getElementById('map'),
             mapOption = {
                 center: new kakao.maps.LatLng(37.5665, 126.9780),
                 level: 3
             };
 
-        map = new kakao.maps.Map(mapContainer, mapOption);
+        const map = new kakao.maps.Map(mapContainer, mapOption);
 
         var zoomControl = new kakao.maps.ZoomControl();
         map.addControl(zoomControl, kakao.maps.ControlPosition.LEFT);
@@ -187,6 +190,8 @@
 
         searchPlacesByCenter(map.getCenter());
         createCategoryButtons();
+        loadRandomMaps();
+
     }
 
     function toggleExcludeBrands() {
@@ -347,6 +352,41 @@
                 alert('Error: ' + error.message);
             });
     }
+    // 랜덤 지도를 불러와서 카드 형태로 표시하는 함수
+    async function loadRandomMaps() {
+        try {
+            const response = await fetch('/api/randommap');
+            if (!response.ok) {
+                throw new Error('랜덤 지도를 불러오는데 실패했습니다.');
+            }
+            const mapList = await response.json();
+
+            // 최대 3개의 카드만 표시
+            displayMapCards(mapList.slice(0, 3));
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message);
+        }
+    }
+
+    function displayMapCards(mapList) {
+        const container = document.getElementById('map-cards-container');
+        container.innerHTML = ''; // 기존의 카드를 초기화
+
+        mapList.forEach(map => {
+            const card = document.createElement('div');
+            card.className = 'map-card';
+            card.innerHTML = `
+            <h3>${map.mapName}</h3>
+            <p>작성자: ${map.username}</p>
+        `;
+            card.addEventListener('click', () => {
+                window.location.href = `/mymap/${map.mapId}`;
+            });
+            container.appendChild(card);
+        });
+    }
+
 
 
     function onCategorySelect() {

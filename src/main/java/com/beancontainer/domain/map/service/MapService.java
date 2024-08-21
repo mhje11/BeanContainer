@@ -124,4 +124,8 @@ public class MapService {
     public Map findById(Long mapId) {
         return mapRepository.findById(mapId).orElseThrow(() -> new MapNotFoundException("해당 지도를 찾을 수 없습니다."));
     }
+
+    public List<MapListResponseDto> findRandomPublicMap() {
+        return mapRepository.findRandomMaps(3);
+    }
 }
