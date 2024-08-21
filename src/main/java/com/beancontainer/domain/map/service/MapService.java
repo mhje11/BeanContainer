@@ -38,8 +38,7 @@ public class MapService {
 
     @Transactional
     public Long createMap(MapCreateDto mapCreateDto, Member member) {
-        Map map = new Map(mapCreateDto.getMapName(), member);
-        log.info("kakaoIds {}", mapCreateDto.getKakaoIds());
+        Map map = new Map(mapCreateDto.getMapName(), member, mapCreateDto.isPublic());
         mapRepository.save(map);
         Set<String> kakaoIds = mapCreateDto.getKakaoIds();
 
