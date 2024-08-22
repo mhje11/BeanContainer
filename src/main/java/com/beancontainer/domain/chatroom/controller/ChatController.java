@@ -1,51 +1,43 @@
 package com.beancontainer.domain.chatroom.controller;
 
-import com.beancontainer.domain.chatroom.entity.ChatListEntity;
-import com.beancontainer.domain.chatroom.entity.ChatroomEntity;
-import com.beancontainer.domain.chatroom.entity.MessageEntity;
+import com.beancontainer.domain.chatroom.model.ChatMessage;
+import com.beancontainer.domain.chatroom.repo.ChatRoomRepository;
 import com.beancontainer.domain.chatroom.service.ChatService;
-import com.beancontainer.domain.member.service.MemberService;
+import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.global.exception.UserNotFoundException;
+import com.beancontainer.global.jwt.util.JwtTokenizer;
+import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.Optional;
 
-@Controller
+@Slf4j
 @RequiredArgsConstructor
+@Controller
 public class ChatController {
+
+    private final ChatRoomRepository chatRoomRepository;
     private final ChatService chatService;
-    private final MemberService memberService; // 추가
+    private final MemberRepository memberRepository;
 
-    @GetMapping("/chat")
-    public String chatList(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        List<ChatListEntity> chatList = chatService.getChatList(userDetails.getUsername());
-        model.addAttribute("chatList", chatList);
-        return "chat/chatlist";
-    }
-
-    @GetMapping("/chat/{id}")
-    public String chatRoom(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        ChatroomEntity chatroom = chatService.getChatroom(id);
-        if (!chatService.hasAccess(userDetails.getUsername(), chatroom)) {
-            return "redirect:/welcome";
-        }
-        List<MessageEntity> messages = chatService.getChatroomMessages(id);
-        model.addAttribute("chatroom", chatroom);
-        model.addAttribute("messages", messages);
-        model.addAttribute("username", userDetails.getUsername());
-        return "chat/chatroom";
-    }
-
-    @PostMapping("/chat/new")
-    public String newChat(@RequestParam String username, @AuthenticationPrincipal UserDetails userDetails) {
-        ChatroomEntity chatroom = chatService.createChatroom(userDetails.getUsername(), username);
-        return "redirect:/chat/" + chatroom.getId();
+    /**
+     * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
+     */
+    @MessageMapping("/chat/message")
+    public void message(ChatMessage message, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Member member = memberRepository.findByUserId(userDetails.getUserId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다"));
+        String nickname = member.getNickname();
+        // 로그인 회원 정보로 대화명 설정
+        message.setSender(nickname);
+        // 채팅방 인원수 세팅
+        message.setUserCount(chatRoomRepository.getUserCount(message.getRoomId()));
+        // Websocket에 발행된 메시지를 redis로 발행(publish)
+        chatService.sendChatMessage(message);
     }
 }
