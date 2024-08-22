@@ -12,4 +12,10 @@ public class ReviewUpdateDto {
     private String content;
     private Double score;
     private Set<String> categoryNames;
+
+    public ReviewUpdateDto(String content, Double score, Set<String> categoryNames) {
+        this.content = content;
+        this.score = score;
+        this.categoryNames = categoryNames;
+    }
 }
