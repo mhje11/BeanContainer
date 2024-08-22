@@ -7,7 +7,6 @@ import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
-import com.beancontainer.global.exception.PostNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,19 +66,19 @@ public class PostRestController {
         return ResponseEntity.ok(post);
     }
 
-    @DeleteMapping("/post/delete/{postId}") // 게시글 삭제
-    @RequireAdmin
-    public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        boolean isAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
-
-        try {
-            postService.deletePost(postId, userDetails.getUserId(), isAdmin);
-            return ResponseEntity.ok("글 삭제가 완료되었습니다");
-        } catch (PostNotFoundException e) {
-            throw new PostNotFoundException("해당 게시글을 찾을 수 없습니다.");
-        }
-    }
+//    @DeleteMapping("/post/delete/{postId}") // 게시글 삭제
+//    @RequireAdmin
+//    public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+//        boolean isAdmin = userDetails.getAuthorities().stream()
+//                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+//
+//        try {
+//            postService.deletePost(postId, userDetails.getUserId(), isAdmin);
+//            return ResponseEntity.ok("글 삭제가 완료되었습니다");
+//        } catch (PostNotFoundException e) {
+//            throw new PostNotFoundException("해당 게시글을 찾을 수 없습니다.");
+//        }
+//    }
 
     @PutMapping("/post/update/{postId}")    // 게시글 수정
     public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestPart("postRequestDto") PostRequestDto postRequestDto,

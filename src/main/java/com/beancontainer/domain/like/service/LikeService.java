@@ -6,10 +6,8 @@ import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
-import com.beancontainer.global.exception.HistoryNotFoundException;
-import com.beancontainer.global.exception.LikeExistException;
-import com.beancontainer.global.exception.PostNotFoundException;
-import com.beancontainer.global.exception.UserNotFoundException;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,12 +25,12 @@ public class LikeService {
     // 좋아요 추가
     public void addLike(Long postId, String userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
         Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
 
         if (likeRepository.findByPostAndMember(post, member).isPresent()) {
-            throw new LikeExistException("이미 좋아요를 누른 상태입니다.");
+            throw new CustomException(ExceptionCode.LIKE_ALREADY_EXISTS);
         }
 
         Likes like = new Likes(post, member);
@@ -45,11 +43,11 @@ public class LikeService {
     // 좋아요 삭제
     public void removeLike(Long postId, String userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
         Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
         Likes like = likeRepository.findByPostAndMember(post, member)
-                .orElseThrow(() -> new HistoryNotFoundException("좋아요를 누르지 않았습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.HISTORY_NOT_FOUND));
 
         likeRepository.delete(like);
 
@@ -61,7 +59,7 @@ public class LikeService {
     @Transactional(readOnly = true)
     public int countLikes(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
 
         return likeRepository.countByPostId(postId);
     }

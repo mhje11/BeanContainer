@@ -1,11 +1,8 @@
 package com.beancontainer.global.jwt.filter;
 
-import com.beancontainer.domain.member.repository.MemberRepository;
-import com.beancontainer.global.jwt.exception.JwtExceptionCode;
 import com.beancontainer.global.jwt.token.JwtAuthenticationToken;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.CustomUserDetails;
-import com.beancontainer.global.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -28,7 +25,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -45,24 +41,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 getAuthentication(token);
             } catch (ExpiredJwtException e) {
-                request.setAttribute("exception", JwtExceptionCode.EXPIRED_TOKEN.getCode());
-                log.error("Expired Token : {}", token, e);
-                throw new BadCredentialsException("Expired token exception", e);
-            } catch (UnsupportedJwtException e) {
-                request.setAttribute("exception", JwtExceptionCode.UNSUPPORTED_TOKEN.getCode());
-                log.error("Unsupported Token: {}", token, e);
-                throw new BadCredentialsException("Unsupported token exception", e);
-            } catch (MalformedJwtException e) {
-                request.setAttribute("exception", JwtExceptionCode.INVALID_TOKEN.getCode());
+                log.error("Expired Token : {}", token);
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("TOKEN_EXPIRED");
+                return;
+            } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
                 log.error("Invalid Token: {}", token, e);
-                throw new BadCredentialsException("Invalid token exception", e);
-            } catch (IllegalArgumentException e) {
-                request.setAttribute("exception", JwtExceptionCode.NOT_FOUND_TOKEN.getCode());
-                log.error("Token not found: {}", token, e);
-                throw new BadCredentialsException("Token not found exception", e);
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("INVALID_TOKEN");
+                return;
             } catch (Exception e) {
                 log.error("JWT Filter - Internal Error: {}", token, e);
-                throw new BadCredentialsException("JWT filter internal exception", e);
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("INTERNAL_ERROR");
+                return;
             }
         }
         filterChain.doFilter(request, response);
