@@ -13,4 +13,11 @@ public class ReviewCreateDto {
     private Double score;
     private Long cafeId;
     private Set<String> categoryNames;
+
+    public ReviewCreateDto(String content, Double score, Long cafeId, Set<String> categoryNames) {
+        this.content = content;
+        this.score = score;
+        this.cafeId = cafeId;
+        this.categoryNames = categoryNames;
+    }
 }
