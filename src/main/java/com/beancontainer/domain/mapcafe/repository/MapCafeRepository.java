@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MapCafeRepository extends JpaRepository<MapCafe, Long> {
-    List<MapCafe> findByMapId(Long mapId);
-    List<MapCafe> findByCafeId(Long cafeId);
+    List<MapCafe> findAllByMapId(Long mapId);
+    List<MapCafe> findAllByCafeId(Long cafeId);
 }
