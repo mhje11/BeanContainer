@@ -33,10 +33,20 @@ document.getElementById('postForm').addEventListener('submit', function(event) {
         method: 'POST',
         body: formData
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    throw new Error(error.message);
+                });
+            }
+            return response.json()
+        })
         .then(data => {
             console.log(data);
             window.location.href = '/postList/' + data.postId;
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            alert(error.message);
+            console.error('Error:', error)
+        });
 });

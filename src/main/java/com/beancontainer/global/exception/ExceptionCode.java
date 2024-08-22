@@ -39,6 +39,7 @@ public enum ExceptionCode {
     COMMENT_NOT_FOUND(404, HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     HISTORY_NOT_FOUND(404, HttpStatus.NOT_FOUND, "해당 글에 대한 내역을 찾을 수 없습니다."),
     LIKE_ALREADY_EXISTS(400, HttpStatus.BAD_REQUEST, "이미 좋아요를 눌렀습니다."),
+    INVALID_IMAGE_FORMAT(400, HttpStatus.BAD_REQUEST, "유효하지 않은 이미지 파일 형식입니다."),
 
     /**
      *  채팅방 관련
