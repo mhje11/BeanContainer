@@ -52,6 +52,7 @@ public class AuthRestController {
         }
 
 
+
         // username 과 password 값을 잘 받아왔다면
         // 우리 서버의 저장되어 있는 유저인지 확인
         Member member = memberService.findByUserId(userLoginRequestDto.getUserId());
