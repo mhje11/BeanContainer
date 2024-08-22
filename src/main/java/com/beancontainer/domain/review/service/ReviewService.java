@@ -13,14 +13,12 @@ import com.beancontainer.domain.review.dto.ReviewUpdateDto;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.repository.ReviewRepository;
 import com.beancontainer.domain.reviewcategory.entity.ReviewCategory;
-import com.beancontainer.domain.reviewcategory.repository.ReviewCategoryRepository;
 import com.beancontainer.global.exception.CafeNotFoundException;
 import com.beancontainer.global.exception.CategoryNotFoundException;
 import com.beancontainer.global.exception.ReviewNotFoundException;
-import com.beancontainer.global.exception.UserNotFoundException;
+import com.beancontainer.global.exception.MemberNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +39,7 @@ public class ReviewService {
 
     @Transactional
     public void createReview(ReviewCreateDto reviewCreateDto, String userLoginId) {
-        Member member = memberRepository.findByUserId(userLoginId).orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+        Member member = memberRepository.findByUserId(userLoginId).orElseThrow(() -> new MemberNotFoundException("해당 사용자를 찾을 수 없습니다."));
         Cafe cafe = cafeRepository.findById(reviewCreateDto.getCafeId()).orElseThrow(() -> new CafeNotFoundException("카페를 찾을 수 없습니다."));
 
         Review review = new Review(member, cafe, reviewCreateDto.getContent(), reviewCreateDto.getScore(), new HashSet<>());

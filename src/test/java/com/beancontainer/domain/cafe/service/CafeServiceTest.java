@@ -125,10 +125,13 @@ class CafeServiceTest {
 
     @Test
     void getCafeByKakaoIdOrSave_whenCafeExists() {
+        //given
         CafeSaveDto cafeSaveDto = new CafeSaveDto("kakao1", "Starbucks", "Seoul, Gangnam-gu", 37.5665, 126.9780, "Seoul", "Gangnam-gu");
 
+        //when
         CafeResponseDto responseDto = cafeService.getCafeByKakaoIdOrSave("kakao1", cafeSaveDto);
 
+        //then
         assertNotNull(responseDto);
         assertEquals("Starbucks", responseDto.getName());
         assertEquals("Seoul, Gangnam-gu", responseDto.getAddress());
@@ -137,10 +140,13 @@ class CafeServiceTest {
 
     @Test
     void getCafeByKakaoIdOrSave_whenCafeDoesNotExist() {
+        //given
         CafeSaveDto cafeSaveDto = new CafeSaveDto("kakao4", "New Cafe", "Seoul, Jung-gu", 37.5663, 126.9779, "Seoul", "Jung-gu");
 
+        //when
         CafeResponseDto responseDto = cafeService.getCafeByKakaoIdOrSave("kakao4", cafeSaveDto);
 
+        //then
         assertNotNull(responseDto);
         assertEquals("New Cafe", responseDto.getName());
         assertEquals("Seoul, Jung-gu", responseDto.getAddress());
