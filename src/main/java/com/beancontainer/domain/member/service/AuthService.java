@@ -30,7 +30,8 @@ public class AuthService {
                 signUpRequestDTO.getName(),
                 signUpRequestDTO.getNickname(),
                 signUpRequestDTO.getUserId(),
-                passwordEncoder.encode(signUpRequestDTO.getPassword())
+                passwordEncoder.encode(signUpRequestDTO.getPassword()),
+                signUpRequestDTO.getEmail()
         );
 
         //db에 저장
