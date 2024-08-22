@@ -5,14 +5,12 @@ import com.beancontainer.domain.chatroom.repo.ChatRoomRepository;
 import com.beancontainer.domain.chatroom.service.ChatService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
-import com.beancontainer.global.exception.UserNotFoundException;
-import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 
 import java.util.Optional;
@@ -31,7 +29,7 @@ public class ChatController {
      */
     @MessageMapping("/chat/message")
     public void message(ChatMessage message, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Member member = memberRepository.findByUserId(userDetails.getUserId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다"));
+        Member member = memberRepository.findByUserId(userDetails.getUserId()).orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다"));
         String nickname = member.getNickname();
         // 로그인 회원 정보로 대화명 설정
         message.setSender(nickname);
