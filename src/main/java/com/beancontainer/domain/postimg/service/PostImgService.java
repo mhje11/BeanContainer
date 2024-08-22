@@ -34,6 +34,8 @@ public class PostImgService {
     @Transactional
     public String saveImage(MultipartFile image) throws IOException {
 
+        checkImageFormat(image);    // 이미지 파일 형식 검사
+
         String originalName = image.getOriginalFilename();  // 본래 이미지 이름
         String name = getFileName(originalName);    // uuid로 변환된 이름
 
