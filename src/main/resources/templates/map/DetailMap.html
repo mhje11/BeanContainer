@@ -115,7 +115,7 @@
             const response = await fetch(`/api/mymap/${mapId}`);
             const mapDetail = await response.json();
 
-            document.getElementById('map-name').innerText = `지도 이름: ${mapDetail.mapName}`;
+            document.getElementById('map-name').innerText = `${mapDetail.mapName}`;
             document.getElementById('username').innerText = `작성자: ${mapDetail.username}`;
 
             mapDetail.cafes.forEach(cafe => {
@@ -142,18 +142,24 @@
         });
 
         markers[cafe.id] = marker;
+        console.log("Original averageScore:", cafe.averageScore);
+
 
         // 마커 클릭 시 인포윈도우 열기
         kakao.maps.event.addListener(marker, 'click', function () {
+            // 여기서 averageScore를 명확히 부동소수점으로 변환하여 처리
+            const averageScore = cafe.averageScore !== null ? Number(parseFloat(cafe.averageScore).toFixed(1)) : '0.0';
+            console.log("Formatted averageScore:", averageScore);
+
             const content = `
-                <div style="padding:10px; font-size:14px;">
-                    <strong>${cafe.name}</strong><br>
-                    ${cafe.address}<br>
-                    <strong>평점:</strong> ${cafe.averageScore.toFixed(1)} / 5.0<br>
-                    <strong>카테고리:</strong> ${Array.from(cafe.topCategories).join(', ')}<br>
-                    <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
-                </div>
-            `;
+            <div style="padding:10px; font-size:14px;">
+                <strong>${cafe.name}</strong><br>
+                ${cafe.address}<br>
+                <strong>평점:</strong> ${averageScore} / 5.0<br>
+                <strong>카테고리:</strong> ${Array.from(cafe.topCategories).join(', ')}<br>
+                <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
+            </div>
+        `;
             infowindow.setContent(content);
             infowindow.open(map, marker);
         });
@@ -168,7 +174,7 @@
         cafeBox.innerHTML = `
             <h4>${cafe.name}</h4>
             <p><strong>카테고리:</strong> ${Array.from(cafe.topCategories).join(', ')}</p>
-            <p><strong>평점:</strong> ${cafe.averageScore} / 5.0</p>
+            <p><strong>평점:</strong> ${cafe.averageScore.toFixed(1)} / 5.0</p>
             <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
         `;
 
