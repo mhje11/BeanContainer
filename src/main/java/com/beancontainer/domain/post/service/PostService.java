@@ -10,8 +10,8 @@ import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import com.beancontainer.domain.postimg.service.PostImgService;
-import com.beancontainer.global.exception.AccessDeniedException;
-import com.beancontainer.global.exception.PostNotFoundException;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -87,7 +87,7 @@ public class PostService {
     // 게시글 상세 보기
     @Transactional
     public PostDetailsResponseDto postDetails(Long postId, String userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
 
         post.incrementViews();  // 조회수 증가
         postRepository.save(post);
@@ -101,10 +101,10 @@ public class PostService {
     // 게시글 삭제
     @Transactional
     public void deletePost(Long postId, String userId, boolean isAdmin) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
 
         if (!isAdmin && !post.getMember().getUserId().equals(userId)) {
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
 
         // S3에서 이미지 삭제
@@ -118,7 +118,7 @@ public class PostService {
     // 게시글 수정
     @Transactional
     public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
 
         post.update(postRequestDto.getTitle(), postRequestDto.getContent());
 

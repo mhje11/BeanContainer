@@ -2,8 +2,8 @@ package com.beancontainer.domain.member.service;
 
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
-import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
-import com.beancontainer.global.exception.MemberNotFoundException;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
@@ -26,14 +26,14 @@ public class MemberService implements UserDetailsService {
     public Member findByUserId(String userId) {
         return memberRepository.findByUserId(userId)
                 .orElseThrow(() ->
-                        new MemberNotFoundException("해당 사용자를 찾을 수 없습니다."));
+                        new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
     //닉네임 변경
     @Transactional
     public void updateNickname(String userId, String newNickname) {
         Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new MemberNotFoundException("해당 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
         member.updateNickname(newNickname);
         memberRepository.save(member);
         log.info("사용자 {} 의 닉네임이 {}로 변경되었습니다.", userId, newNickname);
@@ -51,7 +51,7 @@ public class MemberService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         log.info("Error : " , userId);
         Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new MemberNotFoundException("해당 사용자를 찾을 수 없습니다 : " + userId));
+                .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
 
         return User.builder()
                 .username(member.getUserId())

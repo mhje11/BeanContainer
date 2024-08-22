@@ -5,12 +5,10 @@ import com.beancontainer.domain.cafe.dto.CafeSaveDto;
 import com.beancontainer.domain.cafe.entity.Cafe;
 import com.beancontainer.domain.cafe.repository.CafeRepository;
 import com.beancontainer.domain.review.repository.ReviewRepository;
-import com.beancontainer.global.exception.CafeNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +47,7 @@ public class CafeService {
     }
 
     public CafeResponseDto getCafeById(Long cafeId) {
-        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new CafeNotFoundException("해당 카페를 찾을 수 없습니다."));
+        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new CustomException(ExceptionCode.CAFE_NOT_FOUND));
         Double average = reviewRepository.calculateAverageScoreByCafeId(cafeId);
         return new CafeResponseDto(cafe, average);
     }
@@ -65,7 +63,7 @@ public class CafeService {
                 .orElseGet(() -> {
                     Long savedCafeId = saveCafe(cafeSaveDto);
                     Cafe savedCafe = cafeRepository.findById(savedCafeId).orElseThrow(
-                            () -> new CafeNotFoundException("해당 카페를 찾을 수 없습니다.")
+                            () -> new CustomException(ExceptionCode.CAFE_NOT_FOUND)
                     );
                     return new CafeResponseDto(savedCafe, 0.0);
                 });
@@ -76,7 +74,7 @@ public class CafeService {
     @Transactional
     public void updatedCafeCategories(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId)
-                .orElseThrow(() -> new CafeNotFoundException("해당 카페를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionCode.CAFE_NOT_FOUND));
 
         Map<String, Long> categoryFrequency = reviewRepository.findAllByCafeId(cafeId).stream()
                 .flatMap(review -> review.getReviewCategories().stream())

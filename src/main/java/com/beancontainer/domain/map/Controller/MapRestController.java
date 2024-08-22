@@ -8,8 +8,8 @@ import com.beancontainer.domain.map.entity.Map;
 import com.beancontainer.domain.map.service.MapService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
-import com.beancontainer.global.exception.AccessDeniedException;
-import com.beancontainer.global.exception.UnAuthorizedException;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import com.beancontainer.global.service.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class MapRestController {
     @PostMapping("/api/mymap")
     public ResponseEntity<String> createMap(@Valid @RequestBody MapCreateDto mapCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 후 이용 가능합니다");
+            throw new CustomException(ExceptionCode.UNAUTHORIZED);
         }
         Member member = memberService.findByUserId(userDetails.getUsername());
         mapCreateDto.setMemberId(member.getId());
@@ -60,9 +60,9 @@ public class MapRestController {
         Map map = mapService.findById(mapId);
 
         if (userDetails == null) {
-            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
+            throw new CustomException(ExceptionCode.UNAUTHORIZED);
         } else if (!userDetails.getUsername().equals(map.getMember().getUserId())) {
-            throw new AccessDeniedException("권한이 없습니다.");
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
 
         mapUpdateDto.setMapId(mapId);
@@ -76,9 +76,9 @@ public class MapRestController {
         log.info("userDetails {}", userDetails.getUserId());
         log.info("mapUserId {}", map.getMember().getUserId());
         if (userDetails == null) {
-            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
+            throw new CustomException(ExceptionCode.UNAUTHORIZED);
         } else if (!userDetails.getUserId().equals(map.getMember().getUserId())) {
-            throw new AccessDeniedException("권한이 없습니다.");
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
         mapService.deleteMap(mapId);
         return ResponseEntity.ok("지도 삭제 성공 ID : " + mapId);
