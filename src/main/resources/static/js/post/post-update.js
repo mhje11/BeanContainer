@@ -24,11 +24,13 @@ async function fetchPost() {
 
         if (post.imageUrls && post.imageUrls.length > 0) {
             const imagesDiv = document.getElementById('existing-images');
-            post.imageUrls.forEach(url => {
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = '게시글 이미지';
-                imagesDiv.appendChild(img);
+            post.imageUrls.forEach((url, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <img src="${url}" alt="게시글 이미지">
+                    <input type="checkbox" name="deleteImages" value="${post.imageIds[index]}"> 삭제
+                `;
+                imagesDiv.appendChild(div);
             });
         }
     } catch(error) {
@@ -42,10 +44,14 @@ document.getElementById('updateForm').addEventListener('submit', function (event
     event.preventDefault();
     const formData = new FormData();
 
-    formData.append('postRequestDto', new Blob([JSON.stringify({
+    const postRequestDto = {
         title: document.getElementById('title').value,
-        content: document.getElementById('content').value
-    })], { type: 'application/json' }));
+        content: document.getElementById('content').value,
+        deleteImages: Array.from(document.querySelectorAll('input[name="deleteImages"]:checked'))
+            .map(checkbox => parseInt(checkbox.value))
+    };
+
+    formData.append('postRequestDto', new Blob([JSON.stringify(postRequestDto)], { type: 'application/json' }));
 
     const images = document.getElementById('images').files;
 
