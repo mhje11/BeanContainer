@@ -48,7 +48,8 @@ public class SecurityConfig {
             "/mypage/{userId}", "/api/profileImage/**", //마이페이지, 프로필 변경
             "/mymap","/mymap/update/{mapId}",
             "/api/mymap/delete/{mapId}", "/api/mymap/update/{mapId}", "/api/mymap", //나만의 지도
-            "/api/review/delete/{reviewId}", "/api/review/update/{reviewId}", "/api/review/create" //리뷰 작성, 수정, 삭제
+            "/api/review/delete/{reviewId}", "/api/review/update/{reviewId}", "/api/review/create", //리뷰 작성, 수정, 삭제
+            "/chat/**" //모든 채팅
     };
 
 
