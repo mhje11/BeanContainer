@@ -38,6 +38,9 @@ public class PostService {
             for (MultipartFile image : images) {
                 if (image.isEmpty()) continue;
 
+                // 이미지 형식 검사
+                postImgService.checkImageFormat(image);
+
                 // S3에 이미지 저장 및 URL 생성
                 String imgUrl = postImgService.saveImage(image);
                 String originalName = image.getOriginalFilename();
