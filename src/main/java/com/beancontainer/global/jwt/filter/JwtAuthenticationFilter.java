@@ -1,11 +1,8 @@
 package com.beancontainer.global.jwt.filter;
 
-import com.beancontainer.domain.member.repository.MemberRepository;
-import com.beancontainer.global.exception.JwtTokenExpiredException;
 import com.beancontainer.global.jwt.token.JwtAuthenticationToken;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.CustomUserDetails;
-import com.beancontainer.global.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -28,7 +25,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j

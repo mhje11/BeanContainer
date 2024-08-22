@@ -7,8 +7,8 @@ import com.beancontainer.domain.review.dto.ReviewResponseDto;
 import com.beancontainer.domain.review.dto.ReviewUpdateDto;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.service.ReviewService;
-import com.beancontainer.global.exception.AccessDeniedException;
-import com.beancontainer.global.exception.UnAuthorizedException;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class ReviewRestController {
     @PostMapping("/api/review/create")
     public ResponseEntity<String> createReview(@RequestBody ReviewCreateDto reviewCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
-            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
+            throw new CustomException(ExceptionCode.UNAUTHORIZED);
         }
         Member member = memberService.findByUserId(userDetails.getUsername());
         reviewService.createReview(reviewCreateDto, userDetails.getUsername());
@@ -49,9 +49,9 @@ public class ReviewRestController {
     public ResponseEntity<String> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewUpdateDto reviewUpdateDto, @AuthenticationPrincipal UserDetails userDetails) {
         Review review = reviewService.findById(reviewId);
         if (userDetails == null) {
-            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
+            throw new CustomException(ExceptionCode.UNAUTHORIZED);
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
-            throw new AccessDeniedException("권한이 없습니다.");
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
         reviewService.updateReview(reviewId, reviewUpdateDto);
         return ResponseEntity.ok("리뷰 수정 완료");
@@ -61,11 +61,11 @@ public class ReviewRestController {
     public ResponseEntity<String> deleteReview(@PathVariable("reviewId")Long reviewId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Review review = reviewService.findById(reviewId);
         if (userDetails == null) {
-            throw new UnAuthorizedException("로그인 후 이용 가능합니다.");
+            throw new CustomException(ExceptionCode.UNAUTHORIZED);
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
             log.info("userDetails {}", userDetails.getUsername());
             log.info("review {}", review.getMember().getUserId());
-            throw new AccessDeniedException("권한이 없습니다.");
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
         reviewService.deleteReview(reviewId);
 

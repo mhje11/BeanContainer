@@ -4,12 +4,10 @@ import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.RefreshToken;
-import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.member.service.AuthService;
 import com.beancontainer.domain.member.service.MemberService;
-import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
-import com.beancontainer.global.exception.PasswordMismatchException;
-import com.beancontainer.global.exception.UserNotFoundException;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
@@ -27,7 +25,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.List;
 
 
 @RestController
@@ -59,7 +56,7 @@ public class AuthRestController {
         //요청 정보에서 얻어온 비밀번호와 서버의 비밀번호가 일치하는지 확인
         if (!passwordEncoder.matches(userLoginRequestDto.getPassword(), member.getPassword())) {
             //비밀번호가 일치하지 않을 때
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ExceptionCode.PASSWORD_MISMATCH);
         }
 
         //토큰 발급
@@ -132,7 +129,7 @@ public class AuthRestController {
         Member member = memberService.findByUserId(userId);
 
         if(member == null) {
-            throw new UserNotFoundException("사용자를 찾을 수 없습니다.");
+            throw new CustomException(ExceptionCode.MEMBER_NOT_FOUND);
         }
 
         // accessToken 생성.

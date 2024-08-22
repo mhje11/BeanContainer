@@ -8,7 +8,7 @@ public enum ExceptionCode {
     /**
      *  유저 관련
      */
-    USER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    MEMBER_NOT_FOUND(404, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     EMAIL_NOT_FOUND(404, HttpStatus.NOT_FOUND, "존재하지 않는 이메일입니다."),
     EMAIL_ALREADY_EXISTS(400, HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다."),
     EMAIL_CODE_MISMATCH(400, HttpStatus.BAD_REQUEST, "이메일 인증번호가 일치하지 않습니다."),
