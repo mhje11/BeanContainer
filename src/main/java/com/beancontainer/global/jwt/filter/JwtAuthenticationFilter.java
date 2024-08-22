@@ -2,7 +2,6 @@ package com.beancontainer.global.jwt.filter;
 
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.exception.JwtTokenExpiredException;
-import com.beancontainer.global.jwt.exception.JwtExceptionCode;
 import com.beancontainer.global.jwt.token.JwtAuthenticationToken;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.CustomUserDetails;
