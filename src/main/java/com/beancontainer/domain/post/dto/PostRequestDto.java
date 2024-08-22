@@ -14,4 +14,5 @@ public class PostRequestDto {
     private String title;
     private String content;
     private List<MultipartFile> images = new ArrayList<>();
+    private List<Long> deleteImages = new ArrayList<>();
 }
