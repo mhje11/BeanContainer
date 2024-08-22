@@ -1,26 +1,21 @@
 package com.beancontainer.domain.review.controller;
 
 import com.beancontainer.domain.member.entity.Member;
-import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.review.dto.ReviewCreateDto;
 import com.beancontainer.domain.review.dto.ReviewResponseDto;
 import com.beancontainer.domain.review.dto.ReviewUpdateDto;
 import com.beancontainer.domain.review.entity.Review;
-import com.beancontainer.domain.review.repository.ReviewRepository;
 import com.beancontainer.domain.review.service.ReviewService;
 import com.beancontainer.global.exception.AccessDeniedException;
 import com.beancontainer.global.exception.UnAuthorizedException;
-import com.beancontainer.global.exception.UserNotFoundException;
 import com.beancontainer.global.service.CustomUserDetails;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
