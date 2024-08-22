@@ -55,19 +55,13 @@ public class ProfileImageService {
 
         return imageUrl;
     }
+
     private void deleteExistingProfileImage(String userId) {
         Member member = memberRepository.findByUserId(userId).orElseThrow();
         if (member.getProfileImageUrl() != null && !member.getProfileImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
             String fileName = member.getProfileImageUrl().substring(member.getProfileImageUrl().lastIndexOf("/") + 1);
             deleteImageFromS3(fileName);
         }
-    }
-
-
-    // 이미지 확장자 추출
-    public String extractExtension(String originalName) {
-        int index = originalName.lastIndexOf(".");
-        return originalName.substring(index + 1);
     }
 
 

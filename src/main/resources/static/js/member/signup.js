@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmPassword = document.getElementById('confirmPassword');
     const nickname = document.getElementById('nickname');
     const name = document.getElementById('name');
+    const email = document.getElementById('email');
     const checkUserIdButton = document.getElementById('checkUserIdButton');
     const signupButton = document.getElementById('signupButton');
 
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordError = document.getElementById('passwordError');
     const confirmPasswordError = document.getElementById('confirmPasswordError');
     const nicknameError = document.getElementById('nicknameError');
+    const emailError = document.getElementById('emailError');
 
     let isUserIdValid = false;
 
@@ -34,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 return response.json();
             })
-            .then(isDuplicate => {
-                if (isDuplicate) {  // 서버에서 true를 반환하면 중복된 아이디
+            .then(data => {
+                if (data.exists) {
                     userIdError.textContent = '이미 존재하는 사용자 ID 입니다.';
                     userIdError.style.color = 'red';
                     isUserIdValid = false;
@@ -105,6 +107,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function validateEmail() {
+        const emailValue = email.value.trim();
+        if (emailValue === '') {
+            emailError.textContent = '이메일을 입력해주세요.';
+            return false;
+        } else {
+            emailError.textContent = '';
+            return true;
+        }
+    }
+
 
     function updateSignupButtonState() {
         signupButton.disabled = !isUserIdValid;
@@ -119,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmPassword.addEventListener('input', validateConfirmPassword);
     nickname.addEventListener('input', validateNickname);
     name.addEventListener('input', validateName);
+    email.addEventListener('input', validateEmail);
 
     form.addEventListener('submit', function(e) {
         e.preventDefault(); // 항상 기본 제출을 막습니다.
@@ -128,13 +142,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const isConfirmPasswordValid = validateConfirmPassword();
         const isNicknameValid = validateNickname();
         const isNameValid = validateName();
+        const isEmailValid = validateEmail();
 
-        if (isUserIdValid && isPasswordValid && isConfirmPasswordValid && isNicknameValid && isNameValid) {
+        if (isUserIdValid && isPasswordValid && isConfirmPasswordValid && isNicknameValid && isNameValid && isEmailValid) {
             const formData = {
                 userId: userId.value,
                 password: password.value,
                 nickname: nickname.value,
-                name: name.value
+                name: name.value,
+                email: email.value
             };
 
             fetch('/api/auth/signup', {
