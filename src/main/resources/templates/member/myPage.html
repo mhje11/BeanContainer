@@ -25,16 +25,15 @@
 
         <div class="profile-upload">
             <form id="profileImageForm" enctype="multipart/form-data">
-                <label for="file-upload" class="custom-file-upload">
-                    프로필 이미지 업로드
-                </label>
-                <input id="file-upload" type="file" name="file" accept="image/*">
+                <label for="file-upload" class="custom-file-upload"> 프로필 업로드 </label>
+                <input id="file-upload" type="file" name="file" accept="image/*" onchange="uploadProfileImage()">
             </form>
         </div>
 
 
-
-
+        <div class="profile-delete">
+            <button onclick="deleteProfileImage()">프로필 제거</button>
+        </div>
 
 
         <button onclick="showNicknameChangeForm()">닉네임 변경</button>
@@ -50,36 +49,58 @@
     </div>
 
 <script th:inline="javascript">
-    /*<![CDATA[*/
-    var userId = /*[[${userId}]]*/ 'defaultUserId';
-    /*]]>*/
+    const userId = /*[[${#authentication.principal.userId}]]*/ 'defaultUserId';
 
-    $(document).ready(function () {
-        $('#file-upload').change(function () {
-            var file = this.files[0];
-            if (file) {
-                var formData = new FormData($('#profileImageForm')[0]);
-                $.ajax({
-                    url: '/api/mypage/' + userId + '/uploadProfileImage',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
-                        if (response.imageUrl) {
-                            $('.profile-image').css('background-image', 'url(' + response.imageUrl + ')');
-                            alert('프로필 이미지가 업데이트되었습니다.');
-                        } else {
-                            alert('프로필 이미지 업데이트에 실패했습니다.');
-                        }
-                    },
-                    error: function () {
-                        alert('프로필 이미지 업로드 중 오류가 발생했습니다.');
+    function uploadProfileImage() {
+        const fileInput = document.getElementById('file-upload');
+        const file = fileInput.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/api/mypage/' + userId + '/uploadProfileImage', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
+                    return response.json();
+                })
+                .then(data => {
+                    document.querySelector('.profile-image').style.backgroundImage = `url('${data.imageUrl}')`;
+                    alert('프로필 이미지가 성공적으로 업로드되었습니다.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('프로필 이미지 업로드에 실패했습니다.');
                 });
-            }
-        });
-    });
+        }
+    }
+    function deleteProfileImage() {
+        if (confirm('프로필 이미지를 제거하시겠습니까?')) {
+            fetch('/api/mypage/{userId}/deleteProfileImage', {
+                method: 'POST',
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('프로필 이미지 제거 실패');
+                })
+                .then(data => {
+                    // 프로필 이미지를 기본 이미지로 변경
+                    document.querySelector('.profile-image').style.backgroundImage = 'url("/images/BeanContainer.png")';
+                    alert('프로필 이미지가 제거되었습니다.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('프로필 이미지 제거 중 오류가 발생했습니다.');
+                });
+        }
+    }
 
     function showNicknameChangeForm() {
         document.getElementById('nicknameChangeForm').style.display = 'block';
