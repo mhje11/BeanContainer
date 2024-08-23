@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', fetchPost);
 
 document.getElementById('updateForm').addEventListener('submit', function (event) {
     event.preventDefault();
+
     const formData = new FormData();
 
     const postRequestDto = {
@@ -51,9 +52,9 @@ document.getElementById('updateForm').addEventListener('submit', function (event
             .map(checkbox => parseInt(checkbox.value))
     };
 
-    formData.append('postRequestDto', new Blob([JSON.stringify(postRequestDto)], { type: 'application/json' }));
+    formData.append('postRequestDto', new Blob([JSON.stringify(postRequestDto)], {type: 'application/json'}));
 
-    const images = document.getElementById('images').files;
+    const images = document.getElementById('images').files; // 새로운 이미지
 
     for (let i = 0; i < images.length && i < 5; i++) {  // 이미지 최대 5장
         formData.append('images', images[i]);
@@ -65,14 +66,25 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         method: 'PUT',
         body: formData
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    throw new Error(error.message);
+                });
+            }
+            return response.json()
+        })
         .then(data => {
             console.log(data);
             alert('게시글이 수정되었습니다.');
             window.location.href = `/postList/${postId}`; // 수정 후 게시글 상세 페이지로 리다이렉트
         })
-        .catch(error => console.error('Error: ', error));});
+        .catch(error => {
+            alert(error.message);
+            console.error('Error:', error)
+        });
+});
 
-document.getElementById('cancel-button').addEventListener('click', function() {
+document.getElementById('cancel-button').addEventListener('click', function () {
     window.history.back();  // 이전 페이지로 돌아가기
 });
