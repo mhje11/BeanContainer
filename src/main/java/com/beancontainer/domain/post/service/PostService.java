@@ -37,6 +37,9 @@ public class PostService {
     // 이미지 처리
     private void createImages(Post post, List<MultipartFile> images) throws IOException {
         if (images != null && !images.isEmpty()) {
+            if(images.size() > 5) {
+                throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
+            }
             for (MultipartFile image : images) {
                 if (image.isEmpty()) continue;
 
