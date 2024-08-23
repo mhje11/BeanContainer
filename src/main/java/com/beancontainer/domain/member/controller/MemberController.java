@@ -60,6 +60,7 @@ public class MemberController {
         }
 
         // 여기서 필요한 사용자 정보를 가져와 모델에 추가
+        //Login Responcse DTO 만들어서 DTO 로 보내기 ..
         Member member = memberService.findByUserId(userId);
         model.addAttribute("userId", userId);
         model.addAttribute("name", member.getName());
