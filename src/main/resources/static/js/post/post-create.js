@@ -25,7 +25,7 @@ document.getElementById('postForm').addEventListener('submit', function(event) {
 
     const images = document.getElementById('images').files;
 
-    for (let i = 0; i < images.length && i < 5; i++) {  // 이미지 최대 5장
+    for (let i = 0; i < images.length; i++) {
         formData.append('images', images[i]);
     }
 
