@@ -208,5 +208,7 @@ public class AuthRestController {
         response.put("exists", exists);
         return ResponseEntity.ok(response);
     }
+
+    //이메일 중복 체크
 }
 
