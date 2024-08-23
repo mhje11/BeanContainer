@@ -4,6 +4,8 @@ import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.memberprofileimg.entity.ProfileImage;
 import com.beancontainer.domain.memberprofileimg.repository.ProfileImageRepository;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +30,7 @@ public class ProfileImageService {
     private final ProfileImageRepository profileImageRepository;
     private final MemberRepository memberRepository;
 
-    private static final String DEFAULT_PROFILE_IMAGE = "images/BeanContainer.png";
+    private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
 
 
 
@@ -36,6 +38,7 @@ public class ProfileImageService {
         String originalName = image.getOriginalFilename();
         String name = getFileName(originalName);
 
+        //s3 에 업로드
         s3Client.putObject(
                 PutObjectRequest.builder()
                         .bucket(bucketName)
@@ -56,11 +59,20 @@ public class ProfileImageService {
         return imageUrl;
     }
 
-    private void deleteExistingProfileImage(String userId) {
-        Member member = memberRepository.findByUserId(userId).orElseThrow();
+    //기존 프로필 이미지 삭제
+    @Transactional
+    public void deleteExistingProfileImage(String userId) {
+        Member member = memberRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
         if (member.getProfileImageUrl() != null && !member.getProfileImageUrl().equals(DEFAULT_PROFILE_IMAGE)) {
             String fileName = member.getProfileImageUrl().substring(member.getProfileImageUrl().lastIndexOf("/") + 1);
             deleteImageFromS3(fileName);
+
+            // DB에서도 삭제
+            profileImageRepository.deleteByFileName(fileName);
+
+            // profileImageUrl을 null로 설정
+            member.updateProfileImageUrl(null);
+            memberRepository.save(member);
         }
     }
 
@@ -75,10 +87,18 @@ public class ProfileImageService {
         );
     }
 
+    //이미지 확장자
+    public String extractExtension(String originalName) {
+        int index = originalName.lastIndexOf(".");
+        return originalName.substring(index + 1);
+    }
+
+
     //파일 이름 UUID 변환
     private String getFileName(String originalName) {
-        return UUID.randomUUID() + "-" + originalName;
+        return UUID.randomUUID() + "-" + extractExtension(originalName);
     }
+
 
     private String generateImageUrl(String fileName) {
         return String.format("https://%s.s3.amazonaws.com/%s", bucketName, fileName);
