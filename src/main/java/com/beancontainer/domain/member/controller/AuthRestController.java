@@ -19,12 +19,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -40,8 +41,8 @@ public class AuthRestController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO userLoginRequestDto,
-                                   BindingResult bindingResult, HttpServletResponse response) {
+    public ResponseEntity<LoginRequestDTO> login(@RequestBody @Valid LoginRequestDTO userLoginRequestDto,
+                                     BindingResult bindingResult, HttpServletResponse response) {
         log.info("==login==");
         //username, password가 null 일 때
         if (bindingResult.hasErrors()) {
@@ -97,7 +98,7 @@ public class AuthRestController {
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
-        return new ResponseEntity(loginResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
     }
 
 
@@ -156,14 +157,14 @@ public class AuthRestController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
+    public ResponseEntity<Map<String, String>> signUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
         log.info("Received signup request for user: " + signUpRequestDTO.getUserId());
         authService.signUp(signUpRequestDTO);
         return ResponseEntity.ok(Collections.singletonMap("message", "회원가입이 성공적으로 완료되었습니다.")); //JSON 형태로 응답
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         String refreshToken = null;
         if (cookies != null) {
@@ -201,15 +202,11 @@ public class AuthRestController {
 
     //아이디 중복 체크
     @GetMapping("/check-userid")
-    public ResponseEntity<?> checkUserId(@RequestParam String userId) {
-        try {
-            memberService.findByUserId(userId);
-            // 사용자를 찾았다면, 이미 존재하는 ID
-            return ResponseEntity.ok(true);
-        } catch (UsernameNotFoundException e) {
-            // 사용자를 찾지 못했다면, 사용 가능한 ID
-            return ResponseEntity.ok(false);
-        }
+    public ResponseEntity<Map<String, Boolean>> checkUserId(@RequestParam String userId) {
+        boolean exists = memberService.existsByUserId(userId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
     }
 }
 

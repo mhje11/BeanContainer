@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, exceptionCode.getHttpStatus());
     }
 
+    @Getter
     private static class ExceptionResponse {
         private final int code;
         private final String message;

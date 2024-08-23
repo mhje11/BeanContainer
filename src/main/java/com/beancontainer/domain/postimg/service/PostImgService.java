@@ -2,6 +2,8 @@ package com.beancontainer.domain.postimg.service;
 
 import com.beancontainer.domain.postimg.entity.PostImg;
 import com.beancontainer.domain.postimg.repository.PostImgRepository;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,8 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,11 +27,14 @@ public class PostImgService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketname;
     private final S3Client s3Client;
+    private final List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png");
 
     private final PostImgRepository postImgRepository;
 
     @Transactional
     public String saveImage(MultipartFile image) throws IOException {
+
+        checkImageFormat(image);    // 이미지 파일 형식 검사
 
         String originalName = image.getOriginalFilename();  // 본래 이미지 이름
         String name = getFileName(originalName);    // uuid로 변환된 이름
@@ -42,6 +49,14 @@ public class PostImgService {
         );
 
         return generateImageUrl(name);
+    }
+
+    // 이미지 판별
+    public void checkImageFormat(MultipartFile image) {
+        String extension = extractExtension(image.getOriginalFilename());
+        if(!allowedExtensions.contains(extension)) {
+            throw new CustomException(ExceptionCode.INVALID_IMAGE_FORMAT);
+        }
     }
 
     // 이미지 확장자 추출

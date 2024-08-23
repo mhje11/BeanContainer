@@ -46,8 +46,7 @@ public class MemberRestController {
     @PostMapping("/mypage/{userId}/uploadProfileImage")
     public ResponseEntity<Map<String, String>> uploadProfileImage(
             @PathVariable String userId,
-            @RequestParam("file") MultipartFile file,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @RequestParam("file") MultipartFile file) {
 
 
         try {

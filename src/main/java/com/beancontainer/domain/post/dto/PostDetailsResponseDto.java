@@ -22,6 +22,7 @@
         private int likes;
         private String content;
         private List<String> imageUrls;
+        private List<Long> imageIds;
         private boolean authorCheck;
 
         public PostDetailsResponseDto(Post updatedPost, int likesCount, boolean authorCheck) {
@@ -35,6 +36,9 @@
             this.content = updatedPost.getContent();
             this.imageUrls = updatedPost.getImages().stream()
                     .map(PostImg::getPath)
+                    .collect(Collectors.toList());
+            this.imageIds = updatedPost.getImages().stream()
+                    .map(PostImg::getId)
                     .collect(Collectors.toList());
             this.authorCheck = authorCheck;
         }
