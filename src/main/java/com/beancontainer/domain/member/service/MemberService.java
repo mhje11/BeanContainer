@@ -1,5 +1,6 @@
 package com.beancontainer.domain.member.service;
 
+import com.beancontainer.domain.member.dto.MemberDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.exception.CustomException;
@@ -24,10 +25,12 @@ public class MemberService implements UserDetailsService {
 
     //ID로 유저 찾기
     public Member findByUserId(String userId) {
+        log.info("Finding member for userId: {}", userId);
         return memberRepository.findByUserId(userId)
                 .orElseThrow(() ->
                         new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
     }
+
 
     //닉네임 변경
     @Transactional

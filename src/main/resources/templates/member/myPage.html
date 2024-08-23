@@ -15,11 +15,13 @@
 <body>
     <div th:replace="fragments/header :: header"></div>
 
-    <div class="container" th:if="${#authentication.isAuthenticated()}">
-        <h1>안녕하세요, <span id="userNickname" th:text="${nickname}"></span>님!</h1>
+
+<!--    <div class="container" th:if="${#authentication.isAuthenticated()}">-->
+    <div class="container" th:if="${member != null}">
+        <h1 th:text="'안녕하세요, ' + ${member.nickname} + '님!'"></h1>
 
         <div class="profile-image"
-             th:style="'background-image: url(' + (${profileImageUrl != null ? profileImageUrl : '/images/BeanContainer.png'}) + ')'"
+             th:style="'background-image: url(' + ${member.profileImageUrl != null ? member.profileImageUrl : '/images/BeanContainer.png'} + ');'"
              onclick="document.getElementById('file-upload').click();">
         </div>
 
@@ -39,7 +41,7 @@
         <button onclick="showNicknameChangeForm()">닉네임 변경</button>
 
         <div id="nicknameChangeForm" style="display: none;">
-            <input type="text" id="newNickname" placeholder="새 닉네임 입력">
+            <input type="text" id="newNickname" th:value="${member.nickname}" placeholder="새 닉네임 입력">
             <button onclick="changeNickname()">변경 완료</button>
         </div>
 
@@ -49,10 +51,10 @@
     </div>
 
 <script th:inline="javascript">
-    const userId = /*[[${#authentication.principal.userId}]]*/ 'defaultUserId';
+    const userId = /*[[${member.userId}]]*/ 'defaultUserId';
 
     function uploadProfileImage() {
-        const fileInput = document.getElementById('file-upload');
+        const fileInput = document.getElementById('file-upload');n
         const file = fileInput.files[0];
         if (file) {
             const formData = new FormData();
