@@ -1,14 +1,11 @@
 package com.beancontainer.domain.member.controller;
 
-import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
-import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -77,7 +77,7 @@ public class Member {
         this.profileImageUrl = newProfileImageUrl;
     }
 
-    //프로필 이미지 경로 null 이면 기본 이미지 불러옴
+    //null 이면 기본 경로 불러옴
     public String getProfileImageUrl() {
         return profileImageUrl != null ? profileImageUrl : DEFAULT_PROFILE_IMAGE;
     }
