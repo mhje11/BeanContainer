@@ -1,9 +1,10 @@
 package com.beancontainer.domain.chatroom.controller;
 
 import com.beancontainer.domain.chatroom.model.ChatRoom;
-import com.beancontainer.domain.chatroom.repo.ChatRoomRepository;
+import com.beancontainer.domain.chatroom.service.ChatRoomService;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
 
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomService chatRoomService;
     private final JwtTokenizer jwtTokenProvider;
 
     @GetMapping("/room")
@@ -25,16 +26,17 @@ public class ChatRoomController {
 
     @GetMapping("/rooms")
     @ResponseBody
-    public List<ChatRoom> room() {
-        List<ChatRoom> chatRooms = chatRoomRepository.findAllRoom();
-        chatRooms.stream().forEach(room -> room.setUserCount(chatRoomRepository.getUserCount(room.getRoomId())));
-        return chatRooms;
+    public ResponseEntity<List<ChatRoom>> room() {
+        List<ChatRoom> chatRooms = chatRoomService.findAllRoom();
+        chatRooms.forEach(room -> room.updateUserCount(chatRoomService.getUserCount(room.getRoomId())));
+        return ResponseEntity.ok(chatRooms);
     }
 
     @PostMapping("/room")
     @ResponseBody
-    public ChatRoom createRoom(@RequestParam String name) {
-        return chatRoomRepository.createChatRoom(name);
+    public ResponseEntity<ChatRoom> createRoom(@RequestParam String name) {
+        ChatRoom chatRoom = chatRoomService.createChatRoom(name);
+        return ResponseEntity.ok(chatRoom);
     }
 
     @GetMapping("/room/enter/{roomId}")
@@ -45,7 +47,8 @@ public class ChatRoomController {
 
     @GetMapping("/room/{roomId}")
     @ResponseBody
-    public ChatRoom roomInfo(@PathVariable String roomId) {
-        return chatRoomRepository.findRoomById(roomId);
+    public ResponseEntity<ChatRoom> roomInfo(@PathVariable String roomId) {
+        ChatRoom chatRoom = chatRoomService.findRoomById(roomId);
+        return ResponseEntity.ok(chatRoom);
     }
 }
