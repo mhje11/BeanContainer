@@ -65,16 +65,11 @@ public class MemberController {
         model.addAttribute("name", member.getName());
         model.addAttribute("nickname", member.getNickname());
         model.addAttribute("profileImageUrl", member.getProfileImageUrl());
+        log.info(member.getProfileImageUrl() + " ======= 이미지 url!@!");
         model.addAttribute("authorities", authentication.getAuthorities());
 
         return "member/myPage";
     }
-
-
-
-
-
-
 
 }
 

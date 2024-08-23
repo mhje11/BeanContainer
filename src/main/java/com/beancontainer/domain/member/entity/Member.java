@@ -34,8 +34,11 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
-    @Column(nullable = true)
+    @Column(name = "profile_image_url")
     private String profileImageUrl;
+
+    private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
+
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -74,7 +77,10 @@ public class Member {
         this.profileImageUrl = newProfileImageUrl;
     }
 
-
+    //프로필 이미지 경로 null 이면 기본 이미지 불러옴
+    public String getProfileImageUrl() {
+        return profileImageUrl != null ? profileImageUrl : DEFAULT_PROFILE_IMAGE;
+    }
 
 
 }
