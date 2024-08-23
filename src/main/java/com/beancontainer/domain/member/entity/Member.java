@@ -1,10 +1,8 @@
 package com.beancontainer.domain.member.entity;
 
-import com.beancontainer.domain.memberprofileimg.entity.ProfileImage;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.type.descriptor.java.EnumJavaType;
 
 import java.time.LocalDateTime;
 
@@ -36,6 +34,7 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
+    @Column(nullable = true)
     private String profileImageUrl;
 
     @Column(name = "created_at", updatable = false)
@@ -43,14 +42,6 @@ public class Member {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
-    public Member(String name, String nickname, String userId, String password, Role role) {
-        this.name = name;
-        this.nickname = nickname;
-        this.userId = userId;
-        this.password = password;
-        this.role = role;
-    }
 
     public Member(String name, String nickname, String userId, String password, String email, Role role) {
         this.name = name;
@@ -61,12 +52,14 @@ public class Member {
         this.role = role;
     }
 
-    public static Member createMember(String name, String nickname, String userId, String password) {
+
+    public static Member createMember(String name, String nickname, String userId, String password, String email) {
         Member member = new Member();
         member.name = name;
         member.nickname = nickname;
         member.userId = userId;
         member.password = password;
+        member.email = email;
         member.role = Role.MEMBER; // 기본 역할을 MEMBER로 설정
         return member;
     }

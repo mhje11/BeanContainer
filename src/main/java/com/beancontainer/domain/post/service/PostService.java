@@ -9,6 +9,7 @@ import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
 import com.beancontainer.domain.postimg.entity.PostImg;
+import com.beancontainer.domain.postimg.repository.PostImgRepository;
 import com.beancontainer.domain.postimg.service.PostImgService;
 import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
@@ -31,6 +32,7 @@ public class PostService {
     private final PostImgService postImgService;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final PostImgRepository postImgRepository;
 
     // 이미지 처리
     private void createImages(Post post, List<MultipartFile> images) throws IOException {
@@ -122,10 +124,14 @@ public class PostService {
 
         post.update(postRequestDto.getTitle(), postRequestDto.getContent());
 
+        // 기존 이미지 중 선택된 이미지 삭제
+        List<Long> deleteImageIds = postRequestDto.getDeleteImages();
+        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+            deleteSelectedImages(post, deleteImageIds);
+        }
+
         // 새로운 이미지가 있는 경우
         if (postRequestDto.getImages() != null && !postRequestDto.getImages().isEmpty()) {
-            // 기존 이미지 삭제
-            deleteExistImages(post);
             // 새 이미지 저장
             createImages(post, postRequestDto.getImages());
         }
@@ -134,5 +140,16 @@ public class PostService {
         int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
         boolean authorCheck = post.getMember().getUserId().equals(post.getMember().getUserId());
         return new PostDetailsResponseDto(updatedPost, likesCount, authorCheck);
+    }
+
+    private void deleteSelectedImages(Post post, List<Long> deleteImageIds) {
+        for (Long imageId : deleteImageIds) {
+
+            PostImg image = postImgRepository.findById(imageId).orElseThrow(() -> new CustomException(ExceptionCode.IMAGE_NOT_FOUND));
+
+            postImgService.deleteImage(image.getPath());
+            post.getImages().remove(image);
+            postImgRepository.delete(image);
+        }
     }
 }

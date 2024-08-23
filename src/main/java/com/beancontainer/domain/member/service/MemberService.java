@@ -60,4 +60,8 @@ public class MemberService implements UserDetailsService {
                 .build();
     }
 
+    //유저 존재 여부
+    public boolean existsByUserId(String userId) {
+        return memberRepository.existsByUserId(userId);
+    }
 }

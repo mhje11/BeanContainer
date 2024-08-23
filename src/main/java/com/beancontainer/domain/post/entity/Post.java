@@ -44,6 +44,7 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImg> images = new ArrayList<>();
+
     private int likeCount = 0;
 
     public Post(Member member, String title, String content) {  // 게시글 작성

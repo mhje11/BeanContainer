@@ -61,7 +61,7 @@ public class MapService {
 
     public MapDetailResponseDto getMapDetail(Long mapId) {
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
-        List<CafeResponseDto> cafes = mapCafeRepository.findByMapId(map.getId()).stream()
+        List<CafeResponseDto> cafes = mapCafeRepository.findAllByMapId(map.getId()).stream()
                 .map(mapCafe -> {
                     Double averageScore = reviewRepository.calculateAverageScoreByCafeId(mapCafe.getCafe().getId());
                     return new CafeResponseDto(mapCafe.getCafe(), averageScore);
@@ -74,7 +74,7 @@ public class MapService {
     public Long updateMap(MapUpdateDto mapUpdateDto) {
         Map map = mapRepository.findById(mapUpdateDto.getMapId()).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
 
-        List<MapCafe> existingMapCafes = mapCafeRepository.findByMapId(map.getId());
+        List<MapCafe> existingMapCafes = mapCafeRepository.findAllByMapId(map.getId());
 
         //업데이트 할 카페목록
         Set<String> newCafeIds = mapUpdateDto.getKakaoIds();
@@ -114,7 +114,7 @@ public class MapService {
     public void deleteMap(Long mapId) {
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
 
-        List<MapCafe> mapCafes = mapCafeRepository.findByMapId(mapId);
+        List<MapCafe> mapCafes = mapCafeRepository.findAllByMapId(mapId);
         mapCafeRepository.deleteAll(mapCafes);
 
         mapRepository.delete(map);
