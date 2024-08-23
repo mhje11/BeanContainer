@@ -205,14 +205,19 @@
     function searchPlacesByCenter(center) {
         const keyword = '카페';
 
+        console.log('Searching for places around:', center);
+
         if (selectedCategories.size > 0 && !isCategorySearch) {
+            console.log('Category search is active, skipping place search');
             return;
         }
 
         ps.keywordSearch(keyword, function (data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
+                console.log('Search successful, found places:', data.length);
                 for (var i = 0; i < data.length; i++) {
                     if (!isExcludedCategory(data[i].category_name) && !isExcludedBrand(data[i].place_name) && !markers[data[i].id]) {
+                        console.log('Displaying marker for place:', data[i]);
                         displayMarker(data[i]);
                     }
                 }
@@ -220,8 +225,10 @@
                 if (pagination.hasNextPage) {
                     pagination.nextPage();
                 }
+            } else {
+                console.log('Search failed with status:', status);
             }
-        }, {location: center, radius: 2000});
+        }, { location: center, radius: 2000 });
     }
 
     function isExcludedCategory(categoryName) {
