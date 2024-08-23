@@ -130,8 +130,17 @@ public class PostService {
             deleteSelectedImages(post, deleteImageIds);
         }
 
+        // 이미지 수 제한
+        int existImagesCount = post.getImages().size(); // 기존 이미지 수
+        int newImagesCount = postRequestDto.getImages() != null ? postRequestDto.getImages().size() : 0; // 새로운 이미지 수
+        int totalImagesCount = existImagesCount + newImagesCount;
+
+        if(totalImagesCount > 5) {  // 이미지 최대 5장
+            throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
+        }
+
         // 새로운 이미지가 있는 경우
-        if (postRequestDto.getImages() != null && !postRequestDto.getImages().isEmpty()) {
+        if (newImagesCount > 0) {
             // 새 이미지 저장
             createImages(post, postRequestDto.getImages());
         }
