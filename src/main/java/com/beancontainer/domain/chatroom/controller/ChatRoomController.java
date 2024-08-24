@@ -4,6 +4,7 @@ package com.beancontainer.domain.chatroom.controller;
 import com.beancontainer.domain.chatroom.dto.ChatRoom;
 import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Slf4j
 @Controller
 @RequestMapping("/chat")
 public class ChatRoomController {
