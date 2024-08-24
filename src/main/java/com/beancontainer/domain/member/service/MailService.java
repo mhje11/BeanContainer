@@ -1,4 +1,4 @@
-package com.beancontainer.global.service;
+package com.beancontainer.domain.member.service;
 
 import com.beancontainer.domain.member.repository.MemberRepository;
 import jakarta.mail.Message;

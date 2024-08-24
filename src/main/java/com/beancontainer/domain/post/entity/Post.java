@@ -3,6 +3,7 @@ package com.beancontainer.domain.post.entity;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @Table(name = "posts")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Post {
     @Id

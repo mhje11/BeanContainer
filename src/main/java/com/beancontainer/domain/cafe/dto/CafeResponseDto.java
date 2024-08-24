@@ -1,12 +1,14 @@
 package com.beancontainer.domain.cafe.dto;
 
 import com.beancontainer.domain.cafe.entity.Cafe;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
+@AllArgsConstructor
 public class CafeResponseDto {
     private Long id;
     private String kakaoId;

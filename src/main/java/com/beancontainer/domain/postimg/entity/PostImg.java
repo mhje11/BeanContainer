@@ -2,12 +2,13 @@ package com.beancontainer.domain.postimg.entity;
 
 import com.beancontainer.domain.post.entity.Post;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "post_images")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class PostImg {
     @Id

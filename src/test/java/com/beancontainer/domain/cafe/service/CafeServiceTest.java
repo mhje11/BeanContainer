@@ -204,8 +204,10 @@ class CafeServiceTest {
         // When
         for (int i = 0; i < 50; i++) {
             long startTime = System.nanoTime();
+        System.out.println("------------QueryStart-------------");
 
             List<CafeResponseDto> responseDtos = cafeService.getCafesByCategories(categories, false);
+        System.out.println("------------QueryEnd-------------");
 
             long endTime = System.nanoTime();
             totalTime += endTime - startTime;
@@ -218,7 +220,7 @@ class CafeServiceTest {
         // Then
         assertNotNull(responseDtos);
         assertFalse(responseDtos.isEmpty());
-        assertEquals(1, responseDtos.size()); // 1개의 카페만 포함되어야 함
+        assertEquals(1, responseDtos.size());
         CafeResponseDto cafeResponseDto = responseDtos.get(0);
         assertEquals("Starbucks", cafeResponseDto.getName());
         assertEquals("Seoul, Gangnam-gu", cafeResponseDto.getAddress());
