@@ -1,15 +1,15 @@
 package com.beancontainer.domain.member.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "members")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,8 +34,11 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
-    @Column(nullable = true)
+    @Column(name = "profile_image_url")
     private String profileImageUrl;
+
+    private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
+
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -74,7 +77,10 @@ public class Member {
         this.profileImageUrl = newProfileImageUrl;
     }
 
-
+    //null 이면 기본 경로 불러옴
+    public String getProfileImageUrl() {
+        return profileImageUrl != null ? profileImageUrl : DEFAULT_PROFILE_IMAGE;
+    }
 
 
 }
