@@ -7,6 +7,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,10 @@ public class MailService {
     private final JavaMailSender javaMailSender;
 
     private String authNum; //인증번호
+
+    //발송 메일 주소
+    @Value("${spring.mail.username}")
+    private String senderEmail;
 
     //인증코드 메일 전송 화면
     public MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException {
@@ -44,9 +49,10 @@ public class MailService {
         msgg += "CODE : <strong>";
         msgg += authNum + "</strong><div><br/> "; // 메일에 인증번호 넣기
         msgg += "</div>";
+        //규격 맞춰주기
         message.setText(msgg, "utf-8", "html");// 내용, charset 타입, subtype
         // 보내는 사람의 이메일 주소, 보내는 사람 이름
-        message.setFrom(new InternetAddress("BeanContainer@naver.com", "BeanContainer"));
+        message.setFrom(new InternetAddress(senderEmail, "BeanContainer", "UTF-8"));
 
         return message;
     }
@@ -56,13 +62,13 @@ public class MailService {
         Random random = new Random();
         StringBuffer key = new StringBuffer();
 
-        for(int i = 0; i< 8; i++){	//인증 코드 8자리
+        for(int i = 0; i< 6; i++){	//인증 코드 6자리
             int index = random.nextInt(3);	//0~2까지 랜덤, 랜덤값으로 switch문 실행
 
             switch (index) {
-                case 0 -> key.append((char) ((int) random.nextInt(26) + 97));
-                case 1 -> key.append((char) (int) random.nextInt(26) + 65);
-                case 2 -> key.append(random.nextInt(9));
+                case 0 -> key.append((char) ((int) random.nextInt(26) + 97)); //소문자 알파벳 ASCII 코드 97('a') 부터 26개
+                case 1 -> key.append((char) (int) random.nextInt(26) + 65); //대문자 알파벳 ASCII 코드 65('A') 부터 26개
+                case 2 -> key.append(random.nextInt(10)); //숫자 0~9 랜덤
             }
         }
         return authNum = key.toString();

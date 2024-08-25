@@ -45,6 +45,7 @@ public class MailConfig {
         properties.setProperty("mail.debug", "true"); // 디버그 사용
         properties.setProperty("mail.smtp.ssl.trust","smtp.naver.com"); // ssl 인증 서버는 smtp.naver.com
         properties.setProperty("mail.smtp.ssl.enable","true"); // ssl 사용
+        properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         return properties;
     }
 

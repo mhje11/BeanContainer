@@ -54,9 +54,11 @@ public class MapService {
     }
 
     public List<MapListResponseDto> getMapList(Member member) {
-        return mapRepository.findAllByMember(member).stream()
-                .map(map -> new MapListResponseDto(map.getMapName(), map.getMember().getNickname(), map.getId()))
-                .collect(Collectors.toList());
+//        return mapRepository.findAllByMember(member).stream()
+//                .map(map -> new MapListResponseDto(map.getMapName(), map.getMember().getNickname(), map.getId()))
+//                .collect(Collectors.toList());
+
+        return mapRepository.getMapList(member);
     }
 
     public MapDetailResponseDto getMapDetail(Long mapId) {

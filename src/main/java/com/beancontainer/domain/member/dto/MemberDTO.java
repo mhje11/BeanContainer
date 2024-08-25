@@ -16,3 +16,4 @@ public class MemberDTO {
     private String profileImageUrl;
 
 }
+

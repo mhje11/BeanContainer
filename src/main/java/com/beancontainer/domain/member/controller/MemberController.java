@@ -1,5 +1,6 @@
 package com.beancontainer.domain.member.controller;
 
+import com.beancontainer.domain.member.dto.MemberDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
@@ -62,12 +63,16 @@ public class MemberController {
         // 여기서 필요한 사용자 정보를 가져와 모델에 추가
         //Login Responcse DTO 만들어서 DTO 로 보내기 ..
         Member member = memberService.findByUserId(userId);
-        model.addAttribute("userId", userId);
-        model.addAttribute("name", member.getName());
-        model.addAttribute("nickname", member.getNickname());
-        model.addAttribute("profileImageUrl", member.getProfileImageUrl());
-        log.info(member.getProfileImageUrl() + " ======= 이미지 url!@!");
-        model.addAttribute("authorities", authentication.getAuthorities());
+        MemberDTO memberDTO = new MemberDTO(
+                member.getUserId(),
+                member.getName(),
+                member.getNickname(),
+                member.getProfileImageUrl()
+        );
+        log.info("MemberDTO created: {}", memberDTO);
+        model.addAttribute("member", memberDTO);
+        log.info("Member found for userId: {}", userId);
+
 
         return "member/myPage";
     }

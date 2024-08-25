@@ -22,11 +22,6 @@ public class CafeRestController {
         return new ResponseEntity<>("카페 저장완료 " + cafeId, HttpStatus.CREATED);
     }
 
-    @GetMapping("/api/cafelist")
-    public ResponseEntity<List<CafeResponseDto>> savedCafeListByDistrict(@RequestParam String district) {
-        List<CafeResponseDto> cafes = cafeService.getCafesByDistrict(district);
-        return ResponseEntity.ok(cafes);
-    }
 
     @GetMapping("/api/cafe/{cafeId}")
     public ResponseEntity<CafeResponseDto> getCafe(@PathVariable("cafeId")Long cafeId) {

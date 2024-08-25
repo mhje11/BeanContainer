@@ -28,10 +28,12 @@ public class SecurityConfig {
     String[] allAllowPage = new String[] {
             "/", "/login", "/signup", //메인, 로그인, 회원가입
             "/js/**", "/css/**", "/images/**", "/static/**", //resources
-            "/api/auth/login", "/api/auth/signup", "/api/auth/check-userid", "/api/auth/logout", //로그인, 로그아웃, 회원가입 API 요청
+            "/api/auth/login", "/api/auth/signup/**", "/api/auth/check-userid", "/api/auth/logout", //로그인, 로그아웃, 회원가입 API 요청
             "/post/post-list", "/api/postList", "/api/postList/{postId}", "/postList/{postId}", //게시글 조회, 게시글 상세보기는 모두 가능
             "/api/postlist/comments/{postId}",  // 댓글 목록
             "/review/{kakaoId}", "/api/reviewlist/{cafeId}", "/reviewlist/{cafeId}", //리뷰도 모두 조회 가능
+            "mymap/{mapId}",
+            "api/mymap/{mapId}",
             "/api/cafe/{cafeId}", // 카페정보
             "/api/map/category", //카테고리 저장 후 검색
             "/api/randommap"
