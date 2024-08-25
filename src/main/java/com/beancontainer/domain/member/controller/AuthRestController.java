@@ -2,9 +2,11 @@ package com.beancontainer.domain.member.controller;
 
 import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.dto.SignUpRequestDTO;
+import com.beancontainer.domain.member.dto.VerifyCodeDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.RefreshToken;
 import com.beancontainer.domain.member.service.AuthService;
+import com.beancontainer.domain.member.service.MailService;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
@@ -14,6 +16,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +41,7 @@ public class AuthRestController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
     private final RefreshTokenService refreshTokenService;
+    private final MailService mailService;
 
 
     @PostMapping("/login")
@@ -103,6 +107,7 @@ public class AuthRestController {
 
 
     //RefreshToken 을 통한 토큰 재발급
+    //변경 필요 -> 쿠키에 토큰이 만료가 되었다면 리프레쉬를 통해 액세스를 재발급 해주면 됨
     @PostMapping("/refreshToken")
     public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
@@ -119,6 +124,9 @@ public class AuthRestController {
         }
 
         // 없으면 오류 응답
+        /**
+         * 수정 필요
+         */
         if (refreshToken == null) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
@@ -156,12 +164,41 @@ public class AuthRestController {
     }
 
 
+    //회원가입
     @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
         log.info("Received signup request for user: " + signUpRequestDTO.getUserId());
         authService.signUp(signUpRequestDTO);
         return ResponseEntity.ok(Collections.singletonMap("message", "회원가입이 성공적으로 완료되었습니다.")); //JSON 형태로 응답
     }
+
+    //이메일 인증 코드 발송
+    //인증번호 세션에 저장
+    @PostMapping("/signup/email-send")
+    public ResponseEntity<String> sendEmailCode(@RequestParam(value = "email", required = false) String email, HttpSession httpSession) {
+        try {
+            String authCode = mailService.sendSimpleMessage(email);
+            httpSession.setAttribute("code", authCode);
+            log.info("인증 코드 : " + authCode);
+            return ResponseEntity.ok("인증 코드가 전송 되었습니다.");
+        } catch (Exception e) {
+            throw new CustomException(ExceptionCode.EMAIL_NOT_FOUND);
+        }
+    }
+
+    //이메일 인증 코드 확인
+    //세션에 저장된 인증번호를 통해 회원가입
+    @PostMapping("/signup/check-code")
+    public ResponseEntity<String> verifyEmailCode(HttpSession httpSession, @RequestBody VerifyCodeDTO verifyCode) throws Exception{
+        boolean result = false;
+        if(httpSession.getAttribute("code").equals(verifyCode.getCode())) {
+            result = true;
+        } else {
+            throw new CustomException(ExceptionCode.EMAIL_CODE_MISMATCH);
+        }
+        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+    }
+
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
@@ -208,5 +245,6 @@ public class AuthRestController {
         response.put("exists", exists);
         return ResponseEntity.ok(response);
     }
+
 }
 
