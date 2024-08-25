@@ -146,7 +146,6 @@ class MapServiceTest {
             totalTime += endTime - startTime;
         }
 
-        System.out.println("totalTime = " + (totalTime / 50) + "ns");
 
 
         List<MapListResponseDto> mapList = mapService.getMapList(member);
@@ -156,6 +155,9 @@ class MapServiceTest {
         assertEquals(1, mapList.size());
 
         assertTrue(mapList.stream().anyMatch(dto -> dto.getMapName().equals("Seoul Cafes")));
+
+        System.out.println("평균시간 : " + (totalTime / 50) + "ns");
+
     }
 
     @Test
@@ -176,8 +178,11 @@ class MapServiceTest {
         //when
         for (int i = 0; i < 50; i++) {
             long startTime = System.nanoTime();
+            System.out.println("------------조회 시작------------------");
 
             MapDetailResponseDto mapDetailResponseDto = mapService.getMapDetail(map.getId());
+            System.out.println("------------조회 끝------------------");
+
 
             long endTime = System.nanoTime();
 

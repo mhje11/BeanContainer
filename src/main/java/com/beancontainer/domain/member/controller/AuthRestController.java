@@ -182,7 +182,7 @@ public class AuthRestController {
             log.info("인증 코드 : " + authCode);
             return ResponseEntity.ok("인증 코드가 전송 되었습니다.");
         } catch (Exception e) {
-            throw new CustomException(ExceptionCode.EMAIL_NOT_FOUND);
+            throw new CustomException(ExceptionCode.EMAIL_SEND_FAILURE);
         }
     }
 
@@ -245,6 +245,5 @@ public class AuthRestController {
         response.put("exists", exists);
         return ResponseEntity.ok(response);
     }
-
 }
 

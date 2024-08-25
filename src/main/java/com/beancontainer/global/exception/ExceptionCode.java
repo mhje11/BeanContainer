@@ -13,6 +13,7 @@ public enum ExceptionCode {
     EMAIL_ALREADY_EXISTS(400, HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다."),
     EMAIL_CODE_MISMATCH(400, HttpStatus.BAD_REQUEST, "이메일 인증번호가 일치하지 않습니다."),
     PASSWORD_MISMATCH(400, HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    EMAIL_SEND_FAILURE(500, HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송에 실패했습니다."),
 
     /**
      *  토근 관련

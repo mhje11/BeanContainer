@@ -3,13 +3,14 @@ package com.beancontainer.domain.like.entity;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.post.entity.Post;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "likes")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 public class Likes {
