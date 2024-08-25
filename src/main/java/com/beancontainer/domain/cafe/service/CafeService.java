@@ -35,16 +35,6 @@ public class CafeService {
 
 
 
-    //구별 카페 검색
-    public List<CafeResponseDto> getCafesByDistrict(String district) {
-        List<Cafe> cafes = cafeRepository.findAllByDistrict(district);
-        return cafes.stream()
-                .map(cafe -> {
-                    Double averageScore = reviewRepository.calculateAverageScoreByCafeId(cafe.getId());
-                    return new CafeResponseDto(cafe, averageScore);
-                })
-                .collect(Collectors.toList());
-    }
 
     public CafeResponseDto getCafeById(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new CustomException(ExceptionCode.CAFE_NOT_FOUND));

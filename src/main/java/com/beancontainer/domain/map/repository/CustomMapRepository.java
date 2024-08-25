@@ -13,7 +13,7 @@ public interface CustomMapRepository {
 
     List<MapListResponseDto> getMapList(Member member);
 
-    MapDetailResponseDto getMapDetail(Long mapId);
 
 //    List<Map> findAllMember(Member member);
+
 }

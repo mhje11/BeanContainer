@@ -70,7 +70,6 @@ public class MapService {
                 })
                 .collect(Collectors.toList());
         return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes, map.getIsPublic());
-//        return mapRepository.getMapDetail(mapId);
     }
 
     @Transactional
