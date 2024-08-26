@@ -59,10 +59,11 @@ public class ReviewService {
 
 
     public List<ReviewResponseDto> findReviewByCafeId(Long cafeId) {
-        List<Review> cafes = reviewRepository.findAllByCafeId(cafeId);
-        return cafes.stream()
-                .map(ReviewResponseDto::new)
-                .collect(Collectors.toList());
+//        List<Review> cafes = reviewRepository.findAllByCafeId(cafeId);
+//        return cafes.stream()
+//                .map(ReviewResponseDto::new)
+//                .collect(Collectors.toList());
+        return reviewRepository.findAllByCafeId(cafeId);
     }
 
     @Transactional

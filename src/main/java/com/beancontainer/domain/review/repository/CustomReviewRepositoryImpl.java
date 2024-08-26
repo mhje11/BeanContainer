@@ -2,14 +2,16 @@ package com.beancontainer.domain.review.repository;
 
 import com.beancontainer.domain.cafe.entity.QCafe;
 import com.beancontainer.domain.member.entity.QMember;
+import com.beancontainer.domain.review.dto.ReviewResponseDto;
 import com.beancontainer.domain.review.entity.QReview;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.reviewcategory.entity.QReviewCategory;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.beancontainer.domain.cafe.entity.QCafe.cafe;
@@ -26,16 +28,51 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository{
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+//    @Override
+//    public List<Review> findAllByCafeId(Long cafeId) {
+//        return queryFactory
+//                .selectFrom(review)
+//                .join(review.member, member).fetchJoin()
+//                .join(review.reviewCategories, reviewCategory).fetchJoin()
+//                .where(review.cafe.id.eq(cafeId))
+//                .fetch();
+//    }
+
     @Override
-    public List<Review> findAllByCafeId(Long cafeId) {
-        return queryFactory
-                .selectFrom(review)
-                .join(review.member, member).fetchJoin()
-                .join(review.cafe, cafe).fetchJoin()
-                .join(review.reviewCategories, reviewCategory).fetchJoin()
+    public List<ReviewResponseDto> findAllByCafeId(Long cafeId) {
+        List<Tuple> result = queryFactory
+                .select(
+                        review.id,
+                        review.member.nickname,
+                        review.content,
+                        review.score,
+                        reviewCategory.category.name
+                )
+                .from(review)
+                .join(review.member, member)
+                .join(review.reviewCategories, reviewCategory)
                 .where(review.cafe.id.eq(cafeId))
                 .fetch();
+
+        Map<Long, ReviewResponseDto> reviewMap = new LinkedHashMap<>();
+
+        for (Tuple tuple : result) {
+            Long reviewId = tuple.get(review.id);
+            ReviewResponseDto dto = reviewMap.computeIfAbsent(reviewId, id -> new ReviewResponseDto(
+                    id,
+                    tuple.get(review.member.nickname),
+                    tuple.get(review.content),
+                    tuple.get(review.score),
+                    new HashSet<>()
+            ));
+            dto.getCategoryNames().add(tuple.get(reviewCategory.category.name));
+        }
+
+        return new ArrayList<>(reviewMap.values());
     }
+
+
+
 
 //    @Override
 //    public Map<String, Long> findCategoryFrequenciesByCafeId(Long cafeId) {
