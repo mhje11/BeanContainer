@@ -24,7 +24,7 @@ public class AdminController {
                                                                  @RequestParam(defaultValue = "createdAt") String sortBy) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sortBy));
 
-        Page<PostListResponseDto> posts = postService.getAllPosts(pageable);
+        Page<PostListResponseDto> posts = postService.getAllPosts(pageable, sortBy);
         return ResponseEntity.ok(posts);
     }
 

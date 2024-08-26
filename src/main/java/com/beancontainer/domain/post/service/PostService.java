@@ -84,9 +84,10 @@ public class PostService {
 
     // 게시글 목록 조회
     @Transactional(readOnly = true)
-    public Page<PostListResponseDto> getAllPosts(Pageable pageable) {
-        Page<Post> postList = postRepository.findAll(pageable);
-        return postList.map(PostListResponseDto::new);
+    public Page<PostListResponseDto> getAllPosts(Pageable pageable, String sortBy) {
+//        Page<Post> postList = postRepository.findAll(pageable);
+//        return postList.map(PostListResponseDto::new);
+        return postRepository.getAllPosts(pageable, sortBy);
     }
 
     // 게시글 상세 보기
