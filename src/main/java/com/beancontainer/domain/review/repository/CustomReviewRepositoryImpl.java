@@ -6,12 +6,12 @@ import com.beancontainer.domain.review.dto.ReviewResponseDto;
 import com.beancontainer.domain.review.entity.QReview;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.reviewcategory.entity.QReviewCategory;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.beancontainer.domain.cafe.entity.QCafe.cafe;
@@ -40,23 +40,37 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository{
 
     @Override
     public List<ReviewResponseDto> findAllByCafeId(Long cafeId) {
-        return queryFactory
-                .select(Projections.constructor(
-                        ReviewResponseDto.class,
+        List<Tuple> result = queryFactory
+                .select(
                         review.id,
                         review.member.nickname,
                         review.content,
                         review.score,
-                        Projections.list(
-                                reviewCategory.category.name
-                        )
-                ))
+                        reviewCategory.category.name
+                )
                 .from(review)
                 .join(review.member, member)
                 .join(review.reviewCategories, reviewCategory)
                 .where(review.cafe.id.eq(cafeId))
                 .fetch();
+
+        Map<Long, ReviewResponseDto> reviewMap = new LinkedHashMap<>();
+
+        for (Tuple tuple : result) {
+            Long reviewId = tuple.get(review.id);
+            ReviewResponseDto dto = reviewMap.computeIfAbsent(reviewId, id -> new ReviewResponseDto(
+                    id,
+                    tuple.get(review.member.nickname),
+                    tuple.get(review.content),
+                    tuple.get(review.score),
+                    new HashSet<>()
+            ));
+            dto.getCategoryNames().add(tuple.get(reviewCategory.category.name));
+        }
+
+        return new ArrayList<>(reviewMap.values());
     }
+
 
 
 
