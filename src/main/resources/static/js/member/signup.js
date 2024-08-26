@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const email = document.getElementById('email');
     const checkUserIdButton = document.getElementById('checkUserIdButton');
     const signupButton = document.getElementById('signupButton');
+    const sendVerificationButton = document.getElementById('sendVerificationButton');
+    const verifyCodeButton = document.getElementById('verifyCodeButton');
+    const verificationCode = document.getElementById('verificationCode');
+    const verificationError = document.getElementById('verificationError');
+
+
+
 
     const userIdError = document.getElementById('userIdError');
     const passwordError = document.getElementById('passwordError');
@@ -16,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailError = document.getElementById('emailError');
 
     let isUserIdValid = false;
+    let isEmailVerified = false;
 
     // 아이디 중복 확인
     checkUserIdButton.addEventListener('click', function() {
@@ -56,6 +64,59 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
+    // 이메일 인증코드 발송
+    function sendVerificationCode() {
+        const emailValue = email.value.trim();
+        if(emailValue == '') {
+            emailError.textContent = '이메일을 입력해주세요.';
+            return;
+        }
+        fetch(`/api/auth/signup/email-send?email=${encodeURIComponent(emailValue)}`, {
+            method: 'POST'
+        })
+            .then(data => {
+                alert('인증 코드가 전송되었습니다.');
+                verificationCode.disabled = false;
+                verifyCodeButton.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error : ' ,error);
+                emailError.textContent = '인증 코드 전송이 실패했습니다.'
+            });
+    }
+
+    //인증코드 확인
+    function verifyCode() {
+        const code = verificationCode.value.trim();
+        if(code === '') {
+            verificationError.textContent = '인증 코드를 입력해주세요.';
+            return
+        }
+        fetch("/api/auth/signup/check-code", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({code:code}),
+        })
+            .then(data=> {
+                alert('이메일 인증이 완료되었습니다.');
+                isEmailVerified = true;
+                verificationCode.disabled = true;
+                verifyCodeButton.disabled = true;
+            })
+            .catch(error=> {
+                console.error('Error:', error);
+                verificationError.textContent = '인증 코드가 일치하지 않습니다.';
+                isEmailVerified = false;
+            });
+    }
+
+    sendVerificationButton.addEventListener('click', sendVerificationCode);
+    verifyCodeButton.addEventListener('click', verifyCode);
+
+
+    //비밀번호
     function validatePassword() {
         const passwordValue = password.value;
         let isValid = true;
@@ -144,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isNameValid = validateName();
         const isEmailValid = validateEmail();
 
-        if (isUserIdValid && isPasswordValid && isConfirmPasswordValid && isNicknameValid && isNameValid && isEmailValid) {
+        if (isUserIdValid && isPasswordValid && isConfirmPasswordValid && isNicknameValid && isNameValid && isEmailValid && isEmailVerified) {
             const formData = {
                 userId: userId.value,
                 password: password.value,
