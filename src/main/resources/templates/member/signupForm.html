@@ -48,13 +48,15 @@
     <div class="form-group">
         <label for="email">이메일:</label>
         <input type="text" id="email" name="email" required>
-        <button type="submit" id="checkEmail">인증 확인</button>
+        <button type="button" id="sendVerificationButton">인증 번호 발송</button>
         <div id="emailError" class="error"></div>
     </div>
 
-    <div class="form-group check_input">
-        <label for="email" id="emailconfm"></label>
-
+    <div class="form-group">
+        <label for="verificationCode">인증 코드:</label>
+        <input type="text" id="verificationCode" name="verificationCode" required>
+        <button type="button" id="verifyCodeButton">인증 확인</button>
+        <div id="verificationError" class="error"></div>
     </div>
 
     <button type="submit" id="signupButton">가입하기</button>
