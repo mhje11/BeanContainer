@@ -98,10 +98,11 @@ public class PostService {
         post.incrementViews();  // 조회수 증가
         postRepository.save(post);
 
-        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
-
-        boolean authorCheck = (userId != null) && post.getMember().getUserId().equals(userId);
-        return new PostDetailsResponseDto(post, likesCount, authorCheck);
+//        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
+//
+//        boolean authorCheck = (userId != null) && post.getMember().getUserId().equals(userId);
+//        return new PostDetailsResponseDto(post, likesCount, authorCheck);
+        return postRepository.findPostDetailsById(postId, userId);
     }
 
     // 게시글 삭제

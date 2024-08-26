@@ -18,14 +18,14 @@
         private String nickname;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        private int views;
-        private int likes;
+        private Integer views;
+        private Integer likes;
         private String content;
         private List<String> imageUrls;
         private List<Long> imageIds;
-        private boolean authorCheck;
+        private Boolean authorCheck;
 
-        public PostDetailsResponseDto(Post updatedPost, int likesCount, boolean authorCheck) {
+        public PostDetailsResponseDto(Post updatedPost, int likesCount, Boolean authorCheck) {
             this.id = updatedPost.getId();
             this.title = updatedPost.getTitle();
             this.nickname = updatedPost.getMember().getNickname();
