@@ -13,7 +13,7 @@ public class ChatMessageDto {
     private Long id;
     private MessageType type;
     private Long roomId;
-    private String sender;
+    private String senderNickname;
     private String message;
     private LocalDateTime timestamp;
 
@@ -26,7 +26,7 @@ public class ChatMessageDto {
         dto.setId(chatMessage.getId());
         dto.setType(MessageType.valueOf(chatMessage.getType().name()));
         dto.setRoomId(chatMessage.getChatRoom().getRoomId());
-        dto.setSender(chatMessage.getSender());
+        dto.setSenderNickname(chatMessage.getSender().getNickname());
         dto.setMessage(chatMessage.getMessage());
         dto.setTimestamp(chatMessage.getTimestamp());
         return dto;

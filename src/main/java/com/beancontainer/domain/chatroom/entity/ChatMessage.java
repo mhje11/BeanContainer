@@ -1,6 +1,7 @@
 package com.beancontainer.domain.chatroom.entity;
 
 
+import com.beancontainer.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +24,9 @@ public class ChatMessage {
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
-    @Column(nullable = false)
-    private String sender;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private Member sender;
 
     @Column(nullable = false)
     private String message;
@@ -36,7 +38,7 @@ public class ChatMessage {
         ENTER, TALK
     }
 
-    public ChatMessage(MessageType type, ChatRoom chatRoom, String sender, String message) {
+    public ChatMessage(MessageType type, ChatRoom chatRoom, Member sender, String message) {
         this.type = type;
         this.chatRoom = chatRoom;
         this.sender = sender;

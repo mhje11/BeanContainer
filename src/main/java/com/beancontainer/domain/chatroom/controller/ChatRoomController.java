@@ -4,6 +4,8 @@ import com.beancontainer.domain.chatroom.dto.ChatRoomDto;
 import com.beancontainer.domain.chatroom.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +39,9 @@ public class ChatRoomController {
     }
 
     @GetMapping("/room/enter/{roomId}")
-    public String roomDetail(Model model, @PathVariable Long roomId) {
+    public String roomDetail(Model model, @PathVariable Long roomId, @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("roomId", roomId);
+        model.addAttribute("userId", userDetails.getUsername());
         return "/chat/roomdetail";
     }
 

@@ -2,10 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>채팅방 목록</title>
     <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">
     <link rel="icon" href="/images/favicon.ico">
 </head>
@@ -34,13 +33,12 @@
 
 <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
 <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
-<script >
+<script th:inline="javascript">
     var vm = new Vue({
         el: '#app',
         data: {
             room_name : '',
-            chatrooms: [
-            ]
+            chatrooms: []
         },
         created() {
             this.findAllRoom();
@@ -51,7 +49,7 @@
             },
             createRoom: function() {
                 if("" === this.room_name) {
-                    alert("방 제목을 입력해 주십시요.");
+                    alert("방 제목을 입력해 주십시오.");
                     return;
                 } else {
                     var params = new URLSearchParams();
@@ -68,12 +66,7 @@
                 }
             },
             enterRoom: function(roomId) {
-                var sender = prompt('대화명을 입력해 주세요.');
-                if(sender != "") {
-                    localStorage.setItem('wschat.sender',sender);
-                    localStorage.setItem('wschat.roomId',roomId);
-                    location.href="/chat/room/enter/"+roomId;
-                }
+                location.href="/chat/room/enter/"+roomId;
             }
         }
     });
