@@ -1,6 +1,5 @@
 package com.beancontainer.domain.category.init;
 
-import com.beancontainer.domain.cafe.repository.CafeRepository;
 import com.beancontainer.domain.category.entity.Category;
 import com.beancontainer.domain.category.repository.CategoryRepository;
 import jakarta.annotation.PostConstruct;

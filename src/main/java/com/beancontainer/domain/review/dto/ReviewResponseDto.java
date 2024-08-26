@@ -4,6 +4,8 @@ import com.beancontainer.domain.review.entity.Review;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,5 +26,21 @@ public class ReviewResponseDto {
         this.categoryNames = review.getReviewCategories().stream()
                 .map(reviewCategory -> reviewCategory.getCategory().getName())
                 .collect(Collectors.toSet());
+    }
+
+    public ReviewResponseDto(Long id, String nickName, String content, Double score, List<String> categoryNames) {
+        this.id = id;
+        this.nickName = nickName;
+        this.content = content;
+        this.score = score;
+        this.categoryNames = new HashSet<>(categoryNames);
+    }
+
+    public ReviewResponseDto(Long id, String nickName, String content, Double score, Set<String> categoryNames) {
+        this.id = id;
+        this.nickName = nickName;
+        this.content = content;
+        this.score = score;
+        this.categoryNames = categoryNames;
     }
 }

@@ -178,8 +178,11 @@ class MapServiceTest {
         //when
         for (int i = 0; i < 50; i++) {
             long startTime = System.nanoTime();
+            System.out.println("------------조회 시작------------------");
 
             MapDetailResponseDto mapDetailResponseDto = mapService.getMapDetail(map.getId());
+            System.out.println("------------조회 끝------------------");
+
 
             long endTime = System.nanoTime();
 

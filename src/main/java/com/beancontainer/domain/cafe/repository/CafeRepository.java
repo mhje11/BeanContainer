@@ -10,7 +10,5 @@ import java.util.Optional;
 
 public interface CafeRepository extends JpaRepository<Cafe, Long>, CustomCafeRepository {
     Optional<Cafe> findByKakaoId(String kakaoId);
-    List<Cafe> findAllByDistrict(String district);
-
 
 }
