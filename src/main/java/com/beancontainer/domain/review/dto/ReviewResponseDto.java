@@ -35,4 +35,12 @@ public class ReviewResponseDto {
         this.score = score;
         this.categoryNames = new HashSet<>(categoryNames);
     }
+
+    public ReviewResponseDto(Long id, String nickName, String content, Double score, Set<String> categoryNames) {
+        this.id = id;
+        this.nickName = nickName;
+        this.content = content;
+        this.score = score;
+        this.categoryNames = categoryNames;
+    }
 }
