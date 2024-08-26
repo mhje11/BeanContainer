@@ -45,13 +45,14 @@ public class CommentService {
     // 댓글 조회
     @Transactional(readOnly = true)
     public List<CommentListResponseDto> getAllComments(Long postId, Long currentUserId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
-        List<Comment> comments = commentRepository.findByPost(post);
-
-        return comments.stream()
-                .map(comment -> new CommentListResponseDto(comment, (currentUserId != null) && comment.getMember().getId().equals(currentUserId)))
-                .collect(Collectors.toList());
+//        Post post = postRepository.findById(postId)
+//                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
+//        List<Comment> comments = commentRepository.findByPost(post);
+//
+//        return comments.stream()
+//                .map(comment -> new CommentListResponseDto(comment, (currentUserId != null) && comment.getMember().getId().equals(currentUserId)))
+//                .collect(Collectors.toList());
+        return commentRepository.getAllComments(postId, currentUserId);
     }
 
     // 댓글 삭제

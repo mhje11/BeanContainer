@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,17 @@ public class PostRestController {
     @GetMapping("/postList/{postId}")   // 게시글 상세 정보
     public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = (userDetails != null) ? userDetails.getUserId() : null;
+        if (userId != null) {
+            try {
+                // userId를 UTF-8로 인코딩하여 다시 문자열로 변환
+                userId = new String(userId.getBytes("UTF-8"), "UTF-8");
+                System.out.println("Converted UserID: " + userId);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("UserID is null");
+        }
         PostDetailsResponseDto post = postService.postDetails(postId, userId);
         return ResponseEntity.ok(post);
     }
