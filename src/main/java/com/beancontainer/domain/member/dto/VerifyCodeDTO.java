@@ -8,5 +8,6 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 public class VerifyCodeDTO {
-    private Long code;
+    private String email;
+    private String code;
 }

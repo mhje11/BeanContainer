@@ -27,6 +27,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -173,12 +174,10 @@ public class AuthRestController {
     }
 
     //이메일 인증 코드 발송
-    //인증번호 세션에 저장
     @PostMapping("/signup/email-send")
-    public ResponseEntity<String> sendEmailCode(@RequestParam(value = "email", required = false) String email, HttpSession httpSession) {
+    public ResponseEntity<String> sendEmailCode(@RequestParam(value = "email", required = false) String email) {
         try {
             String authCode = mailService.sendSimpleMessage(email);
-            httpSession.setAttribute("code", authCode);
             log.info("인증 코드 : " + authCode);
             return ResponseEntity.ok("인증 코드가 전송 되었습니다.");
         } catch (Exception e) {
@@ -187,17 +186,19 @@ public class AuthRestController {
     }
 
     //이메일 인증 코드 확인
-    //세션에 저장된 인증번호를 통해 회원가입
     @PostMapping("/signup/check-code")
-    public ResponseEntity<String> verifyEmailCode(HttpSession httpSession, @RequestBody VerifyCodeDTO verifyCode) throws Exception{
-        boolean result = false;
-        if(httpSession.getAttribute("code").equals(verifyCode.getCode())) {
-            result = true;
+    public ResponseEntity<String> verifyEmailCode(@RequestBody VerifyCodeDTO verifyCode) {
+        log.info("발송 된 인증번호 확인: {}", verifyCode.getCode());
+
+        String authCode = mailService.getAuthNum();
+        if (authCode != null && authCode.equals(verifyCode.getCode())) {
+            log.info("이메일 인증 성공");
+            return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
         } else {
             throw new CustomException(ExceptionCode.EMAIL_CODE_MISMATCH);
         }
-        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
     }
+
 
 
     @PostMapping("/logout")

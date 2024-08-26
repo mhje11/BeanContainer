@@ -68,7 +68,7 @@ public class MailService {
             switch (index) {
                 case 0 -> key.append((char) ((int) random.nextInt(26) + 97)); //소문자 알파벳 ASCII 코드 97('a') 부터 26개
                 case 1 -> key.append((char) (int) random.nextInt(26) + 65); //대문자 알파벳 ASCII 코드 65('A') 부터 26개
-                case 2 -> key.append(random.nextInt(10)); //숫자 0~9 랜덤
+                case 2 -> key.append(random.nextInt(6)); //숫자 0~5 랜덤
             }
         }
         return authNum = key.toString();
@@ -87,5 +87,10 @@ public class MailService {
             throw new IllegalArgumentException();
         }
         return authNum;
+    }
+
+    //저장된 인증 코드 반환
+    public String getAuthNum() {
+        return this.authNum;
     }
 }

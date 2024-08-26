@@ -28,7 +28,7 @@
         <div class="profile-upload">
             <form id="profileImageForm" enctype="multipart/form-data">
                 <label for="file-upload" class="custom-file-upload"> 프로필 업로드 </label>
-                <input id="file-upload" type="file" name="file" accept="image/*" onchange="uploadProfileImage()">
+                <input id="file-upload" type="file" name="file" accept="image/*" onclick="uploadProfileImage()">
             </form>
         </div>
 
@@ -54,7 +54,7 @@
     const userId = /*[[${member.userId}]]*/ 'defaultUserId';
 
     function uploadProfileImage() {
-        const fileInput = document.getElementById('file-upload');n
+        const fileInput = document.getElementById('file-upload');
         const file = fileInput.files[0];
         if (file) {
             const formData = new FormData();
