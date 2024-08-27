@@ -214,6 +214,10 @@ strong {
     overflow-y: auto;
 }
 
+#submit-comment:hover {
+    background-color: #884D33;
+}
+
 #submit-comment {
     background-color: #7B6155;
     color: #FFFFFF;
