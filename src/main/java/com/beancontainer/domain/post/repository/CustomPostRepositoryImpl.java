@@ -88,6 +88,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                                 .when(post.member.deletedAt.isNull())
                                 .then(post.member.nickname)
                                 .otherwise("탈퇴한 회원").as("nickname"),
+                        post.member.profileImageUrl,
                         post.createdAt,
                         post.updatedAt,
                         post.views,
@@ -121,6 +122,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                         result.get(post.id),
                         result.get(post.title),
                         nickname,
+                        result.get(post.member.profileImageUrl),
                         result.get(post.createdAt),
                         result.get(post.updatedAt),
                         result.get(post.views).intValue(),
