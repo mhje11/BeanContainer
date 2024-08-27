@@ -65,6 +65,11 @@ public class AuthRestController {
             throw new CustomException(ExceptionCode.PASSWORD_MISMATCH);
         }
 
+        //탈퇴한 계정
+        if (member.getDeletedAt() != null) {
+            throw new CustomException(ExceptionCode.CANCEL_ACCOUNT);
+        }
+
         //토큰 발급
         String accessToken = jwtTokenizer.createAccessToken(member);
         String refreshToken = jwtTokenizer.createRefreshToken(member);
