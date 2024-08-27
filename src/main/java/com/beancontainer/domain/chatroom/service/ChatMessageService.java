@@ -29,11 +29,16 @@ public class ChatMessageService {
         Member sender = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
+        String message = messageDto.getMessage();
+        if (message == null || message.trim().isEmpty()) {
+            message = "No content"; // 기본 메시지 설정
+        }
+
         ChatMessage chatMessage = new ChatMessage(
                 ChatMessage.MessageType.valueOf(messageDto.getType().name()),
                 chatRoom,
                 sender,
-                messageDto.getMessage()
+                message
         );
 
         chatMessage = chatMessageRepository.save(chatMessage);
