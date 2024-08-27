@@ -118,7 +118,6 @@ public class MemberService implements UserDetailsService {
             reviewRepository.deleteAll(reviews);
 
             memberRepository.delete(member);
-
         }
     }
 }
