@@ -2,6 +2,10 @@ package com.beancontainer.domain.chatroom.controller;
 
 import com.beancontainer.domain.chatroom.dto.ChatRoomDto;
 import com.beancontainer.domain.chatroom.service.ChatRoomService;
+import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ import java.util.UUID;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final MemberRepository memberRepository;
 
     @GetMapping("/room")
     public String rooms(Model model) {
@@ -41,7 +47,10 @@ public class ChatRoomController {
     @GetMapping("/room/enter/{roomId}")
     public String roomDetail(Model model, @PathVariable Long roomId, @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("roomId", roomId);
-        model.addAttribute("userId", userDetails.getUsername());
+        Member userId = memberRepository.findByUserId(userDetails.getUsername())
+                .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
+        model.addAttribute("userId", userId.getNickname());
+
         return "/chat/roomdetail";
     }
 

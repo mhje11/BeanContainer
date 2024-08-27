@@ -33,11 +33,6 @@ public class ChatRoomService {
 
     @Transactional
     public ChatRoomDto createChatRoom(String name) {
-        // 방 이름 중복 체크
-        if (chatRoomRepository.existsByName(name)) {
-            throw new IllegalArgumentException("Room name already exists: " + name);
-        }
-
         ChatRoom chatRoom = new ChatRoom(name);
         chatRoom = chatRoomRepository.save(chatRoom);
         return ChatRoomDto.from(chatRoom);
