@@ -8,7 +8,6 @@ import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +15,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
@@ -25,11 +23,6 @@ public class ChatMessageService {
 
     @Transactional
     public ChatMessageDto saveMessage(ChatMessageDto messageDto, String userId) {
-        log.info("메세지: {}",messageDto.getMessage());
-        log.info("아디: {}",messageDto.getRoomId());
-        log.info("타입: {}",messageDto.getType());
-        log.info("보낸닉넴: {}",messageDto.getSenderNickname());
-
         ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getRoomId())
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
 
@@ -42,6 +35,7 @@ public class ChatMessageService {
                 sender,
                 messageDto.getMessage()
         );
+
         chatMessage = chatMessageRepository.save(chatMessage);
 
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
@@ -53,6 +47,7 @@ public class ChatMessageService {
             );
             chatMessage = chatMessageRepository.save(chatMessage);
         }
+
         return ChatMessageDto.from(chatMessage);
     }
 

@@ -3,6 +3,8 @@ package com.beancontainer.domain.chatroom.service;
 import com.beancontainer.domain.chatroom.dto.ChatRoomDto;
 import com.beancontainer.domain.chatroom.entity.ChatRoom;
 import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
+import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public List<ChatRoomDto> findAllRoom() {
@@ -32,8 +35,10 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoomDto createChatRoom(String name) {
-        ChatRoom chatRoom = new ChatRoom(name);
+    public ChatRoomDto createChatRoom(String name, String userId) {
+        Member creator = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+        ChatRoom chatRoom = new ChatRoom(name, creator);
         chatRoom = chatRoomRepository.save(chatRoom);
         return ChatRoomDto.from(chatRoom);
     }
