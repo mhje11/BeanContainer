@@ -33,6 +33,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, CustomRev
             "ORDER BY COUNT(rc.category_id) DESC", nativeQuery = true)
     List<Object[]> findCategoryFrequenciesByCafeId(@Param("cafeId") Long cafeId);
 
+    List<Review> findAllByMember(Member member);
 
 
 }
