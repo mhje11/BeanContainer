@@ -38,6 +38,7 @@
 <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 <script th:inline="javascript">
+    const userId = /*[[${userId}]]*/ 'defaultUserId';
     var sock = new SockJS("/ws-stomp");
     var ws = Stomp.over(sock);
     var reconnect = 0;
@@ -63,8 +64,15 @@
                 this.message = '';
             },
             recvMessage: function(recv) {
-                this.messages.unshift({"type":recv.type,"senderNickname":recv.type=='ENTER'?'[알림]':recv.senderNickname,"message":recv.message})
+                /* 타임리프 인라인 사용을 위해 th:inline="javascript" 적용 */
+                /* recv.type이 'ENTER'이면, [알림]과 닉네임을 조합한 메시지 생성 */
+                var messageContent = /*[[${recv.type} == 'ENTER' ? '[알림] ' + ${recv.senderNickname} + '님이 입장했습니다' : ${recv.message}]]*/ '기본 메시지';
+
+                /* 생성된 메시지를 this.messages 리스트에 추가 */
+                console.log(userId);
+                this.messages.unshift({"type":recv.type, "senderNickname":recv.type=='ENTER'?'[알림]':recv.userId, "message":messageContent});
             }
+
         }
     });
 
