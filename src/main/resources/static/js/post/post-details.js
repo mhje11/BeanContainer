@@ -18,6 +18,14 @@ class PostOperations {
             document.getElementById('content').innerText = post.content;
             document.getElementById('views').innerText = post.views;
 
+            // 프로필 이미지 설정
+            const profileImage = document.getElementById('profile-image');
+            if (post.profileImageUrl) {
+                profileImage.src = post.profileImageUrl;
+            } else {
+                profileImage.src = '/images/BeanContainer.png';
+            }
+
             // 이미지
             const imagesDiv = document.getElementById('images');
             if(post.imageUrls && post.imageUrls.length > 0) {
