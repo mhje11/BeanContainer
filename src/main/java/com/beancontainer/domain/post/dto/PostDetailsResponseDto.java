@@ -16,6 +16,7 @@
         private Long id;
         private String title;
         private String nickname;
+        private String profileImageUrl;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         private Integer views;
@@ -29,6 +30,7 @@
             this.id = updatedPost.getId();
             this.title = updatedPost.getTitle();
             this.nickname = updatedPost.getMember().getNickname();
+            this.profileImageUrl = updatedPost.getMember().getProfileImageUrl();
             this.createdAt = updatedPost.getCreatedAt();
             this.updatedAt = updatedPost.getUpdatedAt();
             this.views = updatedPost.getViews();
