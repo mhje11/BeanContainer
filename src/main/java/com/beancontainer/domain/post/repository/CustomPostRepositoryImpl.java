@@ -12,9 +12,7 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -46,7 +44,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                         PostListResponseDto.class,
                         post.id,
                         post.title,
-                        member.nickname,
+                        new CaseBuilder()
+                                .when(post.member.deletedAt.isNull())
+                                .then(post.member.nickname)
+                                .otherwise("탈퇴한 회원"),
                         post.commentCount,
                         post.likeCount,
                         post.createdAt,
@@ -83,7 +84,11 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                 .select(
                         post.id,
                         post.title,
-                        post.member.nickname,
+                        new CaseBuilder()
+                                .when(post.member.deletedAt.isNull())
+                                .then(post.member.nickname)
+                                .otherwise("탈퇴한 회원").as("nickname"),
+                        post.member.profileImageUrl,
                         post.createdAt,
                         post.updatedAt,
                         post.views,
@@ -108,12 +113,16 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
         List<String> imageUrls = new ArrayList<>();
         List<Long> imageIds = new ArrayList<>();
 
+
+
         for (Tuple result : results) {
             if (dto == null) {
+                String nickname = result.get(Expressions.stringPath("nickname"));
                 dto = new PostDetailsResponseDto(
                         result.get(post.id),
                         result.get(post.title),
-                        result.get(post.member.nickname),
+                        nickname,
+                        result.get(post.member.profileImageUrl),
                         result.get(post.createdAt),
                         result.get(post.updatedAt),
                         result.get(post.views).intValue(),

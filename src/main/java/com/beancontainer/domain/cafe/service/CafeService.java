@@ -25,7 +25,6 @@ public class CafeService {
     private final CafeRepository cafeRepository;
     private final ReviewRepository reviewRepository;
 
-    //카페 db에 저장
     @Transactional
     public Long saveCafe(CafeSaveDto cafeSaveDto) {
         Cafe cafe = cafeSaveDto.toEntity();

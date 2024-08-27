@@ -18,6 +18,14 @@ class PostOperations {
             document.getElementById('content').innerText = post.content;
             document.getElementById('views').innerText = post.views;
 
+            // 프로필 이미지 설정
+            const profileImage = document.getElementById('profile-image');
+            if (post.profileImageUrl) {
+                profileImage.src = post.profileImageUrl;
+            } else {
+                profileImage.src = '/images/BeanContainer.png';
+            }
+
             // 이미지
             const imagesDiv = document.getElementById('images');
             if(post.imageUrls && post.imageUrls.length > 0) {
@@ -102,20 +110,23 @@ class PostOperations {
                 const div = document.createElement('div');
                 div.className = 'comment';
                 div.innerHTML = `
-                    <strong>${comment.nickname}</strong>: <span class="comment-content" id="comment-content-${comment.id}">${comment.content}</span>
-                    <em class="comment-date">${new Date(comment.createdAt).toLocaleString()}</em>
+                    <div class="comment-profile">
+                        <img src="${comment.profileImageUrl || '/images/BeanContainer.png'}" alt="프로필 이미지"/>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author"><strong>${comment.nickname}</strong></span>
+                            <span class="comment-date">${new Date(comment.createdAt).toLocaleString()}</span>
+                        </div>
+                        <div class="comment-body" id="comment-content-${comment.id}">${comment.content}</div>
+                        <div class="comment-actions">
+                            ${comment.authorCheck ? `
+                                <button onclick="postOps.updateComment(${comment.id}, '${comment.content}')">수정</button>
+                                <button onclick="postOps.deleteComment(${comment.id})">삭제</button>
+                            ` : ''}
+                        </div>
+                    </div>
                     `;
-                if (comment.authorCheck) {
-                    const updateButton = document.createElement('button');
-                    updateButton.innerText = '수정';
-                    updateButton.onclick = () => this.updateComment(comment.id, comment.content);
-                    div.appendChild(updateButton);
-
-                    const deleteButton = document.createElement('button');
-                    deleteButton.innerText = '삭제';
-                    deleteButton.onclick = () => this.deleteComment(comment.id);
-                    div.appendChild(deleteButton);
-                }
                 commentsDiv.appendChild(div);
             });
         } catch (error) {
@@ -201,29 +212,20 @@ class PostOperations {
     }
 
     async updateComment(commentId, currentContent) {
-        const commentsDiv = document.getElementById('comments');
-        const commentContentSpan = document.getElementById(`comment-content-${commentId}`);
-        commentContentSpan.innerHTML = `<input type="text" id="update-content-${commentId}" value="${currentContent}"/>`;
+        const commentBody = document.getElementById(`comment-content-${commentId}`);
+        commentBody.innerHTML = `
+            <textarea id="update-content-${commentId}">${currentContent}</textarea>
+            <div class="comment-actions">
+                <button onclick="postOps.saveOrUpdateComment(true, ${commentId})">저장</button>
+                <button onclick="postOps.cancelUpdate(${commentId}, '${currentContent}')">취소</button>
+               
+            </div>
+        `;
+    }
 
-        const saveBtn = document.createElement('button');
-        saveBtn.innerText = '저장';
-        saveBtn.id = `#save-button-${commentId}`;
-        saveBtn.className = 'save-button';
-        saveBtn.onclick = () => this.saveOrUpdateComment(true, commentId);
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.innerText = '취소';
-        cancelBtn.id = `#cancel-button-${commentId}`;
-        cancelBtn.className = 'cancel-button';
-        cancelBtn.onclick = () => {
-            commentContentSpan.innerHTML = currentContent;
-
-            saveBtn.remove();
-            cancelBtn.remove();
-        };
-
-        commentsDiv.appendChild(saveBtn);
-        commentsDiv.appendChild(cancelBtn);
+    cancelUpdate(commentId, content) {
+        const commentBody = document.getElementById(`comment-content-${commentId}`);
+        commentBody.innerHTML = content;
     }
 }
 

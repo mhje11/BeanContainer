@@ -2,6 +2,7 @@ package com.beancontainer.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "members")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,6 +82,10 @@ public class Member {
     //null 이면 기본 경로 불러옴
     public String getProfileImageUrl() {
         return profileImageUrl != null ? profileImageUrl : DEFAULT_PROFILE_IMAGE;
+    }
+
+    public void cancelAccount() {
+        this.deletedAt = LocalDateTime.now();
     }
 
 

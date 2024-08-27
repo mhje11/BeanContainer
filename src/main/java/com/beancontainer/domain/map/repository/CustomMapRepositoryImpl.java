@@ -49,7 +49,8 @@ public class CustomMapRepositoryImpl implements CustomMapRepository{
                         map.id
                 )).from(map)
                 .join(map.member, member)
-                .where(map.isPublic.eq(true))
+                .where(map.isPublic.eq(true)
+                        .and(map.member.deletedAt.isNull()))
                 .orderBy(Expressions.numberTemplate(Double.class, "function('RAND')").asc())
                 .limit(count)
                 .fetch();
@@ -67,7 +68,6 @@ public class CustomMapRepositoryImpl implements CustomMapRepository{
                 .join(map.member, qMember)
                 .where(map.member.eq(member))
                 .fetch();
-
     }
 
 
