@@ -65,7 +65,8 @@ public class MemberRestController {
 
     @PostMapping("/mypage/{userId}/deleteAccount")
     public ResponseEntity<String> deleteAccount(@PathVariable String userId) {
-        memberService.deleteAccount(userId);
-        return ResponseEntity.ok().body("계정이 삭제되었습니다.");
+        memberService.cancelAccount(userId);
+        return ResponseEntity.ok().body("계정이 탈퇴 되었습니다.");
     }
+
 }

@@ -8,6 +8,8 @@ import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.reviewcategory.entity.QReviewCategory;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
@@ -19,7 +21,7 @@ import static com.beancontainer.domain.member.entity.QMember.member;
 import static com.beancontainer.domain.review.entity.QReview.review;
 import static com.beancontainer.domain.reviewcategory.entity.QReviewCategory.reviewCategory;
 
-public class CustomReviewRepositoryImpl implements CustomReviewRepository{
+public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private final EntityManager em;
     private JPAQueryFactory queryFactory;
 
@@ -43,7 +45,10 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository{
         List<Tuple> result = queryFactory
                 .select(
                         review.id,
-                        review.member.nickname,
+                        new CaseBuilder()
+                                .when(review.member.deletedAt.isNull())
+                                .then(review.member.nickname)
+                                .otherwise("탈퇴한 회원").as("nickname"),
                         review.content,
                         review.score,
                         reviewCategory.category.name
@@ -58,9 +63,12 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository{
 
         for (Tuple tuple : result) {
             Long reviewId = tuple.get(review.id);
+            String nickname = tuple.get(Expressions.stringPath("nickname"));
+
+
             ReviewResponseDto dto = reviewMap.computeIfAbsent(reviewId, id -> new ReviewResponseDto(
                     id,
-                    tuple.get(review.member.nickname),
+                    nickname,
                     tuple.get(review.content),
                     tuple.get(review.score),
                     new HashSet<>()
@@ -70,8 +78,6 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository{
 
         return new ArrayList<>(reviewMap.values());
     }
-
-
 
 
 //    @Override

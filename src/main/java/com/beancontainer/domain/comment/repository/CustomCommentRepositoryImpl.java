@@ -1,10 +1,9 @@
 package com.beancontainer.domain.comment.repository;
 
 import com.beancontainer.domain.comment.dto.CommentListResponseDto;
-import com.beancontainer.domain.comment.entity.QComment;
-import com.beancontainer.domain.member.entity.QMember;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
@@ -33,7 +32,10 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository{
                 .select(Projections.constructor(
                         CommentListResponseDto.class,
                         comment.id,
-                        comment.member.nickname,
+                        new CaseBuilder()
+                                .when(comment.member.deletedAt.isNull())
+                                .then(comment.member.nickname)
+                                .otherwise("탈퇴한 회원"),
                         comment.content,
                         comment.createdAt,
                         authorCheckExpression.as("authorCheck")
