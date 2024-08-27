@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class CommentListResponseDto {
     private Long id;
     private String nickname;
+    private String profileImageUrl;
     private String content;
     private LocalDateTime createdAt;
     private boolean authorCheck;

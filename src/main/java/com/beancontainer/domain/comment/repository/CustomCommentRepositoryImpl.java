@@ -34,6 +34,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository{
                         CommentListResponseDto.class,
                         comment.id,
                         comment.member.nickname,
+                        comment.member.profileImageUrl,
                         comment.content,
                         comment.createdAt,
                         authorCheckExpression.as("authorCheck")
