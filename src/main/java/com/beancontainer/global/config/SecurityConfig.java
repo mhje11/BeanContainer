@@ -3,11 +3,13 @@ package com.beancontainer.global.config;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.jwt.filter.JwtAuthenticationFilter;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
+import com.beancontainer.global.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenizer jwtTokenizer;
+    private final CustomOAuth2UserService customOAuth2UserService;
+
 
     //모든 유저 허용
     String[] allAllowPage = new String[] {
@@ -64,7 +68,11 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                  //세션 설정 -> 세션정보를 서버에 저장하지 않도록 함
                 .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //oauth2 설정
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService)));
         //경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
