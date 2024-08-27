@@ -14,6 +14,7 @@ public enum ExceptionCode {
     EMAIL_CODE_MISMATCH(400, HttpStatus.BAD_REQUEST, "이메일 인증번호가 일치하지 않습니다."),
     PASSWORD_MISMATCH(400, HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     EMAIL_SEND_FAILURE(500, HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송에 실패했습니다."),
+    CANCEL_ACCOUNT(404, HttpStatus.NOT_FOUND, "탈퇴한 계정입니다."),
 
     /**
      *  토근 관련

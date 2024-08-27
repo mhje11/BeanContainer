@@ -57,7 +57,6 @@ public class MapService {
 //        return mapRepository.findAllByMember(member).stream()
 //                .map(map -> new MapListResponseDto(map.getMapName(), map.getMember().getNickname(), map.getId()))
 //                .collect(Collectors.toList());
-
         return mapRepository.getMapList(member);
     }
 
@@ -69,7 +68,15 @@ public class MapService {
                     return new CafeResponseDto(mapCafe.getCafe(), averageScore);
                 })
                 .collect(Collectors.toList());
+
+        if (map.getMember().getDeletedAt() != null) {
+            System.out.println("탈퇴한 회원");
+            return new MapDetailResponseDto(map.getMapName(), "탈퇴한 회원", cafes, map.getIsPublic());
+        }
+
+        System.out.println(map.getMember().getNickname());
         return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes, map.getIsPublic());
+
     }
 
     @Transactional
