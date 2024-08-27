@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 
 @Service
 @RequiredArgsConstructor //생성자 자동 주입
@@ -52,7 +54,7 @@ public class MemberService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        log.info("Error : " , userId);
+        log.info("Error : ", userId);
         Member member = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
 
@@ -66,5 +68,12 @@ public class MemberService implements UserDetailsService {
     //유저 존재 여부
     public boolean existsByUserId(String userId) {
         return memberRepository.existsByUserId(userId);
+    }
+
+    @Transactional
+    public void cancelAccount(String userId) {
+        Member existMember = memberRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
+        existMember.cancelAccount();
+        memberRepository.save(existMember);
     }
 }
