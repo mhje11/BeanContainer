@@ -36,6 +36,8 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository{
                                 .when(comment.member.deletedAt.isNull())
                                 .then(comment.member.nickname)
                                 .otherwise("탈퇴한 회원"),
+                        comment.member.nickname,
+                        comment.member.profileImageUrl,
                         comment.content,
                         comment.createdAt,
                         authorCheckExpression.as("authorCheck")
