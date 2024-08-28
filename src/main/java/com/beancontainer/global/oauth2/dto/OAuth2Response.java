@@ -11,6 +11,7 @@ public interface OAuth2Response {
     String getEmail();
     //사용자 실명(설정 이름)
     String getName();
+    String getNickname();
     // 권한
     Map<String, Object> getAttributes();
 

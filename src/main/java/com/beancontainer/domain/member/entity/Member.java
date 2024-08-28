@@ -74,30 +74,23 @@ public class Member {
     }
 
     //OAuth2 로그인 멤버 생성
-    public static Member createOAuth2Member(String userId, String name, String email, String provider, String providerId) {
-        return Member.builder()
-                .userId(userId)
-                .password("{noop}oauth2")
-                .name(name)
-                .nickname(name)  // 초기 닉네임을 이름으로 설정
-                .email(email)
-                .role(Role.MEMBER)
-                .provider(provider)
-                .providerId(providerId)
-                .build();
-    }
+//    public static Member createOAuth2Member(String userId, String name, String email, String provider, String providerId) {
+//        return Member.builder()
+//                .userId(userId)
+//                .password("{noop}oauth2")
+//                .name(name)
+//                .nickname(name)  // 초기 닉네임을 이름으로 설정
+//                .email(email)
+//                .role(Role.MEMBER)
+//                .provider(provider)
+//                .providerId(providerId)
+//                .build();
+//    }
 
     public Member updateOAuth2Info(String name, String email) {
-        return Member.builder()
-                .userId(this.userId)
-                .password(this.password)
-                .name(name)
-                .nickname(this.nickname)
-                .email(email)
-                .role(this.role)
-                .provider(this.provider)
-                .providerId(this.providerId)
-                .build();
+        this.name = name;
+        this.email = email;
+        return this;
     }
 
     //닉네임 수정
