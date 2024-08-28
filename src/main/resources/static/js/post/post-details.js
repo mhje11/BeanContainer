@@ -15,7 +15,7 @@ class PostOperations {
             document.getElementById('title').innerText = post.title;
             document.getElementById('nickname').innerText = post.nickname;
             document.getElementById('createdAt').innerText = post.updatedAt ? new Date(post.updatedAt).toLocaleString() + ' (수정됨)' : new Date(post.createdAt).toLocaleString();
-            document.getElementById('content').innerText = post.content;
+            document.getElementById('content').innerHTML = post.content;    // editor가 적용되어 있기 때문에 text가 아닌 html 자체를 가져와야 함
             document.getElementById('views').innerText = post.views;
 
             // 프로필 이미지 설정

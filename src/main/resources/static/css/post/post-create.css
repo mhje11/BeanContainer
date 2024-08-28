@@ -1,3 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+@media print {
+    body {
+        margin: 0 !important;
+    }
+}
+
+.main-container {
+    font-family: 'Lato';
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ck-content {
+    font-family: 'Lato';
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.editor-container_classic-editor .editor-container__editor {
+    min-width: 795px;
+    max-width: 795px;
+}
+
+
 html {
     background-color: #F2EFE8;
 }
@@ -33,7 +60,7 @@ body {
     color: #B0B0B0;
 }
 
-textarea#content {
+/*textarea#content {
     width: 100%;
     min-height: 500px;
     padding: 20px 0;
@@ -48,7 +75,7 @@ textarea#content {
 
 #content::placeholder {
     color: #B0B0B0;
-}
+}*/
 
 .box {
     display: flex;
