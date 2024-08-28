@@ -23,6 +23,13 @@
 
     <button type="submit">로그인</button>
 
+    <!-- 소셜 로그인 버튼 추가 -->
+    <div class="oauth-login">
+        <a th:href="@{/oauth2/authorization/naver}" class="naver">
+            <img src="https://static.nid.naver.com/oauth/button_g.PNG" height="50">
+        </a>
+    </div>
+
     <div class="signup-link">
         <a th:href="@{/signup}">회원가입</a>
     </div>

@@ -1,10 +1,8 @@
 package com.beancontainer.domain.member.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,6 +39,9 @@ public class Member {
 
     private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
 
+    private String provider;; //OAuth2 제공자(ex : naver, kakao)
+    private String providerId; //OAuth2 로그인 Id
+
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -48,13 +49,16 @@ public class Member {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public Member(String name, String nickname, String userId, String password, String email, Role role) {
+    @Builder //필요한 필드만 사용하기 위해 빌더 어노테이션 사용
+    public Member(String name, String nickname, String userId, String password, String email, Role role, String provider, String providerId) {
         this.name = name;
         this.nickname = nickname;
         this.userId = userId;
         this.password = password;
         this.email = email;
         this.role = role;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 
 
@@ -67,6 +71,33 @@ public class Member {
         member.email = email;
         member.role = Role.MEMBER; // 기본 역할을 MEMBER로 설정
         return member;
+    }
+
+    //OAuth2 로그인 멤버 생성
+    public static Member createOAuth2Member(String userId, String name, String email, String provider, String providerId) {
+        return Member.builder()
+                .userId(userId)
+                .password("{noop}oauth2")
+                .name(name)
+                .nickname(name)  // 초기 닉네임을 이름으로 설정
+                .email(email)
+                .role(Role.MEMBER)
+                .provider(provider)
+                .providerId(providerId)
+                .build();
+    }
+
+    public Member updateOAuth2Info(String name, String email) {
+        return Member.builder()
+                .userId(this.userId)
+                .password(this.password)
+                .name(name)
+                .nickname(this.nickname)
+                .email(email)
+                .role(this.role)
+                .provider(this.provider)
+                .providerId(this.providerId)
+                .build();
     }
 
     //닉네임 수정
