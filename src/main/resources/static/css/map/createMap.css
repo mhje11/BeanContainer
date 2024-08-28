@@ -43,6 +43,15 @@ body {
     width: 100%; /* map-container와 동일한 너비로 설정 */
 }
 
+#search-btn {
+    padding: 10px 20px;
+    background-color: #7B6155;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
 .cafe-card {
     background-color: white;
     border-radius: 8px;
@@ -125,7 +134,18 @@ body {
 #search-results div {
     cursor: pointer;
     padding: 5px;
-    border-bottom: 1px solid #ddd;
+    background-color: white;
+    border: 1px solid #ccc;
+    max-height: 200px;
+}
+#search-input {
+    width: 400px;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #7B6155;
+    border-radius: 8px;
+    background-color: #EDE3D5;
+    color: #333;
 }
 
 #search-results div:hover {
