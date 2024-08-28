@@ -12,11 +12,15 @@ public class ChatRoomDto {
     private Long roomId;
     private String name;
     private String creatorNickname;
+    private int capacity;
+    private int currentUserCount;
 
     public static ChatRoomDto from(ChatRoom chatRoom) {
         ChatRoomDto dto = new ChatRoomDto();
         dto.setRoomId(chatRoom.getRoomId());
         dto.setName(chatRoom.getName());
+        dto.setCapacity(chatRoom.getCapacity());
+        dto.setCurrentUserCount(chatRoom.getCurrentUserCount());
         // Null 체크 추가
         if (chatRoom.getCreator() != null) {
             dto.setCreatorNickname(chatRoom.getCreator().getNickname());
