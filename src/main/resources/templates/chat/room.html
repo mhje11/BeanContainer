@@ -15,18 +15,24 @@
             <h3>채팅방 리스트</h3>
         </div>
     </div>
-    <div class="input-group">
+    <div class="input-group mb-3">
         <div class="input-group-prepend">
-            <label class="input-group-text">방제목</label>
+            <span class="input-group-text">방제목</span>
         </div>
         <input type="text" class="form-control" v-model="room_name" v-on:keyup.enter="createRoom">
+        <div class="input-group-prepend">
+            <span class="input-group-text">최대 인원</span>
+        </div>
+        <input type="number" class="form-control" v-model="room_capacity" min="2" max="100">
         <div class="input-group-append">
             <button class="btn btn-primary" type="button" @click="createRoom">채팅방 개설</button>
         </div>
     </div>
     <ul class="list-group">
         <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId)">
-            {{item.name}}
+            {{item.name}} ({{item.currentUserCount}}/{{item.capacity}})
+            <span class="badge badge-primary float-right" v-if="item.currentUserCount < item.capacity">입장 가능</span>
+            <span class="badge badge-secondary float-right" v-else>만석</span>
         </li>
     </ul>
 </div>
@@ -37,7 +43,8 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            room_name : '',
+            room_name: '',
+            room_capacity: 10,
             chatrooms: []
         },
         created() {
@@ -51,14 +58,19 @@
                 if("" === this.room_name) {
                     alert("방 제목을 입력해 주십시오.");
                     return;
+                } else if (this.room_capacity < 2 || this.room_capacity > 100) {
+                    alert("최대 인원은 2명에서 100명 사이여야 합니다.");
+                    return;
                 } else {
                     var params = new URLSearchParams();
-                    params.append("name",this.room_name);
+                    params.append("name", this.room_name);
+                    params.append("capacity", this.room_capacity);
                     axios.post('/chat/room', params)
                         .then(
                             response => {
-                                alert(response.data.name+"방 개설에 성공하였습니다.")
+                                alert(response.data.name + " 방 개설에 성공하였습니다.")
                                 this.room_name = '';
+                                this.room_capacity = 10;
                                 this.findAllRoom();
                             }
                         )
@@ -66,7 +78,12 @@
                 }
             },
             enterRoom: function(roomId) {
-                location.href="/chat/room/enter/"+roomId;
+                var room = this.chatrooms.find(room => room.roomId === roomId);
+                if (room.currentUserCount >= room.capacity) {
+                    alert("채팅방이 꽉 찼습니다.");
+                } else {
+                    location.href="/chat/room/enter/"+roomId;
+                }
             }
         }
     });
