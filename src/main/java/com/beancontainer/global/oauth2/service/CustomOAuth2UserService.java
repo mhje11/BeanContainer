@@ -2,6 +2,7 @@ package com.beancontainer.global.oauth2.service;
 
 
 import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.member.entity.Role;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.oauth2.dto.*;
 import lombok.extern.slf4j.Slf4j;
@@ -51,21 +52,58 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 
             //DB 저장
+//            Member member = memberRepository.findByUserId(userId)
+//                    .map(existingMember -> {
+//                        Member updatedMember = existingMember.updateOAuth2Info(oAuth2Response.getName(), oAuth2Response.getEmail());
+//                        return memberRepository.save(updatedMember);
+//                    })
+//                    .orElseGet(() -> {
+//                        System.out.println("===========================");
+//                        log.info("getName ==== "  + oAuth2Response.getName());
+//                        log.info(oAuth2Response.getEmail());
+//                        log.info(oAuth2Response.getProvider());
+//                        log.info(oAuth2Response.getProviderId());
+//                        log.info(oAuth2Response.getAttributes().toString());
+//                        Member newMember = Member.createOAuth2Member(
+//                                userId,
+//                                oAuth2Response.getName(),
+//                                oAuth2Response.getEmail(),
+//                                oAuth2Response.getProvider(),
+//                                oAuth2Response.getProviderId()
+//                        );
+//                        return memberRepository.save(newMember);
+//                    });
             Member member = memberRepository.findByUserId(userId)
                     .map(existingMember -> {
-                        Member updatedMember = existingMember.updateOAuth2Info(oAuth2Response.getName(), oAuth2Response.getEmail());
-                        return memberRepository.save(updatedMember);
+                        return Member.builder()
+                                .userId(existingMember.getUserId())
+                                .email(oAuth2Response.getEmail())
+                                .name(oAuth2Response.getName())
+                                .role(existingMember.getRole())
+                                .provider(existingMember.getProvider())
+                                .providerId(existingMember.getProviderId())
+                                .build();
                     })
                     .orElseGet(() -> {
-                        Member newMember = Member.createOAuth2Member(
-                                userId,
-                                oAuth2Response.getName(),
-                                oAuth2Response.getEmail(),
-                                oAuth2Response.getProvider(),
-                                oAuth2Response.getProviderId()
-                        );
-                        return memberRepository.save(newMember);
+                        log.info("Creating new member with OAuth2 info:");
+                        log.info("Name: {}", oAuth2Response.getName());
+                        log.info("Email: {}", oAuth2Response.getEmail());
+                        log.info("Provider: {}", oAuth2Response.getProvider());
+                        log.info("ProviderId: {}", oAuth2Response.getProviderId());
+                        log.info("Attributes: {}", oAuth2Response.getAttributes());
+
+                        return Member.builder()
+                                .userId(userId)
+                                .email(oAuth2Response.getEmail())
+                                .name(oAuth2Response.getName())
+                                .nickname(oAuth2Response.getName()) //이름을 닉네임과 동일하게 사용
+                                .password("")
+                                .provider(oAuth2Response.getProvider())
+                                .providerId(oAuth2Response.getProviderId())
+                                .role(Role.MEMBER)
+                                .build();
                     });
+            member = memberRepository.save(member);
 
 
             OAuth2LoginDTO oAuth2LoginDTO = new OAuth2LoginDTO();

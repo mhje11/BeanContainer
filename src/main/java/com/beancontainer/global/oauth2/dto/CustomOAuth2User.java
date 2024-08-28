@@ -1,5 +1,6 @@
 package com.beancontainer.global.oauth2.dto;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -7,7 +8,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-
+@Slf4j
 public class CustomOAuth2User implements OAuth2User {
 
     private final OAuth2LoginDTO oAuth2LoginDTO;
@@ -21,7 +22,9 @@ public class CustomOAuth2User implements OAuth2User {
     //제공자에게 받은 정보
     @Override
     public Map<String, Object> getAttributes() {
+        log.info("getAttributes : " + oAuth2Response.getAttributes());
         return oAuth2Response.getAttributes();
+
     }
 
 
