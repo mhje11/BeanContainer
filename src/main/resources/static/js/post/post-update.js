@@ -1,12 +1,15 @@
-document.getElementById('images').addEventListener('change', function() {
-    const fileInput = document.getElementById('images');
-    const fileNameDisplay = document.getElementById('fileName');
+import { initEditor } from './editor.js';
 
-    if (fileInput.files.length > 0) {
-        fileNameDisplay.textContent = Array.from(fileInput.files).map(file => file.name).join(', ');
-    } else {
-        fileNameDisplay.textContent = '선택된 파일 없음';
-    }
+let editor;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initEditor('#editor')
+        .then(newEditor => {
+            editor = newEditor;
+        })
+        .catch(error => {
+            console.log('CKEditor 초기화 오류: ', error);
+        });
 });
 
 async function fetchPost() {
@@ -20,7 +23,12 @@ async function fetchPost() {
         const post = await response.json();
         console.log('Fetched Post: ', post)
         document.getElementById('title').value = post.title;
-        document.getElementById('content').value = post.content;
+        // document.getElementById('content').value = post.content;
+
+        // CKEditor에 기존 콘텐츠 로드
+        if (editor) {
+            editor.setData(post.content);
+        }
 
         if (post.imageUrls && post.imageUrls.length > 0) {
             const imagesDiv = document.getElementById('existing-images');
@@ -43,11 +51,16 @@ document.addEventListener('DOMContentLoaded', fetchPost);
 document.getElementById('updateForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
+    if (!editor) {
+        alert('Editor not initialized yet.');
+        return;
+    }
+
     const formData = new FormData();
 
     const postRequestDto = {
         title: document.getElementById('title').value,
-        content: document.getElementById('content').value,
+        content: editor.getData(),  // document.getElementById('content').value
         deleteImages: Array.from(document.querySelectorAll('input[name="deleteImages"]:checked'))
             .map(checkbox => parseInt(checkbox.value))
     };
@@ -83,6 +96,17 @@ document.getElementById('updateForm').addEventListener('submit', function (event
             alert(error.message);
             console.error('Error:', error)
         });
+});
+
+document.getElementById('images').addEventListener('change', function() {
+    const fileInput = document.getElementById('images');
+    const fileNameDisplay = document.getElementById('fileName');
+
+    if (fileInput.files.length > 0) {
+        fileNameDisplay.textContent = Array.from(fileInput.files).map(file => file.name).join(', ');
+    } else {
+        fileNameDisplay.textContent = '선택된 파일 없음';
+    }
 });
 
 document.getElementById('cancel-button').addEventListener('click', function () {

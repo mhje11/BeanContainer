@@ -60,23 +60,6 @@ body {
     color: #B0B0B0;
 }
 
-/*textarea#content {
-    width: 100%;
-    min-height: 500px;
-    padding: 20px 0;
-    font-size: 18px;
-    line-height: 1.6;
-    border: none;
-    outline: none;
-    resize: none;
-    border-bottom: 1px solid #E0E0E0;
-    color: #7B6155;
-}
-
-#content::placeholder {
-    color: #B0B0B0;
-}*/
-
 .box {
     display: flex;
     justify-content: space-between;

@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>게시글 상세보기</title>
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
     <script th:src="@{/js/member/header.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-update.css}">
+    <link rel="stylesheet" th:href="@{/css/post/editor.css}">
     <link rel="icon" href="/images/favicon.ico">
 </head>
 <body>
@@ -21,7 +23,11 @@
         </div>
 
         <div>
-            <textarea id="content" name="content" placeholder="내용을 입력하세요." rows="5" required></textarea>
+            <div class="main-container">
+                <div class="editor-container editor-container_classic-editor" id="editor-container">
+                    <div class="editor-container__editor"><div id="editor"></div></div>
+                </div>
+            </div>
         </div>
 
         <div id="existing-images" class="existing-images">
@@ -43,7 +49,17 @@
     </form>
 </div>
 
-<script src="/js/post/post-update.js"></script>
+<!-- CKEditor CDN -->
+<script type="importmap">
+    {
+        "imports": {
+            "ckeditor5": "https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.js",
+            "ckeditor5/": "https://cdn.ckeditor.com/ckeditor5/43.0.0/"
+        }
+    }
+</script>
+<script type="module" src="/js/post/editor.js"></script>
+<script type="module" src="/js/post/post-update.js"></script>
 
 </body>
 </html>
