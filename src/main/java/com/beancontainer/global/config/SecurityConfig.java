@@ -1,15 +1,15 @@
 package com.beancontainer.global.config;
 
-import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.jwt.filter.JwtAuthenticationFilter;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
+import com.beancontainer.global.oauth2.handler.CustomSuccessHandler;
+import com.beancontainer.global.oauth2.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,9 +20,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenizer jwtTokenizer;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
+
+    public SecurityConfig(JwtTokenizer jwtTokenizer, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
+        this.jwtTokenizer = jwtTokenizer;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customSuccessHandler = customSuccessHandler;
+    }
 
     //모든 유저 허용
     String[] allAllowPage = new String[] {
@@ -64,15 +71,21 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                  //세션 설정 -> 세션정보를 서버에 저장하지 않도록 함
                 .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        //경로별 인가 작업
-        http
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(allAllowPage).permitAll()
-                        .requestMatchers(adminAllowPage).hasAuthority("ADMIN") //접두사 제거
-                        .requestMatchers(authPage).authenticated()
-                        .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
-                )
+                    .requestMatchers(allAllowPage).permitAll()
+                    .requestMatchers(adminAllowPage).hasAuthority("ADMIN") //접두사 제거
+                    .requestMatchers(authPage).authenticated()
+                    .anyRequest().authenticated() //그 외 모든 요청은 인증 필요
+        )
+                //oauth2 설정
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
+                        .authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorization"))
+                        .successHandler(customSuccessHandler))
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenizer), UsernamePasswordAuthenticationFilter.class);
+        http
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
@@ -81,9 +94,7 @@ public class SecurityConfig {
                         .deleteCookies("accessToken", "refreshToken")
                         .permitAll()
                 );
-        //jwt 설정
-        http
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenizer), UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

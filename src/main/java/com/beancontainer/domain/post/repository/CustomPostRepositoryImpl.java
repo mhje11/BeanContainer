@@ -133,8 +133,13 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                         result.get(authorCheckExpression)
                 );
             }
-            imageUrls.add(result.get(postImg.path));
-            imageIds.add(result.get(postImg.id));
+            if (result.get(postImg.path) != null) {
+                imageUrls.add(result.get(postImg.path));
+            }
+
+            if (result.get(postImg.id) != null) {
+                imageIds.add(result.get(postImg.id));
+            }
         }
 
         return dto;

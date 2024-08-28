@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>로그인</title>
     <link rel="stylesheet" href="/css/member/loginForm.css">
-<!--    <script src="/js/auth-handler.js"></script>-->
     <link rel="icon" href="/images/favicon.ico">
 </head>
 <body>
@@ -22,6 +21,16 @@
     </div>
 
     <button type="submit">로그인</button>
+
+    <!-- 소셜 로그인 버튼 추가 -->
+    <div class="oauth-login">
+        <a href="/oauth2/authorization/naver" class="naver">
+            <img src="/images/naver_login.png" height="40" width="140">
+        </a>
+        <a href="/oauth2/authorization/kakao" class="kakao">
+            <img src="/images/kakao_login.png" height="40" width="140">
+        </a>
+    </div>
 
     <div class="signup-link">
         <a th:href="@{/signup}">회원가입</a>
