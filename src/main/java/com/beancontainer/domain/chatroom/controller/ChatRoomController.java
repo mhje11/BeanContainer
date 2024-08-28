@@ -34,9 +34,10 @@ public class ChatRoomController {
 
     @PostMapping("/room")
     @ResponseBody
-    public ChatRoomDto createRoom(@RequestParam String name, @AuthenticationPrincipal UserDetails userDetails) {
-        return chatRoomService.createChatRoom(name, userDetails.getUsername());
+    public ChatRoomDto createRoom(@RequestParam String name, @RequestParam int capacity, @AuthenticationPrincipal UserDetails userDetails) {
+        return chatRoomService.createChatRoom(name, capacity, userDetails.getUsername());
     }
+
     @GetMapping("/room/enter/{roomId}")
     public String roomDetail(Model model, @PathVariable Long roomId, @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("roomId", roomId);

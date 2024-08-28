@@ -15,7 +15,8 @@
 <body>
 <div class="container" id="app" v-cloak>
     <div>
-        <h2>{{room.name}}</h2>
+        <h2>{{ room.name }}</h2>
+        <p>참가자 수: {{ room.currentParticipants }} / {{ room.capacity }}</p>
     </div>
     <div class="input-group">
         <div class="input-group-prepend">
@@ -28,7 +29,7 @@
     </div>
     <ul class="list-group">
         <li class="list-group-item" v-for="message in messages">
-            {{message.senderNickname}} - {{message.message}}
+            {{ message.senderNickname }} - {{ message.message }}
         </li>
     </ul>
 </div>
@@ -56,33 +57,48 @@
         },
         methods: {
             findRoom: function() {
-                axios.get('/chat/room/'+this.roomId).then(response => { this.room = response.data; });
+                axios.get('/chat/room/' + this.roomId).then(response => {
+                    this.room = response.data;
+                });
             },
             sendMessage: function() {
-                ws.send("/pub/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, message:this.message}));
-                this.message = '';
+                if (this.message.trim() !== '') {
+                    ws.send("/pub/chat/message", {}, JSON.stringify({
+                        type: 'TALK',
+                        roomId: this.roomId,
+                        message: this.message
+                    }));
+                    this.message = '';
+                }
             },
             recvMessage: function(recv) {
-                this.messages.unshift({"type":recv.type,"senderNickname":recv.type=='ENTER'?'[알림]':recv.senderNickname,"message":recv.message})
+                this.messages.unshift({
+                    "type": recv.type,
+                    "senderNickname": recv.type == 'ENTER' ? '[알림]' : recv.senderNickname,
+                    "message": recv.message
+                });
             }
         }
     });
 
     function connect() {
         ws.connect({}, function(frame) {
-            ws.subscribe("/sub/chat/room/"+vm.$data.roomId, function(message) {
+            ws.subscribe("/sub/chat/room/" + vm.$data.roomId, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv);
             });
-            ws.send("/pub/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId}));
+            ws.send("/pub/chat/message", {}, JSON.stringify({
+                type: 'ENTER',
+                roomId: vm.$data.roomId
+            }));
         }, function(error) {
-            if(reconnect++ <= 5) {
+            if (reconnect++ <= 5) {
                 setTimeout(function() {
                     console.log("connection reconnect");
                     sock = new SockJS("/ws-stomp");
                     ws = Stomp.over(sock);
                     connect();
-                },10*1000);
+                }, 10 * 1000);
             }
         });
     }

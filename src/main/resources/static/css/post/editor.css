@@ -1,0 +1,79 @@
+/* CKEditor 기본 스타일을 수정하여 기존 스타일과 조화롭게 변경 */
+
+.ck-editor__editable {
+    background-color: #F9F9F9;
+    color: #7B6155;
+    font-size: 18px;
+    line-height: 1.6;
+    padding: 20px;
+    min-height: 500px;
+    border-radius: 5px;
+    border: 1px solid #E0E0E0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    outline: none;
+}
+
+/* Placeholder 스타일 */
+.ck-placeholder {
+    color: #B0B0B0;
+}
+
+/* CKEditor 툴바 스타일 */
+.ck-toolbar {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 툴바 버튼 스타일 */
+.ck-button {
+    color: #7B6155;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+.ck-button.ck-on {
+    background-color: #7B6155;
+    color: #FFFFFF;
+}
+
+.ck-button:hover {
+    background-color: #E0E0E0;
+}
+
+/* 커서가 포커스된 상태에서의 스타일 */
+.ck-editor__editable.ck-focused {
+    border-color: #7B6155;
+    box-shadow: 0 0 0 2px rgba(123, 97, 85, 0.2);
+}
+
+/* 선택된 텍스트 스타일 */
+.ck-content blockquote {
+    border-left: 5px solid #7B6155;
+    margin-left: 0;
+    padding-left: 20px;
+    color: #6E625B;
+}
+
+.ck-content pre {
+    background-color: #F2EFE8;
+    border: 1px solid #E0E0E0;
+    padding: 10px;
+    border-radius: 5px;
+    color: #7B6155;
+}
+
+.ck-content h1, .ck-content h2, .ck-content h3 {
+    color: #7B6155;
+    border-bottom: 1px solid #E0E0E0;
+    padding-bottom: 5px;
+}
+
+.ck-content a {
+    color: #884D33;
+    text-decoration: none;
+}
+
+.ck-content a:hover {
+    text-decoration: underline;
+}
