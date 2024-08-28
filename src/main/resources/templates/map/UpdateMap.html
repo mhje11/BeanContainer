@@ -5,12 +5,19 @@
     <title>지도 수정</title>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c1be6dbc09faa31e5316451aad20da0b&libraries=services,geometry"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
     <link rel="stylesheet" href="/css/map/updateMap.css">
     <script th:src="@{/js/map/UpdateMap.js}" defer></script>
+    <script th:src="@{/js/member/header.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <link rel="icon" href="/images/favicon.ico">
 </head>
 <body>
+<div th:replace="fragments/header :: header"></div>
 
+<div id="container">
 <div id="map-container">
     <div id="map"></div>
     <div id="cafe-cards"></div>
@@ -54,6 +61,6 @@
 
     <button id="save-btn">지도 저장</button>
 </div>
-
+</div>
 </body>
 </html>
