@@ -1,5 +1,7 @@
 package com.beancontainer.global.jwt.filter;
 
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import com.beancontainer.global.jwt.token.JwtAuthenticationToken;
 import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.CustomUserDetails;
@@ -34,39 +36,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.debug("===== JwtAuthenticationFilter start =====");
-//        String token = getToken(request);
-//
-//        if (StringUtils.hasText(token)) {
-//            try {
-//                getAuthentication(token);
-//            } catch (ExpiredJwtException e) {
-//                log.error("Token expired: {}", token);
-//                new CustomException(ExceptionCode.JWT_TOKEN_EXPIRED);
-//                return;
-//            } catch (Exception e) {
-//                log.error("Authentication error: ", e);
-//                new CustomException(ExceptionCode.UNAUTHORIZED);
-//                return;
-//            }
-//        } else {
-//            log.debug("No token found in request");
-//        }
+        String token = getToken(request);
 
-        try {
-            String token = getToken(request);
-            if (StringUtils.hasText(token) && jwtTokenizer.validateToken(token)) {
-                Authentication auth = getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+        if (StringUtils.hasText(token)) {
+            try {
+                getAuthentication(token);
+            } catch (ExpiredJwtException e) {
+                log.error("Token expired: {}", token);
+                new CustomException(ExceptionCode.JWT_TOKEN_EXPIRED);
+                return;
+            } catch (Exception e) {
+                log.error("Authentication error: ", e);
+                new CustomException(ExceptionCode.UNAUTHORIZED);
+                return;
             }
-        } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token expired");
-            return;
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Authentication failed");
-            return;
+        } else {
+            log.debug("No token found in request");
         }
+//
+//        try {
+//            String token = getToken(request);
+//            if (StringUtils.hasText(token) && jwtTokenizer.validateToken(token)) {
+//                Authentication auth = getAuthentication(token);
+//                SecurityContextHolder.getContext().setAuthentication(auth);
+//            }
+//        } catch (ExpiredJwtException e) {
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.getWriter().write("Token expired");
+//            return;
+//        } catch (Exception e) {
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.getWriter().write("Authentication failed");
+//            return;
+//        }
 
         filterChain.doFilter(request, response);
         log.debug("JwtAuthenticationFilter finished");

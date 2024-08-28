@@ -82,9 +82,8 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
-                        .successHandler(customSuccessHandler)
-                        .authorizationEndpoint(authPage -> authPage.baseUri("/oauth2/authorization"))
-                        .permitAll())
+                        .authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorization"))
+                        .successHandler(customSuccessHandler))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenizer), UsernamePasswordAuthenticationFilter.class);
         http
                 .logout(logout -> logout
