@@ -29,7 +29,7 @@ public class Post {
     @Column(nullable = false)
     private String title;   // 제목
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content; // 내용
 
     @Column(name = "comment_count")
