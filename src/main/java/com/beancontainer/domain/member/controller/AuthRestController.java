@@ -80,7 +80,7 @@ public class AuthRestController {
         //리프레시토큰을 디비에 저장.
         RefreshToken refreshTokenEntity = new RefreshToken();
         refreshTokenEntity.setValue(refreshToken);
-        refreshTokenEntity.setUserId(String.valueOf(member.getId()));
+        refreshTokenEntity.setUserId(member.getUserId());
 
         refreshTokenService.addRefreshToken(refreshTokenEntity);
 

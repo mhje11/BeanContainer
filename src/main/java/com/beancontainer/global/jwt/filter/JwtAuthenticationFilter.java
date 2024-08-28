@@ -5,8 +5,6 @@ import com.beancontainer.global.jwt.util.JwtTokenizer;
 import com.beancontainer.global.service.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -35,36 +33,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = getToken(request);
+        log.debug("===== JwtAuthenticationFilter start =====");
+//        String token = getToken(request);
+//
+//        if (StringUtils.hasText(token)) {
+//            try {
+//                getAuthentication(token);
+//            } catch (ExpiredJwtException e) {
+//                log.error("Token expired: {}", token);
+//                new CustomException(ExceptionCode.JWT_TOKEN_EXPIRED);
+//                return;
+//            } catch (Exception e) {
+//                log.error("Authentication error: ", e);
+//                new CustomException(ExceptionCode.UNAUTHORIZED);
+//                return;
+//            }
+//        } else {
+//            log.debug("No token found in request");
+//        }
 
-        if (StringUtils.hasText(token)) {
-            try {
-                getAuthentication(token);
-            } catch (ExpiredJwtException e) {
-                log.error("Expired Token : {}", token);
-                SecurityContextHolder.clearContext();
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("TOKEN_EXPIRED");
-                return;
-            } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
-                log.error("Invalid Token: {}", token, e);
-                SecurityContextHolder.clearContext();
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("INVALID_TOKEN");
-                return;
-            } catch (Exception e) {
-                log.error("JWT Filter - Internal Error: {}", token, e);
-                SecurityContextHolder.clearContext();
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("INTERNAL_ERROR");
-                return;
+        try {
+            String token = getToken(request);
+            if (StringUtils.hasText(token) && jwtTokenizer.validateToken(token)) {
+                Authentication auth = getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token expired");
+            return;
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Authentication failed");
+            return;
         }
+
         filterChain.doFilter(request, response);
+        log.debug("JwtAuthenticationFilter finished");
     }
 
+
     // Authentication 객체를 반환하는 메서드로 변경
-    private void getAuthentication(String token) {
+    private Authentication getAuthentication(String token) {
         Claims claims = jwtTokenizer.parseAccessToken(token);
         String userId = claims.getSubject();
         String role = claims.get("role", String.class);
@@ -74,6 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         CustomUserDetails userDetails = new CustomUserDetails(userId, role);
         Authentication authentication = new JwtAuthenticationToken(authorities, userDetails, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
     }
 
 
@@ -112,4 +123,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/oauth2") || path.equals("/login") || path.startsWith("/error");
+    }
 }

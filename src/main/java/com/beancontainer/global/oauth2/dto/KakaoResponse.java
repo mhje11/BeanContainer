@@ -5,7 +5,7 @@ import java.util.Map;
 public class KakaoResponse implements OAuth2Response{
     private final Map<String, Object> attribute;
     public KakaoResponse(Map<String, Object> attribute) {
-        this.attribute = (Map<String, Object>) attribute.get("response");
+        this.attribute = attribute;
     }
     @Override
     public String getProvider() {
@@ -25,5 +25,10 @@ public class KakaoResponse implements OAuth2Response{
     @Override
     public String getName() {
         return attribute.get("name").toString();
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attribute;
     }
 }

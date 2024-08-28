@@ -1,5 +1,7 @@
 package com.beancontainer.global.oauth2.dto;
 
+import java.util.Map;
+
 public interface OAuth2Response {
     //제공자 (네이버, 카카오)
     String getProvider();
@@ -9,7 +11,7 @@ public interface OAuth2Response {
     String getEmail();
     //사용자 실명(설정 이름)
     String getName();
-
-
+    // 권한
+    Map<String, Object> getAttributes();
 
 }
