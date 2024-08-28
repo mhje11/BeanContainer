@@ -9,5 +9,4 @@ public class OAuth2LoginDTO {
     private String userId; // 아이디
     private String email; // 이메일
 
-
 }
