@@ -35,11 +35,34 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoomDto createChatRoom(String name, String userId) {
+    public ChatRoomDto createChatRoom(String name, int capacity, String userId) {
         Member creator = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
-        ChatRoom chatRoom = new ChatRoom(name, creator);
+        ChatRoom chatRoom = new ChatRoom(name, creator, capacity);
         chatRoom = chatRoomRepository.save(chatRoom);
         return ChatRoomDto.from(chatRoom);
     }
+
+    @Transactional
+    public void enterChatRoom(Long roomId, String userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Chat room not found"));
+
+        if (chatRoom.isFull()) {
+            throw new RuntimeException("Chat room is full");
+        }
+
+        chatRoom.incrementUserCount();
+        chatRoomRepository.save(chatRoom);
+    }
+
+    @Transactional
+    public void leaveChatRoom(Long roomId, String userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Chat room not found"));
+
+        chatRoom.decrementUserCount();
+        chatRoomRepository.save(chatRoom);
+    }
+
 }
