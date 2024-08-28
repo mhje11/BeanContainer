@@ -52,10 +52,12 @@
         },
         methods: {
             findAllRoom: function() {
-                axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+                axios.get('/chat/rooms').then(response => {
+                    this.chatrooms = response.data;
+                });
             },
             createRoom: function() {
-                if("" === this.room_name) {
+                if ("" === this.room_name) {
                     alert("방 제목을 입력해 주십시오.");
                     return;
                 } else if (this.room_capacity < 2 || this.room_capacity > 100) {
@@ -74,7 +76,9 @@
                                 this.findAllRoom();
                             }
                         )
-                        .catch( response => { alert("채팅방 개설에 실패하였습니다."); } );
+                        .catch(response => {
+                            alert("채팅방 개설에 실패하였습니다.");
+                        });
                 }
             },
             enterRoom: function(roomId) {
@@ -82,10 +86,13 @@
                 if (room.currentUserCount >= room.capacity) {
                     alert("채팅방이 꽉 찼습니다.");
                 } else {
-                    location.href="/chat/room/enter/"+roomId;
+                    location.href = "/chat/room/enter/" + roomId;
+                    // 방에 입장한 후, 다시 인원 수를 업데이트하여 클라이언트에 반영
+                    this.findAllRoom();
                 }
             }
         }
+
     });
 </script>
 </body>
