@@ -34,24 +34,15 @@ public class ChatMessageService {
             message = "No content"; // 기본 메시지 설정
         }
 
-        ChatMessage chatMessage = new ChatMessage(
-                ChatMessage.MessageType.valueOf(messageDto.getType().name()),
-                chatRoom,
-                sender,
-                message
-        );
+        ChatMessage.MessageType messageType = ChatMessage.MessageType.valueOf(messageDto.getType().name());
 
-        chatMessage = chatMessageRepository.save(chatMessage);
-
-        if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
-            chatMessage = new ChatMessage(
-                    ChatMessage.MessageType.ENTER,
-                    chatRoom,
-                    sender,
-                    sender.getNickname() + "님이 입장하셨습니다."
-            );
-            chatMessage = chatMessageRepository.save(chatMessage);
+        ChatMessage chatMessage;
+        if (ChatMessage.MessageType.ENTER.equals(messageType)) {
+            message = sender.getNickname() + "님이 입장하셨습니다.";
         }
+
+        chatMessage = new ChatMessage(messageType, chatRoom, sender, message);
+        chatMessage = chatMessageRepository.save(chatMessage);
 
         return ChatMessageDto.from(chatMessage);
     }
