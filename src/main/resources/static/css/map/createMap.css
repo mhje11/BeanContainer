@@ -1,24 +1,31 @@
-
 body {
-    display: flex;
-    flex-direction: row;
     font-family: Arial, sans-serif;
     background-color: #EDE3D5;
     margin: 0;
-    height: 100vh; /* 화면 높이 전체를 사용 */
-    overflow: hidden; /* 스크롤 방지 */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 60px); /* 전체 화면에서 헤더 높이(예: 60px)만큼을 뺀 높이 */
 }
 
 #map-container {
     position: relative;
     width: 70%;
-    height: 62vh; /* 화면 전체 높이를 사용 */
+    height: calc(100% - 100px); /* 지도 높이를 컨테이너 높이에 맞춤 */
     margin: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 #map {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 60px); /* 지도 높이를 조정하여 search-box 공간 확보 */
 }
 
 #cafe-cards {
@@ -28,6 +35,12 @@ body {
     max-height: 80%;
     overflow-y: auto;
     z-index: 1;
+}
+
+#search-box {
+    margin-top: 10px; /* 상단에 약간의 여백을 추가 */
+    margin-left: 0px; /* 왼쪽에 여백 제거 */
+    width: 100%; /* map-container와 동일한 너비로 설정 */
 }
 
 .cafe-card {
@@ -60,15 +73,17 @@ body {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    overflow-y: auto; /* 사이드바 스크롤 가능하게 설정 */
+    overflow-y: auto;
+    height: calc(100vh - 60px); /* 전체 화면에서 헤더 높이(예: 60px)만큼을 뺀 높이 */
+    justify-content: space-between; /* 내용물 사이에 여백을 추가 */
 }
 
-#map-title, #district-select, #search-box, .filter-container {
+#map-title, #district-select, .filter-container {
     margin-bottom: 20px;
     padding: 10px;
     border: 1px solid #ecd4b2;
-    background-color: white; /* 각 섹션 배경색 추가 */
-    border-radius: 8px; /* 섹션 모서리 둥글게 */
+    background-color: white;
+    border-radius: 8px;
     box-sizing: border-box;
 }
 
@@ -79,23 +94,21 @@ body {
 
 .available-categories, .selected-categories {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 두 개의 열로 나눔 */
-    grid-gap: 10px; /* 항목 간 간격 */
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    height: 400px; /* 높이를 고정하여 스크롤이 가능하게 설정 */
+    height: 400px;
     box-sizing: border-box;
-    overflow-y: auto; /* 스크롤 가능하게 설정 */
-    border: 1px solid #7B6155; /* 전체 테두리 설정 */
-    background-color: white; /* 배경색 추가 */
-    position: relative; /* 구분선을 위한 설정 */
+    overflow-y: auto;
+    border: 1px solid #7B6155;
+    background-color: white;
+    position: relative;
 }
 
-
-
 .category-item {
-    height: 50px; /* 모든 항목의 높이를 동일하게 설정 */
+    height: 50px;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
     cursor: pointer;
@@ -108,7 +121,6 @@ body {
     padding: 5px;
     border-radius: 10px;
 }
-
 
 #search-results div {
     cursor: pointer;
