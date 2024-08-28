@@ -12,6 +12,9 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -49,73 +52,48 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             //서버에서 발급 받은 정보를 통해 사용자를 특정할 수 있는 id 생성
             String userId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+            Optional<Member> memberOptional = memberRepository.findByUserId(userId);
 
+            Member member;
+            if (memberOptional.isPresent()) {
+                member = memberOptional.get();
+                log.info("소셜 유저 로그인 : {}", userId);
+                member.updateOAuth2Info(oAuth2Response.getName(), oAuth2Response.getEmail());
+                member = memberRepository.save(member);
+            } else {
+                // DB에 새 유저 저장
+                member = Member.builder()
+                        .userId(userId)
+                        .email(oAuth2Response.getEmail())
+                        .name(oAuth2Response.getName())
+                        .nickname(oAuth2Response.getName()) // 이름을 닉네임과 동일하게 사용
+                        .password("")
+                        .provider(oAuth2Response.getProvider())
+                        .providerId(oAuth2Response.getProviderId())
+                        .role(Role.MEMBER)
+                        .build();
+                log.info("새로운 소셜 유저 생성");
+                log.info("이름: {}", oAuth2Response.getName());
+                log.info("이메일: {}", oAuth2Response.getEmail());
+                log.info("Provider: {}", oAuth2Response.getProvider());
+                log.info("ProviderId: {}", oAuth2Response.getProviderId());
+                log.info("Attributes: {}", oAuth2Response.getAttributes());
 
-            //DB 저장
-//            Member member = memberRepository.findByUserId(userId)
-//                    .map(existingMember -> {
-//                        Member updatedMember = existingMember.updateOAuth2Info(oAuth2Response.getName(), oAuth2Response.getEmail());
-//                        return memberRepository.save(updatedMember);
-//                    })
-//                    .orElseGet(() -> {
-//                        System.out.println("===========================");
-//                        log.info("getName ==== "  + oAuth2Response.getName());
-//                        log.info(oAuth2Response.getEmail());
-//                        log.info(oAuth2Response.getProvider());
-//                        log.info(oAuth2Response.getProviderId());
-//                        log.info(oAuth2Response.getAttributes().toString());
-//                        Member newMember = Member.createOAuth2Member(
-//                                userId,
-//                                oAuth2Response.getName(),
-//                                oAuth2Response.getEmail(),
-//                                oAuth2Response.getProvider(),
-//                                oAuth2Response.getProviderId()
-//                        );
-//                        return memberRepository.save(newMember);
-//                    });
-            Member member = memberRepository.findByUserId(userId)
-                    .map(existingMember -> {
-                        return Member.builder()
-                                .userId(existingMember.getUserId())
-                                .email(oAuth2Response.getEmail())
-                                .name(oAuth2Response.getName())
-                                .role(existingMember.getRole())
-                                .provider(existingMember.getProvider())
-                                .providerId(existingMember.getProviderId())
-                                .build();
-                    })
-                    .orElseGet(() -> {
-                        log.info("Creating new member with OAuth2 info:");
-                        log.info("Name: {}", oAuth2Response.getName());
-                        log.info("Email: {}", oAuth2Response.getEmail());
-                        log.info("Provider: {}", oAuth2Response.getProvider());
-                        log.info("ProviderId: {}", oAuth2Response.getProviderId());
-                        log.info("Attributes: {}", oAuth2Response.getAttributes());
+                member = memberRepository.save(member);
+            }
 
-                        return Member.builder()
-                                .userId(userId)
-                                .email(oAuth2Response.getEmail())
-                                .name(oAuth2Response.getName())
-                                .nickname(oAuth2Response.getName()) //이름을 닉네임과 동일하게 사용
-                                .password("")
-                                .provider(oAuth2Response.getProvider())
-                                .providerId(oAuth2Response.getProviderId())
-                                .role(Role.MEMBER)
-                                .build();
-                    });
-            member = memberRepository.save(member);
+                OAuth2LoginDTO oAuth2LoginDTO = new OAuth2LoginDTO();
+                oAuth2LoginDTO.setUserId(member.getUserId());
+                oAuth2LoginDTO.setName(member.getName());
+                oAuth2LoginDTO.setEmail(member.getEmail());
 
+                log.debug("CustomOAuth2UserService.loadUser() 종료");
 
-            OAuth2LoginDTO oAuth2LoginDTO = new OAuth2LoginDTO();
-            oAuth2LoginDTO.setUserId(member.getUserId());
-            oAuth2LoginDTO.setName(member.getName());
-            oAuth2LoginDTO.setEmail(member.getEmail());
-
-            log.debug("CustomOAuth2UserService.loadUser() 종료");
-            return new CustomOAuth2User(oAuth2LoginDTO, oAuth2Response);
+                return new CustomOAuth2User(oAuth2LoginDTO, oAuth2Response);
         } catch (Exception e) {
             log.error("OAuth2 인증 처리 중 오류 발생", e);
             throw new OAuth2AuthenticationException("OAuth2 인증 처리 중 오류 발생" + e);
         }
     }
 }
+
