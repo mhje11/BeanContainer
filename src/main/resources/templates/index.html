@@ -21,6 +21,20 @@
 
 <div class="container">
     <div class="left-section">
+
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="map-cards-container" class="map-cards-container"></div>
+        </div>
+
+        <div id="search-box">
+            <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
+            <button id="search-btn">검색</button>
+            <div id="search-results"></div>
+        </div>
+    </div>
+    <div class="right-section">
+
         <div id="district-select">
             <label for="districts">지역 선택:</label>
             <select id="districts">
@@ -52,20 +66,6 @@
                 <option value="중랑구">중랑구</option>
             </select>
         </div>
-
-        <div id="map-container">
-            <div id="map"></div>
-            <div id="map-cards-container" class="map-cards-container"></div>
-        </div>
-
-        <div id="search-box">
-            <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
-            <button id="search-btn">검색</button>
-            <div id="search-results"></div>
-        </div>
-    </div>
-    <div class="right-section">
-
         <div class="filter-container">
             <div class="category-selection">
                 <div class="available-categories">
@@ -75,16 +75,22 @@
                     <!-- 여기에 선택된 카테고리 버튼들이 동적으로 이동합니다 -->
                 </div>
             </div>
+
+            <div id="checkbox-container">
+                <div id="brand-exclude">
+                    <label for="brand-exclude-checkbox">브랜드 카페 제외</label>
+                    <label class="switch">
+                        <input type="checkbox" id="brand-exclude-checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                </div>
             <div class="button-container">
-                <button class="category-reset" onclick="resetCategories()">카테고리 초기화</button>
-                <button class="category-search" onclick="onCategorySelect()">검색</button>
+                <button onclick="onCategorySelect()">검색</button>
+                <button onclick="resetCategories()">카테고리 초기화</button>
             </div>
-            <!-- 브랜드 카페 제외 토글 추가 -->
-            <div class="brand-exclude">
-                <label>
-                    <input type="checkbox" id="brand-exclude-checkbox" onclick="toggleExcludeBrands()"> 브랜드 카페 제외
-                </label>
             </div>
+
         </div>
     </div>
 </div>

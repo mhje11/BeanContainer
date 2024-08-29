@@ -1,20 +1,31 @@
 body {
-    display: flex;
-    flex-direction: row;
     font-family: Arial, sans-serif;
     background-color: #EDE3D5;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 60px); /* 전체 화면에서 헤더 높이(예: 60px)만큼을 뺀 높이 */
 }
 
 #map-container {
     position: relative;
     width: 70%;
-    height: 600px;
+    height: 615px; /* 지도 높이를 컨테이너 높이에 맞춤 */
     margin: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 #map {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 60px);
 }
 
 #cafe-cards {
@@ -26,97 +37,86 @@ body {
     z-index: 1;
 }
 
+#search-box {
+    margin-top: 10px;
+    width: 100%;
+}
+
+#search-btn {
+    padding: 8px 16px; /* 축소된 버튼 크기 */
+    background-color: #7B6155;
+    color: white;
+    border: 2px solid #7B6155;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px; /* 축소된 폰트 크기 */
+    margin-left: 10px; /* 약간의 간격 */
+}
+
 .cafe-card {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    padding: 10px;
-    margin-bottom: 10px;
-    width: 200px;
+    padding: 8px; /* 축소된 카드 내부 패딩 */
+    margin-bottom: 8px;
+    width: 180px; /* 축소된 카드 너비 */
 }
 
 .cafe-card h4 {
-    margin: 0 0 5px 0;
+    margin: 0 0 3px 0; /* 줄어든 마진 */
+    font-size: 14px; /* 줄어든 폰트 크기 */
 }
 
 .cafe-card p {
     margin: 0;
-    font-size: 12px;
+    font-size: 10px; /* 줄어든 폰트 크기 */
 }
 
 .cafe-card button {
-    margin-top: 5px;
-    padding: 2px 5px;
-    font-size: 12px;
+    margin-top: 3px;
+    padding: 2px 4px;
+    font-size: 10px; /* 줄어든 버튼 폰트 크기 */
 }
 
 #sidebar {
-    width: 30%;
+    width: 25%;
     height: 600px;
     margin: 10px;
     display: flex;
     flex-direction: column;
-}
-
-#search-box {
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    padding: 10px;
-}
-
-#search-results {
-    overflow-y: auto;
-    max-height: 200px;
-}
-
-#search-results div {
-    cursor: pointer;
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-}
-
-#search-results div:hover {
-    background-color: #f0f0f0;
-}
-
-#map-title {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-}
-#map-title, #search-box, .filter-container {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ecd4b2;
-    background-color: white; /* 각 섹션 배경색 추가 */
-    border-radius: 8px; /* 섹션 모서리 둥글게 */
     box-sizing: border-box;
+    overflow-y: auto;
+    justify-content: space-between;
+    font-size: 90%; /* 전체적인 폰트 크기 축소 */
 }
+
+#map-title, #district-select, .filter-container {
+    padding: 8px; /* 줄어든 패딩 */
+    border: 1px solid #ecd4b2;
+    background-color: white;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 90%; /* 축소된 폰트 크기 */
+}
+
+
 .category-selection {
     display: flex;
     justify-content: space-between;
-
+    width: 100%;
 }
 
 .available-categories, .selected-categories {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 두 개의 열로 나눔 */
-    grid-gap: 10px; /* 항목 간 간격 */
-    width: 100%;
+    width: 48%;
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #7B6155;
     padding: 10px;
-    margin-bottom: 10px;
-    height: 400px; /* 높이를 고정하여 스크롤이 가능하게 설정 */
     box-sizing: border-box;
-    overflow-y: auto; /* 스크롤 가능하게 설정 */
-    border: 1px solid #7B6155; /* 전체 테두리 설정 */
-    background-color: white; /* 배경색 추가 */
-    position: relative; /* 구분선을 위한 설정 */
 }
 
-
-
 .category-item {
-    height: 50px; /* 모든 항목의 높이를 동일하게 설정 */
+    height: 40px; /* 줄어든 카테고리 아이템 높이 */
     border: 1px solid #ccc;
     background-color: #f9f9f9;
     cursor: pointer;
@@ -124,17 +124,187 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px; /* 축소된 폰트 크기 */
     box-sizing: border-box;
-    padding: 5px;
-    border-radius: 10px;
+    padding: 3px; /* 축소된 패딩 */
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    margin: 5px;
+}
+
+.category-item:hover {
+    background-color: #ececec;
+}
+
+.category-item.selected {
+    background-color: #7B6155;
+    color: white;
+}
+
+#search-results div {
+    width: 500px;
+    padding: 8px; /* 축소된 패딩 */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    max-height: 80px; /* 최대 높이를 제한하여 스크롤 가능하게 설정 */
+    overflow-y: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 12px; /* 축소된 폰트 크기 */
+}
+
+#search-input {
+    width: 500px; /* 검색창의 너비를 축소 */
+    padding: 8px; /* 축소된 패딩 */
+    font-size: 14px; /* 축소된 폰트 크기 */
+    border: 2px solid #7B6155;
+    border-radius: 8px;
+    background-color: #EDE3D5;
+    color: #333;
+}
+
+#search-results div:hover {
+    background-color: #f0f0f0;
 }
 
 #save-btn {
-    margin-top: 10px;
-    padding: 10px;
+    padding: 8px; /* 축소된 버튼 크기 */
     background-color: #884D33;
     color: white;
     border: none;
     cursor: pointer;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 12px; /* 축소된 폰트 크기 */
+}
+
+.button-container button {
+    padding: 8px 16px;
+    background-color: #7B6155;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+}
+
+.button-container button:hover {
+    background-color: #5b4a42;
+}
+
+#brand-exclude input[type="checkbox"],
+#public-toggle input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.2);
+    accent-color: #7B6155;
+}
+
+#brand-exclude label,
+#public-toggle label {
+    font-size: 14px;
+    color: #333;
+}
+
+#public-toggle input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-left: 5px; /* margin-left 조정 */
+}
+
+#brand-exclude,
+#public-toggle {
+    margin-top: 10px; /* margin-top 조정 */
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-left: 8px;
+}
+
+#public-toggle label {
+    display: inline-flex;
+    align-items: center;
+}
+
+#brand-exclude label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.button-container {
+    display: flex;
+    gap: 63px; /* 버튼 간의 간격 조정 */
+    margin-top: 7px;
+    margin-left: 5px;
+}
+
+#checkbox-container {
+    display: flex;
+    font-size: 14px;
+    gap: 20px; /* 항목 간의 간격을 적당히 설정 */
+}
+
+#brand-exclude, #public-toggle {
+    display: flex;
+    flex-direction: column; /* 라벨과 스위치를 상하로 배치 */
+}
+
+#brand-exclude label,
+#public-toggle label {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Toggle switch container */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+/* Hide default checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Slider circle */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* When the checkbox is checked */
+input:checked + .slider {
+    background-color: #ecd4b2;
+}
+
+/* Move the slider when checked */
+input:checked + .slider:before {
+    transform: translateX(26px);
 }
