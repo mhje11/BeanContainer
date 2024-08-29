@@ -36,6 +36,13 @@ function initMap() {
         if (!isCategorySearch) searchPlacesByCenter(map.getCenter());
     });
 
+    document.getElementById('brand-exclude-checkbox').addEventListener('change', function () {
+        excludeBrands = this.checked;
+        console.log('excludeBrands:', excludeBrands);
+        clearMarkers();
+        searchPlacesByCenter(map.getCenter());
+    });
+
     loadMapDetails();
     searchPlacesByCenter(map.getCenter());
     createCategoryButtons();

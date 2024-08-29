@@ -95,6 +95,13 @@ function initMap() {
         }
     });
 
+    document.getElementById('brand-exclude-checkbox').addEventListener('change', function () {
+        excludeBrands = this.checked;
+        console.log('excludeBrands:', excludeBrands);
+        clearMarkers();
+        searchPlacesByCenter(map.getCenter());
+    });
+
     document.getElementById('search-btn').addEventListener('click', searchCafeByName);
 
     searchPlacesByCenter(map.getCenter());
@@ -105,7 +112,6 @@ function initMap() {
 
 function toggleExcludeBrands() {
     excludeBrands = !excludeBrands;
-    console.log("토글 클릭")
     clearMarkers();
     searchPlacesByCenter(map.getCenter());
 }
@@ -113,28 +119,17 @@ function toggleExcludeBrands() {
 function searchPlacesByCenter(center) {
     const keyword = '카페';
 
-    console.log('Searching for places around:', center);
-
-    if (selectedCategories.size > 0 && !isCategorySearch) {
-        console.log('Category search is active, skipping place search');
-        return;
-    }
 
     ps.keywordSearch(keyword, function (data, status, pagination) {
         if (status === kakao.maps.services.Status.OK) {
-            console.log('Search successful, found places:', data.length);
             for (var i = 0; i < data.length; i++) {
                 if (!isExcludedCategory(data[i].category_name) && !isExcludedBrand(data[i].place_name) && !markers[data[i].id]) {
-                    console.log('Displaying marker for place:', data[i]);
                     displayMarker(data[i]);
                 }
             }
-
             if (pagination.hasNextPage) {
                 pagination.nextPage();
             }
-        } else {
-            console.log('Search failed with status:', status);
         }
     }, {location: center, radius: 2000});
 }
@@ -210,10 +205,10 @@ function displayMarker(place) {
         const parsedAddress = parseAddress(place.road_address_name || place.address_name);
 
         var content = `
-        <div style="padding:10px; font-size:14px;">
-            <strong>${place.place_name}</strong><br>
-            ${place.road_address_name || place.address_name}<br>
-            <a href="#" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 페이지로 이동</a>
+        <div id="custom-infowindow" class="kakao-infowindow-content">
+            <strong class="place-name">${place.place_name}</strong><br>
+            <span class="place-address">${place.road_address_name || place.address_name}</span><br>
+            <a href="#" class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 페이지로 이동</a>
         </div>
     `;
         infowindow.setContent(content);
@@ -231,7 +226,15 @@ function displayDbMarker(cafe) {
 
     kakao.maps.event.addListener(marker, 'click', function () {
         var content = `
-        <div style="padding:10px; font-size:14px;">
+        <div style="padding:10px;
+         font-size:14px;
+         max-width: 200px;
+          white-space: normal;
+          word-wrap: break-word;
+          word-break: break-all;
+          overflow: hidden;
+         ">
+       
             <strong>${cafe.name}</strong><br>
             ${cafe.address}<br>
             <a href="#" onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 페이지로 이동</a>
@@ -421,16 +424,19 @@ function displaySearchResults(places) {
     });
 }
 
-function openInfoWindow(place) {
-    const marker = markers[place.id];
+function openInfoWindow(marker, place) {
     const parsedAddress = parseAddress(place.road_address_name || place.address_name);
     const content = `
-        <div style="padding:10px; font-size:14px;">
+        <div style="padding:10px; font-size:14px; max-width: 250px; white-space: normal; word-wrap: break-word; word-break: break-all; overflow: hidden;">
             <strong>${place.place_name}</strong><br>
             ${place.road_address_name || place.address_name}<br>
-            <a href="#" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 페이지로 이동</a>
+            <div style="margin-top: 10px;">
+                <button style="padding: 5px 10px; margin-right: 5px;" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
+                <button style="padding: 5px 10px;" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 페이지로 이동</button>
+            </div>
         </div>
     `;
+
     infowindow.setContent(content);
     infowindow.open(map, marker);
 }
@@ -472,3 +478,16 @@ document.addEventListener('click', function (event) {
 window.onload = function () {
     initMap();
 };
+
+
+function createCustomOverlay(content, position) {
+    return new kakao.maps.CustomOverlay({
+        map: map,
+        position: position,
+        content: content,
+        yAnchor: 1,
+        zIndex: 3
+    });
+}
+
+
