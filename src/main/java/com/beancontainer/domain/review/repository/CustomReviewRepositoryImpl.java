@@ -12,6 +12,9 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,7 +44,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
 //    }
 
     @Override
-    public List<ReviewResponseDto> findAllByCafeId(Long cafeId) {
+    public Page<ReviewResponseDto> findAllByCafeId(Long cafeId, Pageable pageable) {
         List<Tuple> result = queryFactory
                 .select(
                         review.id,
@@ -51,12 +54,16 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
                                 .otherwise("탈퇴한 회원").as("nickname"),
                         review.content,
                         review.score,
-                        reviewCategory.category.name
+                        reviewCategory.category.name,
+                        review.createdAt
                 )
                 .from(review)
                 .join(review.member, member)
                 .join(review.reviewCategories, reviewCategory)
                 .where(review.cafe.id.eq(cafeId))
+                .orderBy(review.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Map<Long, ReviewResponseDto> reviewMap = new LinkedHashMap<>();
@@ -76,7 +83,15 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
             dto.getCategoryNames().add(tuple.get(reviewCategory.category.name));
         }
 
-        return new ArrayList<>(reviewMap.values());
+        List<ReviewResponseDto> content = new ArrayList<>(reviewMap.values());
+
+        Long total = queryFactory
+                .select(review.count())
+                .from(review)
+                .where(review.cafe.id.eq(cafeId))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
 

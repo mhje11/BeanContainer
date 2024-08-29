@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,9 @@ public class Review {
 
     private Double score;
 
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ReviewCategory> reviewCategories = new HashSet<>();
 
@@ -44,6 +48,7 @@ public class Review {
         this.content = content;
         this.score = score;
         this.reviewCategories = reviewCategories;
+        this.createdAt = LocalDateTime.now();
     }
 
     public void addReviewCategory(Category category) {

@@ -17,6 +17,8 @@ import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,12 +60,12 @@ public class ReviewService {
     }
 
 
-    public List<ReviewResponseDto> findReviewByCafeId(Long cafeId) {
+    public Page<ReviewResponseDto> findReviewByCafeId(Long cafeId, Pageable pageable) {
 //        List<Review> cafes = reviewRepository.findAllByCafeId(cafeId);
 //        return cafes.stream()
 //                .map(ReviewResponseDto::new)
 //                .collect(Collectors.toList());
-        return reviewRepository.findAllByCafeId(cafeId);
+        return reviewRepository.findAllByCafeId(cafeId, pageable);
     }
 
     @Transactional

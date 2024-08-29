@@ -3,6 +3,9 @@ const editFormCategories = new Map();
 let isEditing = false;
 let currentEditId = null;
 let reviewsData = [];
+let totalPages = 0;
+let currentPage = 0;  // 현재 페이지 번호
+const pageSize = 10;  // 한 페이지에 보여줄 리뷰 수
 
 // 리뷰 작성 폼의 체크박스 이벤트 리스너
 document.querySelectorAll('.review-form .categories input[type="checkbox"]').forEach(checkbox => {
@@ -28,15 +31,39 @@ function updateSelectedCategories(formType, categories, reviewId) {
 }
 
 document.getElementById('submit-review').addEventListener('click', async () => {
-    const rating = document.querySelector('.review-form input[name="rating"]:checked').value;
-    const content = document.getElementById('review-content').value;
+    const ratingElement = document.querySelector('.review-form input[name="rating"]:checked');
+    const content = document.getElementById('review-content').value.trim();
     const categoryNames = Array.from(selectedCategories);
+
+    // 별점, 카테고리, 내용이 모두 비어있는지 확인
+    if (!ratingElement && categoryNames.length === 0 && content === '') {
+        alert('별점, 카테고리, 내용을 하나 이상 입력해주세요.');
+        return;
+    }
+
+    // 별점만 없는 경우
+    if (!ratingElement) {
+        alert('별점을 선택해주세요.');
+        return;
+    }
+
+    // 내용만 없는 경우
+    if (content === '') {
+        alert('리뷰 내용을 입력해주세요.');
+        return;
+    }
+
+    // 카테고리만 없는 경우
+    if (categoryNames.length === 0) {
+        alert('카테고리를 하나 이상 선택해주세요.');
+        return;
+    }
 
     const path = window.location.pathname;
     const cafeId = path.split('/').filter(Boolean).pop();
 
     const reviewData = {
-        score: rating,
+        score: ratingElement.value,
         content: content,
         categoryNames: categoryNames,
         cafeId: cafeId
@@ -55,36 +82,104 @@ document.getElementById('submit-review').addEventListener('click', async () => {
         });
 
         if (response.ok) {
-            alert('리뷰가 등록 됐습니다.');
+            alert('리뷰가 등록되었습니다.');
             fetchReviews();
+
+            // 리뷰 작성 후 입력 필드와 체크박스 초기화
             document.getElementById('review-content').value = '';
-            document.querySelector('.review-form input[name="rating"]:checked').checked = false;
+            if (ratingElement) {
+                ratingElement.checked = false;
+            }
             selectedCategories.clear();
-            updateSelectedCategories('review', []);
+
+            document.querySelectorAll('.review-form .categories input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
         } else {
-            alert('리뷰 작성에 실패 했습니다.');
+            const errorData = await response.json();
+            alert(`${errorData.message}`);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('리뷰 작성에 실패 했습니다.');
+        alert('리뷰 작성에 실패했습니다.');
     }
 });
+
+
 
 async function fetchReviews() {
     const path = window.location.pathname;
     const cafeId = path.split('/').filter(Boolean).pop();
 
     try {
-        const response = await fetch(`/api/reviewlist/${cafeId}`);
+        const response = await fetch(`/api/reviewlist/${cafeId}?page=${currentPage}&size=${pageSize}`);
         const reviews = await response.json();
-        reviewsData = reviews;
-
-        displayReviews(reviews);
+        reviewsData = reviews.content;
+        totalPages = reviews.totalPages;  // 총 페이지 수 업데이트
+        displayReviews(reviewsData);
+        updatePagination();
     } catch (error) {
         console.error('Error:', error);
         alert('리뷰 정보를 불러오는데 실패 했습니다.');
     }
 }
+
+function updatePagination() {
+    const paginationDiv = document.getElementById('pagination');
+    paginationDiv.innerHTML = '';  // 기존 버튼 제거
+
+    // 이전 버튼
+    if (currentPage > 0) {
+        const prevButton = document.createElement('button');
+        prevButton.innerText = '이전';
+        prevButton.onclick = previousPage;
+        paginationDiv.appendChild(prevButton);
+    }
+
+    // 페이지 번호 버튼
+    for (let i = 0; i < totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.innerText = i + 1;
+        pageButton.className = (i === currentPage) ? 'active' : '';
+        pageButton.onclick = () => goToPage(i);
+        paginationDiv.appendChild(pageButton);
+    }
+
+    // 다음 버튼
+    if (currentPage < totalPages - 1) {
+        const nextButton = document.createElement('button');
+        nextButton.innerText = '다음';
+        nextButton.onclick = nextPage;
+        paginationDiv.appendChild(nextButton);
+    }
+}
+
+function nextPage() {
+    currentPage++;
+    fetchReviews();
+}
+
+function previousPage() {
+    if (currentPage > 0) {
+        currentPage--;
+        fetchReviews();
+    }
+}
+
+function goToPage(page) {
+    currentPage = page;
+    fetchReviews();
+}
+
+// DOM에 페이지 네비게이션 버튼 추가
+const paginationDiv = document.createElement('div');
+paginationDiv.id = 'pagination';
+document.body.appendChild(paginationDiv);
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchCafeInfo();
+    fetchReviews();
+});
 
 async function fetchCafeInfo() {
     const path = window.location.pathname;
@@ -238,7 +333,8 @@ async function submitEditReview(reviewId) {
             alert('리뷰를 수정했습니다.');
             fetchReviews();
         } else {
-            alert('리뷰를 수정하는데 실패 했습니다.');
+            const errorData = await response.json();
+            alert(`${errorData.message}`);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -266,7 +362,8 @@ async function deleteReview(reviewId) {
             alert('리뷰가 성공적으로 삭제되었습니다!');
             fetchReviews();
         } else {
-            alert('리뷰 삭제에 실패했습니다.');
+            const errorData = await response.json();  // JSON 응답 파싱
+            alert(`${errorData.message}`);
         }
     } catch (error) {
         console.error('Error:', error);
