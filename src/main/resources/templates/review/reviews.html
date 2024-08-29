@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="/css/review/review.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <link rel="icon" href="/images/favicon.ico">
+
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
@@ -39,30 +40,50 @@
 
 
     <div class="categories">
-        <label><input type="checkbox" value="대형카페" /> 대형카페</label>
-        <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
-        <label><input type="checkbox" value="주차가 가능한" /> 주차가 가능한</label>
-        <label><input type="checkbox" value="24시간 카페" /> 24시간 카페</label>
-        <label><input type="checkbox" value="룸" /> 룸</label>
-        <label><input type="checkbox" value="테라스" /> 테라스</label>
-        <label><input type="checkbox" value="와이파이" /> 와이파이</label>
-        <label><input type="checkbox" value="데이트 하기 좋은" /> 데이트 하기 좋은</label>
-        <label><input type="checkbox" value="혼자가기 좋은" /> 혼자가기 좋은</label>
-        <label><input type="checkbox" value="공부하기 좋은" /> 공부하기 좋은</label>
-        <label><input type="checkbox" value="비즈니스 미팅" /> 비즈니스 미팅</label>
-        <label><input type="checkbox" value="애견 동반" /> 애견 동반</label>
-        <label><input type="checkbox" value="분위기 좋은" /> 분위기 좋은</label>
-        <label><input type="checkbox" value="인스타 감성" /> 인스타 감성</label>
-        <label><input type="checkbox" value="풍경이 좋은" /> 풍경이 좋은</label>
-        <label><input type="checkbox" value="새로 오픈" /> 새로 오픈</label>
-        <label><input type="checkbox" value="조용한" /> 조용한</label>
-        <label><input type="checkbox" value="커피가 맛있는" /> 커피가 맛있는</label>
-        <label><input type="checkbox" value="디저트가 맛있는" /> 디저트가 맛있는</label>
-        <label><input type="checkbox" value="직원이 친절한" /> 직원이 친절한</label>
+        <input type="checkbox" id="chk1" value="대형카페"/>
+        <label for="chk1">대형카페</label>
+        <input type="checkbox" id="chk2" value="편한 좌석"/>
+        <label for="chk2">편한 좌석</label>
+        <input type="checkbox" id="chk3" value="주차가 가능한"/>
+        <label for="chk3">주차가 가능한</label>
+        <input type="checkbox" id="chk4" value="24시간 카페"/>
+        <label for="chk4">24시간 카페</label>
+        <input type="checkbox" id="chk5" value="룸"/>
+        <label for="chk5">룸</label>
+        <input type="checkbox" id="chk6" value="테라스"/>
+        <label for="chk6">테라스</label>
+        <input type="checkbox" id="chk7" value="와이파이"/>
+        <label for="chk7">와이파이</label>
+        <input type="checkbox" id="chk8" value="데이트 하기 좋은"/>
+        <label for="chk8">데이트 하기 좋은</label>
+        <input type="checkbox" id="chk9" value="혼자가기 좋은"/>
+        <label for="chk9">혼자가기 좋은</label>
+        <input type="checkbox" id="chk10" value="공부하기 좋은"/>
+        <label for="chk10">공부하기 좋은</label>
+        <input type="checkbox" id="chk11" value="비즈니스 미팅"/>
+        <label for="chk11">비즈니스 미팅</label>
+        <input type="checkbox" id="chk12" value="애견 동반"/>
+        <label for="chk12">애견 동반</label>
+        <input type="checkbox" id="chk13" value="분위기 좋은"/>
+        <label for="chk13">분위기 좋은</label>
+        <input type="checkbox" id="chk14" value="인스타 감성"/>
+        <label for="chk14">인스타 감성</label>
+        <input type="checkbox" id="chk15" value="풍경이 좋은"/>
+        <label for="chk15">풍경이 좋은</label>
+        <input type="checkbox" id="chk16" value="새로 오픈"/>
+        <label for="chk16">새로 오픈</label>
+        <input type="checkbox" id="chk17" value="조용한"/>
+        <label for="chk17">조용한</label>
+        <input type="checkbox" id="chk18" value="커피가 맛있는"/>
+        <label for="chk18">커피가 맛있는</label>
+        <input type="checkbox" id="chk19" value="디저트가 맛있는"/>
+        <label for="chk19">디저트가 맛있는</label>
+        <input type="checkbox" id="chk20" value="직원이 친절한"/>
+        <label for="chk20">직원이 친절한</label>
     </div>
 
     <textarea id="review-content" rows="4" cols="50" required></textarea>
-    <button id="submit-review">Submit Review</button>
+    <button id="submit-review">작성</button>
 </div>
 
 <h3>리뷰</h3>
