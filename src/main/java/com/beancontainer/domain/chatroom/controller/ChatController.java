@@ -18,7 +18,6 @@ public class ChatController {
 
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageService chatMessageService;
-    private final ChatRoomService chatRoomService;
 
     @MessageMapping("/chat/message")
     public void message(ChatMessageDto messageDto, Principal principal) {

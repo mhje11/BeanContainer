@@ -64,7 +64,7 @@ public class ChatRoomController {
 
     @PutMapping("/room/quit")
     @ResponseBody
-    public void exitRoom(@ModelAttribute Long roomId) {
+    public void exitRoom(@RequestParam Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("방못찾음"));
         chatRoom.decrementUserCount();
         chatRoomRepository.save(chatRoom);
