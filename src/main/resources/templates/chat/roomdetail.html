@@ -43,6 +43,20 @@
     var ws = Stomp.over(sock);
     var reconnect = 0;
 
+    // // WebSocket 연결이 닫힐 때 실행될 코드
+    // sock.onclose = function() {
+    //     console.log("웹소켓 연결이 끊어졌습니다.");
+    //
+    //     // 서버에 /room/quit로 PUT 요청을 보냄
+    //     axios.put('/room/quit', {
+    //         roomId: vm.$data.roomId
+    //     }).then(response => {
+    //         console.log("방 퇴장 처리 성공:", response);
+    //     }).catch(error => {
+    //         console.error("방 퇴장 처리 실패:", error);
+    //     });
+    // };
+
     var vm = new Vue({
         el: '#app',
         data: {
