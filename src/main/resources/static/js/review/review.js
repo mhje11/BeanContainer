@@ -214,18 +214,21 @@ function displayReviews(reviews) {
         const div = document.createElement('div');
         div.className = 'review-item';
         div.innerHTML = `
-            <p><strong>별점 : </strong> ${review.score}</p>
+            <p><strong>별점 :</strong> 
+            <span class="star-display">
+                <span class="filled-stars">${'★'.repeat(review.score)}</span><span class="empty-stars">${'★'.repeat(5 - review.score)}</span>
+            </span>
+            </p>
             <p><strong>${review.nickName}:</strong> ${review.content}</p>
             <p><strong>카테고리 : </strong> ${review.categoryNames ? Array.from(review.categoryNames).join(', ') : 'None'}</p>
-            <button onclick="showEditForm(${review.id})">Edit</button>
-            <button onclick="deleteReview(${review.id})">Delete</button>
+            <button class="btn edit-button" onclick="showEditForm(${review.id})">수정</button>
+            <button class="btn delete-button" onclick="deleteReview(${review.id})">삭제</button>
         `;
 
         const editForm = document.createElement('div');
         editForm.className = `edit-form edit-form-${review.id}`;
         editForm.style.display = 'none';
         editForm.innerHTML = `
-            <textarea id="edit-content-${review.id}" rows="4" cols="50"></textarea>
     <div class="star-rating">
         <input type="radio" id="edit-5-stars-${review.id}" name="edit-rating-${review.id}" value="5">
         <label for="edit-5-stars-${review.id}"></label>
@@ -244,29 +247,71 @@ function displayReviews(reviews) {
     </div>
 
             <div class="categories edit-categories">
-                <label><input type="checkbox" value="대형카페" /> 대형카페</label>
-                <label><input type="checkbox" value="편한 좌석" /> 편한 좌석</label>
-                <label><input type="checkbox" value="주차가 가능한" /> 주차가 가능한</label>
-                <label><input type="checkbox" value="24시간 카페" /> 24시간 카페</label>
-                <label><input type="checkbox" value="룸" /> 룸</label>
-                <label><input type="checkbox" value="테라스" /> 테라스</label>
-                <label><input type="checkbox" value="와이파이" /> 와이파이</label>
-                <label><input type="checkbox" value="데이트 하기 좋은" /> 데이트 하기 좋은</label>
-                <label><input type="checkbox" value="혼자가기 좋은" /> 혼자가기 좋은</label>
-                <label><input type="checkbox" value="공부하기 좋은" /> 공부하기 좋은</label>
-                <label><input type="checkbox" value="비즈니스 미팅" /> 비즈니스 미팅</label>
-                <label><input type="checkbox" value="애견 동반" /> 애견 동반</label>
-                <label><input type="checkbox" value="분위기 좋은" /> 분위기 좋은</label>
-                <label><input type="checkbox" value="인스타 감성" /> 인스타 감성</label>
-                <label><input type="checkbox" value="풍경이 좋은" /> 풍경이 좋은</label>
-                <label><input type="checkbox" value="새로 오픈" /> 새로 오픈</label>
-                <label><input type="checkbox" value="조용한" /> 조용한</label>
-                <label><input type="checkbox" value="커피가 맛있는" /> 커피가 맛있는</label>
-        <label><input type="checkbox" value="디저트가 맛있는" /> 디저트가 맛있는</label>
-        <label><input type="checkbox" value="직원이 친절한" /> 직원이 친절한</label>
+                <input type="checkbox" id="edit-category-${review.id}-1" value="대형카페"/>
+                <label for="edit-category-${review.id}-1">대형카페</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-2" value="편한 좌석"/>
+                <label for="edit-category-${review.id}-2">편한 좌석</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-3" value="주차가 가능한"/>
+                <label for="edit-category-${review.id}-3">주차가 가능한</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-4" value="24시간 카페"/>
+                <label for="edit-category-${review.id}-4">24시간 카페</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-5" value="룸"/>
+                <label for="edit-category-${review.id}-5">룸</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-6" value="테라스"/>
+                <label for="edit-category-${review.id}-6">테라스</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-7" value="와이파이"/>
+                <label for="edit-category-${review.id}-7">와이파이</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-8" value="데이트 하기 좋은"/>
+                <label for="edit-category-${review.id}-8">데이트 하기 좋은</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-9" value="혼자가기 좋은"/>
+                <label for="edit-category-${review.id}-9">혼자가기 좋은</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-10" value="공부하기 좋은"/>
+                <label for="edit-category-${review.id}-10">공부하기 좋은</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-11" value="비즈니스 미팅"/>
+                <label for="edit-category-${review.id}-11">비즈니스 미팅</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-12" value="애견 동반"/>
+                <label for="edit-category-${review.id}-12">애견 동반</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-13" value="분위기 좋은"/>
+                <label for="edit-category-${review.id}-13">분위기 좋은</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-14" value="인스타 감성"/>
+                <label for="edit-category-${review.id}-14">인스타 감성</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-15" value="풍경이 좋은"/>
+                <label for="edit-category-${review.id}-15">풍경이 좋은</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-16" value="새로 오픈"/>
+                <label for="edit-category-${review.id}-16">새로 오픈</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-17" value="조용한"/>
+                <label for="edit-category-${review.id}-17">조용한</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-18" value="커피가 맛있는"/>
+                <label for="edit-category-${review.id}-18">커피가 맛있는</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-19" value="디저트가 맛있는"/>
+                <label for="edit-category-${review.id}-19">디저트가 맛있는</label>
+                
+                <input type="checkbox" id="edit-category-${review.id}-20" value="직원이 친절한"/>
+                <label for="edit-category-${review.id}-20">직원이 친절한</label>
             </div>
-            <button onclick="submitEditReview(${review.id})">Submit</button>
-            <button onclick="cancelEditReview(${review.id})">Cancel</button>
+            
+                        <textarea id="edit-content-${review.id}" rows="4" cols="50"></textarea>
+                        <br>
+            <button class="btn edit-button" onclick="submitEditReview(${review.id})">수정</button>
+            <button class="btn edit-button" onclick="cancelEditReview(${review.id})">취소</button>
         `;
 
         div.appendChild(editForm);
@@ -372,6 +417,5 @@ async function deleteReview(reviewId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchCafeInfo();
     fetchReviews();
 });

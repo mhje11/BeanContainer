@@ -113,4 +113,128 @@ body {
     font-weight: bold;
     cursor: default;
 }
+.categories label {
+    display: inline-block;
+    margin: 0.5rem 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #f7f7f7;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    border: #5a453c solid 1px;
+}
 
+.categories input[type="checkbox"] {
+    display: none;
+}
+
+.categories input[type="checkbox"]:checked + label {
+    background-color: #5a453c;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 텍스트 영역 및 버튼 스타일 */
+textarea#review-content {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 10px;
+    border: 1px solid #dcdcdc;
+    margin-top: 1rem;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+button#submit-review {
+    background-color: #5a453c;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+button#submit-review:hover {
+    background-color: #4b362d;
+}
+.review-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+button.edit-button,
+button.delete-button,
+button.save-button,
+button.cancel-button {
+    background-color: #5a453c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-right: 5px;
+    border-radius: 4px;
+}
+
+button.delete-button {
+    background-color: #5a453c;
+}
+
+button.cancel-button {
+    background-color: #6c757d;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.edit-form {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* 수정 폼에만 적용되는 스타일 */
+.edit-categories label {
+    display: inline-block;
+    margin: 0.5rem 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #f7f7f7;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    border: #5a453c solid 1px;
+}
+
+.edit-categories input[type="checkbox"] {
+    display: none;
+}
+
+.edit-categories input[type="checkbox"]:checked + label {
+    background-color: #5a453c;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+
+.star-display {
+    font-size: 1.5rem;
+}
+
+.filled-stars {
+    color: #f5c518; /* 채워진 별의 색상 (노란색) */
+
+}
+
+.empty-stars {
+    color: #ddd; /* 빈 별의 색상 (회색) */
+
+}
