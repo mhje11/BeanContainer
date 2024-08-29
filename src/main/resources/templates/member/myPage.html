@@ -16,14 +16,19 @@
     <div th:replace="fragments/header :: header"></div>
 
 
-<!--    <div class="container" th:if="${#authentication.isAuthenticated()}">-->
     <div class="container" th:if="${member != null}">
         <h1 id="userNickname" th:text="'안녕하세요, ' + ${member.nickname} + '님!'"></h1>
 
         <div class="profile-image"
-             th:style="'background-image: url(' + ${member.profileImageUrl != null ? member.profileImageUrl : '/images/BeanContainer.png'} + ');'"
-             onclick="document.getElementById('file-upload').click();">
+             th:style="'background-image: url(' + ${member.profileImageUrl != null ? member.profileImageUrl : '/images/BeanContainer.png'} + ');'">
         </div>
+
+<!--        <div class="profile-upload">-->
+<!--            <form id="profileImageForm" enctype="multipart/form-data">-->
+<!--                <label for="file-upload" class="custom-file-upload"> 프로필 업로드 </label>-->
+<!--                <input id="file-upload" type="file" name="file" accept="image/*" onclick="uploadProfileImage()">-->
+<!--            </form>-->
+<!--        </div>        -->
 
         <div class="profile-upload">
             <form id="profileImageForm" enctype="multipart/form-data">
@@ -52,34 +57,42 @@
 
 <script th:inline="javascript">
     const userId = /*[[${member.userId}]]*/ 'defaultUserId';
+    const fileUpload = document.getElementById('file-upload');
 
-    function uploadProfileImage() {
-        const fileInput = document.getElementById('file-upload');
-        const file = fileInput.files[0];
+    // 파일 선택 시 이벤트 리스너
+    fileUpload.addEventListener('change', function(event) {
+        const file = event.target.files[0]; // 선택된 파일 가져오기
         if (file) {
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-
-            fetch('/api/mypage/' + userId + '/uploadProfileImage', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.querySelector('.profile-image').style.backgroundImage = `url('${data.imageUrl}')`;
-                    alert('프로필 이미지가 성공적으로 업로드되었습니다.');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('프로필 이미지 업로드에 실패했습니다.');
-                });
+            uploadFile(file);
         }
+    });
+
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/api/mypage/' + userId + '/uploadProfileImage', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.imageUrl) {
+                    // 프로필 이미지 업데이트
+                    document.querySelector('.profile-image').style.backgroundImage = `url(${data.imageUrl})`;
+                    alert('프로필 이미지가 성공적으로 업로드되었습니다.');
+                } else {
+                    throw new Error(data.error || '이미지 업로드에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('프로필 이미지 업로드 중 오류가 발생했습니다: ' + error.message);
+            });
     }
+
+
     function deleteProfileImage() {
         if (confirm('프로필 이미지를 제거하시겠습니까?')) {
             fetch('/api/mypage/{userId}/deleteProfileImage', {

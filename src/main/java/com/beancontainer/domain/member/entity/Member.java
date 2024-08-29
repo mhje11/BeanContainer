@@ -73,20 +73,6 @@ public class Member {
         return member;
     }
 
-    //OAuth2 로그인 멤버 생성
-//    public static Member createOAuth2Member(String userId, String name, String email, String provider, String providerId) {
-//        return Member.builder()
-//                .userId(userId)
-//                .password("{noop}oauth2")
-//                .name(name)
-//                .nickname(name)  // 초기 닉네임을 이름으로 설정
-//                .email(email)
-//                .role(Role.MEMBER)
-//                .provider(provider)
-//                .providerId(providerId)
-//                .build();
-//    }
-
     public Member updateOAuth2Info(String name, String email) {
         this.name = name;
         this.email = email;
