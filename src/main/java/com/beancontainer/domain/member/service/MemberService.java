@@ -62,14 +62,6 @@ public class MemberService implements UserDetailsService {
         log.info("사용자 {} 의 닉네임이 {}로 변경되었습니다.", userId, newNickname);
     }
 
-
-    //계정 삭제
-    @Transactional
-    public void deleteAccount(String userId) {
-        Member member = findByUserId(userId);
-        memberRepository.delete(member);
-    }
-
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         log.info("Error : ", userId);
