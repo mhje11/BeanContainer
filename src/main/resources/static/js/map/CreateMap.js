@@ -513,18 +513,27 @@ function displayDbMarker(cafe) {
 document.addEventListener('DOMContentLoaded', function () {
     initMap();
 
+    // 브랜드 카페 제외 체크박스의 상태를 관리
+    document.getElementById('brand-exclude-checkbox').addEventListener('change', function () {
+        excludeBrands = this.checked;
+        console.log('excludeBrands:', excludeBrands);
+        clearMarkers();
+        searchPlacesByCenter(map.getCenter());
+    });
+
+    // 지도 비공개 체크박스의 상태를 관리
+    document.getElementById('is-public').addEventListener('change', function () {
+        const isPublicCheckbox = document.getElementById('is-public');
+        // isPublic 값 설정: 체크되면 공개(false), 체크 안되면 비공개(true)
+        const isPublic = !isPublicCheckbox.checked;
+        console.log('isPublic value:', isPublic);
+    });
+
     document.getElementById('save-btn').addEventListener('click', async function () {
         const mapName = document.getElementById('map-name').value;
         const isPublicCheckbox = document.getElementById('is-public');
-
-        // 콘솔에 체크박스 상태를 출력
-        console.log('Checkbox checked:', isPublicCheckbox.checked);
-
         // isPublic 값 설정: 체크되면 공개(false), 체크 안되면 비공개(true)
         const isPublic = !isPublicCheckbox.checked;
-
-        // isPublic 값 출력
-        console.log('isPublic value:', isPublic);
 
         if (!mapName) {
             alert('지도 이름을 입력하세요.');
