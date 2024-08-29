@@ -12,6 +12,8 @@ import com.beancontainer.global.exception.ExceptionCode;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,9 +42,9 @@ public class ReviewRestController {
     }
 
     @GetMapping("/api/reviewlist/{cafeId}")
-    public ResponseEntity<List<ReviewResponseDto>> findAllReviewList(@PathVariable("cafeId") Long cafeId) {
-         List<ReviewResponseDto> reviews = reviewService.findReviewByCafeId(cafeId);
-         return new ResponseEntity<>(reviews, HttpStatus.OK);
+    public ResponseEntity<Page<ReviewResponseDto>> findAllReviewList(@PathVariable("cafeId") Long cafeId, Pageable pageable) {
+        Page<ReviewResponseDto> reviews = reviewService.findReviewByCafeId(cafeId, pageable);
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
     @PutMapping("/api/review/update/{reviewId}")

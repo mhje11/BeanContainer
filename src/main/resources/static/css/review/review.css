@@ -19,6 +19,8 @@ body {
     max-width: 800px;
 }
 
+
+
 /* 별점 스타일 */
 .star-rating {
     display: inline-flex;
@@ -82,3 +84,33 @@ body {
     border-radius: 5px;
     background-color: #f9f9f9;
 }
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#pagination button {
+    margin: 0 5px;
+    padding: 8px 16px;
+    border: none;
+    background-color: #7B6155;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+#pagination button:hover {
+    background-color: #5a453c;
+}
+
+#pagination button.active {
+    background-color: #4b362d;
+    font-weight: bold;
+    cursor: default;
+}
+
