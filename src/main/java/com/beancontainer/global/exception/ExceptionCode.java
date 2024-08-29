@@ -22,6 +22,7 @@ public enum ExceptionCode {
     JWT_TOKEN_EXPIRED(401, HttpStatus.UNAUTHORIZED, "JWT 토큰이 만료되었습니다."),
     UNAUTHORIZED(401, HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     ACCESS_DENIED(403, HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    NO_LOGIN(401, HttpStatus.UNAUTHORIZED, "로그인후 이용 가능합니다."),
 
 
     /**
