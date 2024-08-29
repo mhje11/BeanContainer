@@ -18,49 +18,59 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div id="container">
-<div id="map-container">
-    <div id="map"></div>
-    <div id="cafe-cards"></div>
-</div>
-
-<div id="sidebar">
-    <div id="map-title">
-        <label for="map-name">지도 이름:</label>
-        <input type="text" id="map-name">
+    <div id="map-container">
+        <div id="map"></div>
+        <div id="cafe-cards"></div>
+        <div id="search-box">
+            <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
+            <button id="search-btn">검색</button>
+            <div id="search-results"></div>
+        </div>
     </div>
 
-    <div id="search-box">
-        <input type="text" id="search-input" placeholder="카페 이름을 입력하세요">
-        <button id="search-btn">검색</button>
-        <div id="search-results"></div>
-    </div>
+    <div id="sidebar">
+        <div id="map-title">
+            <label for="map-name">지도 이름:</label>
+            <input type="text" id="map-name">
+        </div>
 
-    <div class="filter-container">
-        <div class="category-selection">
-            <div class="available-categories">
-                <!-- 사용 가능한 카테고리 버튼들 -->
+
+        <div class="filter-container">
+            <div class="category-selection">
+                <div class="available-categories">
+                    <!-- 여기에 사용 가능한 카테고리 버튼들이 동적으로 추가됩니다 -->
+                </div>
+                <div class="selected-categories">
+                    <!-- 여기에 선택된 카테고리 버튼들이 동적으로 이동합니다 -->
+                </div>
             </div>
-            <div class="selected-categories">
-                <!-- 선택된 카테고리 버튼들 -->
-            </div>
-        </div>
-        <div class="button-container">
-            <button onclick="onCategorySelect()">카테고리 검색</button>
-            <button onclick="resetCategories()">카테고리 초기화</button>
-        </div>
-        <div id="brand-exclude">
-            <label>
-                <input type="checkbox" id="brand-exclude-checkbox" onclick="toggleExcludeBrands()"> 브랜드 카페 제외
-            </label>
-        </div>
-        <div id="public-toggle">
-            <label for="is-public">지도 비공개:</label>
-            <input type="checkbox" id="is-public">
-        </div>
-    </div>
 
-    <button id="save-btn">지도 저장</button>
-</div>
+            <div id="checkbox-container">
+                <div id="brand-exclude">
+                    <label for="brand-exclude-checkbox">브랜드 카페 제외</label>
+                    <label class="switch">
+                        <input type="checkbox" id="brand-exclude-checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div id="public-toggle">
+                    <label for="is-public">지도 비공개</label>
+                    <label class="switch">
+                        <input type="checkbox" id="is-public">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button onclick="onCategorySelect()">검색</button>
+                <button onclick="resetCategories()">카테고리 초기화</button>
+            </div>
+
+
+        </div>
+        <button id="save-btn">지도 저장</button>
+    </div>
 </div>
 </body>
 </html>
