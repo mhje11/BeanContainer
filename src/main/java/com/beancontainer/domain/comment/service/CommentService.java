@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class CommentService {
@@ -28,6 +27,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     // 댓글 등록
     public Long createComment(Long postId, CommentRequestDto commentRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
@@ -55,6 +55,7 @@ public class CommentService {
         return commentRepository.getAllComments(postId, currentUserId);
     }
 
+    @Transactional
     // 댓글 삭제
     public void deleteComment(Long postId, Long commentId, String userId, boolean isAdmin) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
@@ -75,6 +76,7 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    @Transactional
     // 댓글 수정
     public void updateComment(Long postId, Long commentId, String content, Member member) {
         Post post = postRepository.findById(postId)

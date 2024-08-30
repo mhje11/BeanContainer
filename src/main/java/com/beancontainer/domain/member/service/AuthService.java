@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 //인증 관련 비즈니스 로직
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
     private final MemberRepository memberRepository;

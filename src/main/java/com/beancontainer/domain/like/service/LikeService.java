@@ -15,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class LikeService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     // 좋아요 추가
     public void addLike(Long postId, String userId) {
         Post post = postRepository.findById(postId)
@@ -40,6 +40,7 @@ public class LikeService {
         postRepository.save(post);
     }
 
+    @Transactional
     // 좋아요 삭제
     public void removeLike(Long postId, String userId) {
         Post post = postRepository.findById(postId)
