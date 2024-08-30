@@ -4,7 +4,7 @@
 });
 
     function fetchMyMaps() {
-    fetch('/api/mymap')
+    fetch('/api/maps/my')
         .then(response => {
             if (!response.ok) {
                 return response.text().then(text => {
@@ -45,7 +45,7 @@
     const confirmed = confirm('정말 이 지도를 삭제하시겠습니까?');
 
     if (confirmed) {
-    fetch(`/api/mymap/delete/${mapId}`, {
+    fetch(`/api/maps/${mapId}/delete`, {
     method: 'DELETE',
 })
     .then(response => {

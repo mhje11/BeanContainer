@@ -69,7 +69,7 @@ document.getElementById('submit-review').addEventListener('click', async () => {
         cafeId: cafeId
     };
 
-    const url = '/api/review/create';
+    const url = '/api/reviews';
     const method = 'POST';
 
     try {
@@ -112,7 +112,7 @@ async function fetchReviews() {
     const cafeId = path.split('/').filter(Boolean).pop();
 
     try {
-        const response = await fetch(`/api/reviewlist/${cafeId}?page=${currentPage}&size=${pageSize}`);
+        const response = await fetch(`/api/cafes/${cafeId}/reviews?page=${currentPage}&size=${pageSize}`);
         const reviews = await response.json();
         reviewsData = reviews.content;
         totalPages = reviews.totalPages;  // 총 페이지 수 업데이트
@@ -186,7 +186,7 @@ async function fetchCafeInfo() {
     const cafeId = path.split('/').filter(Boolean).pop();
 
     try {
-        const response = await fetch(`/api/cafe/${cafeId}`);
+        const response = await fetch(`/api/cafes/${cafeId}`);
         const cafe = await response.json();
         displayCafeInfo(cafe);
     } catch (error) {
@@ -366,7 +366,7 @@ async function submitEditReview(reviewId) {
     };
 
     try {
-        const response = await fetch(`/api/review/update/${reviewId}`, {
+        const response = await fetch(`/api/reviews/${reviewId}/update`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -399,7 +399,7 @@ async function deleteReview(reviewId) {
     }
 
     try {
-        const response = await fetch(`/api/review/delete/${reviewId}`, {
+        const response = await fetch(`/api/reviews/${reviewId}/delete`, {
             method: 'DELETE'
         });
 

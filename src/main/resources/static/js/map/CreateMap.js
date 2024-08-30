@@ -193,7 +193,7 @@ function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, dis
 
     console.log("Sending data:", data);
 
-    fetch(`/review/${kakaoId}`, {
+    fetch(`/api/cafes/${kakaoId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -381,7 +381,7 @@ function openReviewPage(kakaoId, name, address, latitude, longitude) {
 
     console.log("Sending data for review page:", data);
 
-    fetch(`/review/${kakaoId}`, {
+    fetch(`/api/cafes/${kakaoId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -473,7 +473,8 @@ function searchPlacesByCategory(categories) {
         excludeBrands: excludeBrands
     });
 
-    fetch('/api/map/category?' + params.toString())
+    // fetch('/api/map/category?' + params.toString())
+    fetch('/api/cafes?' + params.toString())
         .then(response => response.json())
         .then(data => {
             data.forEach(cafe => {
@@ -549,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("Sending map data:", mapData);
 
         try {
-            const response = await fetch('/api/mymap', {
+            const response = await fetch('/api/maps', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -67,7 +67,6 @@ public class ChatRoomController {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("방못찾음"));
         chatRoom.decrementUserCount();
         chatRoomRepository.save(chatRoom);
-
     }
 }
 

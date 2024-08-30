@@ -112,7 +112,7 @@ function isExcludedBrand(placeName) {
 function loadMapDetails() {
     const mapId = window.location.pathname.split("/").pop();
 
-    fetch(`/api/mymap/${mapId}`)
+    fetch(`/api/maps/${mapId}/update`)
         .then(response => response.json())
         .then(data => {
             document.getElementById('map-name').value = data.mapName;
@@ -338,7 +338,7 @@ function saveMap() {
         isPublic: isPublic // 공개 여부 포함
     };
 
-    fetch(`/api/mymap/update/${mapId}`, {
+    fetch(`/api/maps/${mapId}/update`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -401,11 +401,11 @@ function onCategorySelect() {
         isCategorySearch = true;
         const selectedCategoryArray = Array.from(selectedCategories);
 
-        // 브랜드 제외 여부를 쿼리 스트링에 포함
-        const queryString = selectedCategoryArray.map(category => `categories=${encodeURIComponent(category)}`).join('&')
-            + `&excludeBrands=${excludeBrands}`;
+        // 카테고리 값을 쉼표로 조인하고, 브랜드 제외 여부를 쿼리 스트링에 포함
+        const queryString = `categories=${encodeURIComponent(selectedCategoryArray.join(','))}&excludeBrands=${excludeBrands}`;
 
-        fetch(`/api/map/category?${queryString}`)
+        // 요청을 보내는 부분
+        fetch(`/api/cafes?${queryString}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('카페 데이터를 불러오는 중 오류가 발생했습니다.');
@@ -432,6 +432,8 @@ function onCategorySelect() {
         alert("카테고리를 선택하세요.");
     }
 }
+
+
 
 
 function resetCategories() {
@@ -478,7 +480,7 @@ function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, dis
 
     console.log("Sending data:", data);
 
-    fetch(`/review/${kakaoId}`, {
+    fetch(`/api/cafes/${kakaoId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -516,7 +518,7 @@ function openReviewPage(kakaoId, name, address, latitude, longitude) {
 
     console.log("Sending data for review page:", data);
 
-    fetch(`/review/${kakaoId}`, {
+    fetch(`/api/cafes/${kakaoId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
