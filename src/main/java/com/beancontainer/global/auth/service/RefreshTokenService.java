@@ -4,35 +4,52 @@ package com.beancontainer.global.auth.service;
 import com.beancontainer.global.auth.jwt.repository.RefreshTokenRepository;
 import com.beancontainer.global.auth.jwt.entity.RefreshToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
-    @Transactional(readOnly = false)
-    public RefreshToken addRefreshToken(RefreshToken refreshToken) {
-        return refreshTokenRepository.save(refreshToken);
-    }
-
-
     @Autowired
     public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public Optional<RefreshToken> getRefreshTokenByUserId(String userId) {
-        return refreshTokenRepository.findByRefresh(userId);
+
+    //RefreshToken 저장, 업데이트
+    @Transactional(readOnly = false)
+    public RefreshToken saveRefreshToken(RefreshToken refreshToken) {
+        return refreshTokenRepository.save(refreshToken);
     }
 
-    public void deleteRefreshToken(String userId) {
-        refreshTokenRepository.deleteByRefresh(userId);
+    //DB에서 RefreshToken 값 조회
+    public Optional<RefreshToken> findByRefresh(String refresh) {
+        return refreshTokenRepository.findByRefresh(refresh);
     }
 
-    public void saveRefreshToken(RefreshToken refreshToken) {
+    //accessToken 재발급 할 때 DB에 있는 refreshToken 업데이트
+    @Transactional
+    public void updateRefreshToken(RefreshToken refreshToken, String newRefreshTokenValue) {
+        refreshToken.updateRefresh(newRefreshTokenValue);
         refreshTokenRepository.save(refreshToken);
     }
+
+    //RefreshToken 삭제
+    @Transactional
+    public void deleteRefreshToken(String refresh) {
+        refreshTokenRepository.deleteByRefresh(refresh);
+    }
+
+    // 새로운 RefreshToken 추가
+    @Transactional
+    public void addRefreshToken(RefreshToken refreshToken) {
+        refreshTokenRepository.save(refreshToken);
+    }
+
+
 
 }

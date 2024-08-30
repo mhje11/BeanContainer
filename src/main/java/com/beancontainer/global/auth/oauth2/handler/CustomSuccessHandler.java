@@ -36,7 +36,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         //OAuth2 User 주입
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
         String userId = customUserDetails.getUserId();
 
         Member member = memberRepository.findByUserId(userId)
@@ -47,28 +46,28 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String refreshToken = jwtTokenizer.createRefreshToken(member);
 
         //발급받은 토큰을 쿠키에 저장
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true); //프론트단에서 접근 불가하게 만듦
-        accessTokenCookie.setPath("/");
-        response.addCookie(accessTokenCookie);
-        accessTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
+        // Access Token 쿠키 설정
+        addCookie(response, "accessToken", accessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true); //프론트단에서 접근 불가하게 만듦
-        refreshTokenCookie.setPath("/");
-        response.addCookie(refreshTokenCookie);
-        refreshTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000)); //7일
+        // Refresh Token 쿠키 설정
+        addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
 
-        //refreshToken 은 DB에 저장함
-        RefreshToken refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setValue(refreshToken);
-        refreshTokenEntity.setUserId(String.valueOf(member.getId()));
-
+        // Refresh Token DB 저장
+        RefreshToken refreshTokenEntity = new RefreshToken(String.valueOf(member.getId()), refreshToken);
         refreshTokenService.addRefreshToken(refreshTokenEntity);
 
         // 로그인 성공 후 리다이렉트
         getRedirectStrategy().sendRedirect(request, response, "/");
 
+    }
+
+    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true); // HTTPS를 사용하는 경우에만 true로 설정
+        cookie.setPath("/");
+        cookie.setMaxAge(maxAge);
+        response.addCookie(cookie);
     }
 
 }
