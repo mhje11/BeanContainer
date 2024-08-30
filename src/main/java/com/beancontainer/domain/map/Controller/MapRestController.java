@@ -10,6 +10,7 @@ import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
+import com.beancontainer.global.service.AuthorizationService;
 import com.beancontainer.global.service.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.util.List;
 public class MapRestController {
     private final MapService mapService;
     private final MemberService memberService;
+    private final AuthorizationService authorizationService;
 
     @PostMapping("/api/mymap")
     public ResponseEntity<String> createMap(@Valid @RequestBody MapCreateDto mapCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
@@ -59,11 +61,8 @@ public class MapRestController {
     public ResponseEntity<String> updateMap(@PathVariable("mapId") Long mapId, @RequestBody MapUpdateDto mapUpdateDto, @AuthenticationPrincipal UserDetails userDetails) {
         Map map = mapService.findById(mapId);
 
-        if (userDetails == null) {
-            throw new CustomException(ExceptionCode.UNAUTHORIZED);
-        } else if (!userDetails.getUsername().equals(map.getMember().getUserId())) {
-            throw new CustomException(ExceptionCode.ACCESS_DENIED);
-        }
+        authorizationService.checkLogin(userDetails);
+        authorizationService.checkMap(userDetails, map.getMember().getUserId());
 
         mapUpdateDto.setMapId(mapId);
         mapService.updateMap(mapUpdateDto);
@@ -73,11 +72,10 @@ public class MapRestController {
     @DeleteMapping("/api/mymap/delete/{mapId}")
     public ResponseEntity<String> deleteMap(@PathVariable("mapId") Long mapId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Map map = mapService.findById(mapId);
-        if (userDetails == null) {
-            throw new CustomException(ExceptionCode.UNAUTHORIZED);
-        } else if (!userDetails.getUserId().equals(map.getMember().getUserId())) {
-            throw new CustomException(ExceptionCode.ACCESS_DENIED);
-        }
+
+        authorizationService.checkLogin(userDetails);
+        authorizationService.checkMap(userDetails, map.getMember().getUserId());
+
         mapService.deleteMap(mapId);
         return ResponseEntity.ok("지도 삭제 성공 ID : " + mapId);
     }

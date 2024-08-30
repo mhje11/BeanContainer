@@ -21,13 +21,9 @@ public class ReviewController {
     @PostMapping("/review/{kakaoId}")
     @ResponseBody
     public ResponseEntity<?> getCafeOrElseSaveAndGet(@PathVariable("kakaoId") String kakaoId, @RequestBody CafeSaveDto cafeSaveDto) {
-        try {
             CafeResponseDto cafe = cafeService.getCafeByKakaoIdOrSave(kakaoId, cafeSaveDto);
             return ResponseEntity.ok(cafe);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("{\"error\":\"" + e.getMessage() + "\"}");
 
-        }
     }
 
     @GetMapping("review/{cafeId}")

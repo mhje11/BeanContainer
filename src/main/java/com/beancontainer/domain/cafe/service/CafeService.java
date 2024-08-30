@@ -40,7 +40,7 @@ public class CafeService {
     }
 
     //카페가 존재하지 않을경우 저장하고 리뷰페이지로 이동하는 로직
-    @Transactional(readOnly = true)
+    @Transactional
     public CafeResponseDto getCafeByKakaoIdOrSave(String kakaoId, CafeSaveDto cafeSaveDto) {
         return cafeRepository.findByKakaoId(kakaoId)
                 .map(cafe -> {
