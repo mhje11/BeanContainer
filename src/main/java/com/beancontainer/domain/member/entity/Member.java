@@ -39,7 +39,7 @@ public class Member {
 
     private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
 
-    private String provider;; //OAuth2 제공자(ex : naver, kakao)
+    private String provider; //OAuth2 제공자(ex : naver, kakao)
     private String providerId; //OAuth2 로그인 Id
 
 

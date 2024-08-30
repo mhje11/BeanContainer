@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #EDE3D5;
+    background-color: #F2EFE8;
     margin: 0;
     height: 100vh;
     display: flex;
@@ -80,7 +80,7 @@ body {
 
 #sidebar {
     width: 25%;
-    height: 600px;
+    height: 640px;
     margin: 10px;
     display: flex;
     flex-direction: column;
@@ -159,7 +159,7 @@ body {
     font-size: 14px; /* 축소된 폰트 크기 */
     border: 2px solid #7B6155;
     border-radius: 8px;
-    background-color: #EDE3D5;
+    background-color: #F2EFE8;
     color: #333;
 }
 
@@ -275,7 +275,7 @@ body {
     cursor: pointer;
     top: 0;
     left: 0;
-    right: 0;
+    right: -2px;
     bottom: 0;
     background-color: #ccc;
     transition: .4s;

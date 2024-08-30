@@ -45,6 +45,7 @@ public class AuthRestController {
     private final MailService mailService;
 
 
+    //리프레시 토큰 수정 필요
     @PostMapping("/login")
     public ResponseEntity<LoginRequestDTO> login(@RequestBody @Valid LoginRequestDTO userLoginRequestDto,
                                      BindingResult bindingResult, HttpServletResponse response) {

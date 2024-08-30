@@ -1,4 +1,4 @@
-package com.beancontainer.global.handler;
+package com.beancontainer.global.exception.handler;
 
 import com.beancontainer.global.exception.*;
 import lombok.Getter;
