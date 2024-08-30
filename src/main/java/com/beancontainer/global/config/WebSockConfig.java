@@ -1,4 +1,4 @@
-package com.beancontainer.domain.chatroom.config;
+package com.beancontainer.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
