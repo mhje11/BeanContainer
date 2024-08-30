@@ -8,6 +8,7 @@ import com.beancontainer.domain.review.dto.ReviewUpdateDto;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.service.ReviewService;
 import com.beancontainer.global.auth.service.CustomUserDetails;
+import com.beancontainer.global.service.AuthorizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class ReviewRestController {
 
     private final ReviewService reviewService;
     private final MemberService memberService;
-    private final com.beancontainer.global.service.AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
 
     @PostMapping("/api/review/create")
     public ResponseEntity<String> createReview(@RequestBody ReviewCreateDto reviewCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
