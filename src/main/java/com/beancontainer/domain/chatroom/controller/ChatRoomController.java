@@ -47,7 +47,6 @@ public class ChatRoomController {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("찾을수없는룸"));
         if (chatRoom.getCurrentUserCount() >= chatRoom.getCapacity()) {
             return "/chat/room";
-
         }
         model.addAttribute("roomId", roomId);
         model.addAttribute("userId", userDetails.getUsername());

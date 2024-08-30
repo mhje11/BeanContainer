@@ -66,8 +66,6 @@ public class ReviewRestController {
         if (userDetails == null) {
             throw new CustomException(ExceptionCode.UNAUTHORIZED);
         } if (!userDetails.getUsername().equals(review.getMember().getUserId())) {
-            log.info("userDetails {}", userDetails.getUsername());
-            log.info("review {}", review.getMember().getUserId());
             throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
         reviewService.deleteReview(reviewId);
