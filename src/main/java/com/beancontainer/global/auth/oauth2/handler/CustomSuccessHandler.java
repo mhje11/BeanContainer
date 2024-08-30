@@ -60,9 +60,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshTokenCookie.setMaxAge(Math.toIntExact(JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000)); //7일
 
         //refreshToken 은 DB에 저장함
-        RefreshToken refreshTokenEntity = new RefreshToken();
-        refreshTokenEntity.setValue(refreshToken);
-        refreshTokenEntity.setUserId(String.valueOf(member.getId()));
+        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken, String.valueOf(member.getId()));
+//        refreshTokenEntity.setValue(refreshToken);
+//        refreshTokenEntity.setUserId(String.valueOf(member.getId()));
 
         refreshTokenService.addRefreshToken(refreshTokenEntity);
 

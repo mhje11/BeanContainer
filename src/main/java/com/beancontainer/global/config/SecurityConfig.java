@@ -45,6 +45,7 @@ public class SecurityConfig {
             "/api/maps/random",
             "/api/reviews",
             "/api/reviews/{reviewId}/delete", "/api/reviews/{reviewId}/update", //리뷰 작성, 수정, 삭제
+            "/api/cafes"
 
     };
 

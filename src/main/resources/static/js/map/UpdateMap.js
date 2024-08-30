@@ -112,7 +112,7 @@ function isExcludedBrand(placeName) {
 function loadMapDetails() {
     const mapId = window.location.pathname.split("/").pop();
 
-    fetch(`/api/maps/${mapId}/update`)
+    fetch(`/api/maps/${mapId}`)
         .then(response => response.json())
         .then(data => {
             document.getElementById('map-name').value = data.mapName;

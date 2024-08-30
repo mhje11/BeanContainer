@@ -31,7 +31,7 @@ public class CafeRestController {
 
 
 //    @GetMapping("/api/map/category")
-    @GetMapping("/api/cafes?categories={categories}&excludeBrands={excludeBrands}")
+    @GetMapping("/api/cafes")
     public ResponseEntity<List<CafeResponseDto>> findByCategory(@RequestParam Set<String> categories,
                                                                 @RequestParam(required = false) boolean excludeBrands) {
         List<CafeResponseDto> cafes = cafeService.getCafesByCategories(categories, excludeBrands);
