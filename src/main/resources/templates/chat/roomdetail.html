@@ -47,14 +47,20 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            roomId: /*[[${roomId}]]*/,  // roomId를 템플릿에서 전달받도록 수정
+            roomId: /*[[${roomId}]]*/,
             room: {},
             message: '',
-            messages: []
+            messages: [],
+            isExiting: false  // 나가기 버튼 클릭 여부를 확인하기 위한 플래그
         },
         created() {
-            this.roomId = /*[[${roomId}]]*/; // roomId를 올바르게 설정
             this.findRoom();
+            // 페이지 떠날 때 이벤트 등록
+            window.addEventListener('beforeunload', this.beforeUnloadHandler);
+        },
+        destroyed() {
+            // 컴포넌트 파괴 시 이벤트 리스너 제거
+            window.removeEventListener('beforeunload', this.beforeUnloadHandler);
         },
         methods: {
             findRoom: function() {
@@ -79,15 +85,31 @@
                     "message": recv.message
                 });
             },
-            exitRoom: function() {  // 나가기 메서드 수정
-                axios.put('/chat/room/quit', null, {
-                    params: { roomId: this.roomId }  // roomId를 params로 전달
-                }).then(response => {
+            exitRoom: function() {
+                this.isExiting = true;  // 나가기 버튼이 클릭되었음을 표시
+                this.sendExitRequest().then(() => {
                     alert("채팅방에서 나왔습니다.");
                     location.href = "/chat/room"; // 나간 후 방 목록 페이지로 이동
                 }).catch(error => {
                     console.error("방 나가기 실패:", error);
                 });
+            },
+            sendExitRequest: function() {
+                return axios.put('/chat/room/quit', null, {
+                    params: { roomId: this.roomId }
+                });
+            },
+            beforeUnloadHandler: function(e) {
+                // 나가기 버튼이 클릭된 경우 이 핸들러를 실행하지 않음
+                if (!this.isExiting) {
+                    this.sendExitRequest().catch(error => {
+                        console.error("방 나가기 실패:", error);
+                    });
+
+                    // 기본적으로 브라우저의 기본 동작은 하지 않도록 설정 (옵션)
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
             }
         }
     });
@@ -114,6 +136,7 @@
         });
     }
     connect();
+
 </script>
 </body>
 </html>
