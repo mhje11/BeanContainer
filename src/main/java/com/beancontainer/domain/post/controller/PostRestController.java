@@ -7,8 +7,9 @@ import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
+import com.beancontainer.global.auth.service.CustomUserDetails;
 import com.beancontainer.global.service.AuthorizationService;
-import com.beancontainer.global.service.CustomUserDetails;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

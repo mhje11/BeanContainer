@@ -1,11 +1,10 @@
 package com.beancontainer.global.config;
 
-import com.beancontainer.global.jwt.filter.JwtAuthenticationFilter;
-import com.beancontainer.global.jwt.util.JwtTokenizer;
-import com.beancontainer.global.oauth2.handler.CustomSuccessHandler;
-import com.beancontainer.global.oauth2.service.CustomOAuth2UserService;
+import com.beancontainer.global.auth.jwt.filter.JwtAuthenticationFilter;
+import com.beancontainer.global.auth.jwt.util.JwtTokenizer;
+import com.beancontainer.global.auth.oauth2.handler.CustomSuccessHandler;
+import com.beancontainer.global.auth.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

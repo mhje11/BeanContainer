@@ -3,7 +3,6 @@ package com.beancontainer.domain.member.service;
 import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
-import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

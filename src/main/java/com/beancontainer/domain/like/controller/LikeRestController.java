@@ -1,7 +1,7 @@
 package com.beancontainer.domain.like.controller;
 
 import com.beancontainer.domain.like.service.LikeService;
-import com.beancontainer.global.service.CustomUserDetails;
+import com.beancontainer.global.auth.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

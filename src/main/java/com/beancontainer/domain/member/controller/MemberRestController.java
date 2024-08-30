@@ -1,72 +1,90 @@
 package com.beancontainer.domain.member.controller;
 
+import com.beancontainer.domain.member.dto.LoginRequestDTO;
+import com.beancontainer.domain.member.dto.SignUpRequestDTO;
+import com.beancontainer.domain.member.dto.VerifyCodeDTO;
+import com.beancontainer.domain.member.entity.Member;
+import com.beancontainer.domain.member.service.AuthService;
+import com.beancontainer.domain.member.service.MailService;
 import com.beancontainer.domain.member.service.MemberService;
-import com.beancontainer.domain.memberprofileimg.service.ProfileImageService;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
+import com.beancontainer.global.auth.jwt.entity.RefreshToken;
+import com.beancontainer.global.auth.jwt.util.JwtTokenizer;
+import com.beancontainer.global.auth.service.RefreshTokenService;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.security.Principal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class MemberRestController {
+    private final AuthService authService;
     private final MemberService memberService;
-    private final ProfileImageService profileImageService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenizer jwtTokenizer;
+    private final RefreshTokenService refreshTokenService;
+    private final MailService mailService;
 
 
-    @PostMapping("/mypage/{userId}/updateNickname")
-    public ResponseEntity<Map<String, String>> updateNickname(@PathVariable String userId,
-                                                              @RequestBody Map<String, String> payload) {
-        String newNickname = payload.get("newNickname");
+    //회원가입
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, String>> signUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
+        log.info("Received signup request for user: " + signUpRequestDTO.getUserId());
+        authService.signUp(signUpRequestDTO);
+        return ResponseEntity.ok(Collections.singletonMap("message", "회원가입이 성공적으로 완료되었습니다.")); //JSON 형태로 응답
+    }
 
+    //이메일 인증 코드 발송
+    @PostMapping("/signup/email-send")
+    public ResponseEntity<String> sendEmailCode(@RequestParam(value = "email", required = false) String email) {
         try {
-            memberService.updateNickname(userId, newNickname);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "닉네임 변경 완료");
-            response.put("newNickname", newNickname);
-            return ResponseEntity.ok(response);
+            String authCode = mailService.sendSimpleMessage(email);
+            log.info("인증 코드 : " + authCode);
+            return ResponseEntity.ok("인증 코드가 전송 되었습니다.");
         } catch (Exception e) {
-            log.error("닉네임 변경 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "닉네임 변경 중 오류가 발생했습니다."));
+            throw new CustomException(ExceptionCode.EMAIL_SEND_FAILURE);
         }
     }
 
-    @PostMapping("/mypage/{userId}/uploadProfileImage")
-    public ResponseEntity<Map<String, String>> uploadProfileImage(
-            @PathVariable String userId,
-            @RequestParam("file") MultipartFile file) {
+    //이메일 인증 코드 확인
+    @PostMapping("/signup/check-code")
+    public ResponseEntity<String> verifyEmailCode(@RequestBody VerifyCodeDTO verifyCode) {
+        log.info("발송 된 인증번호 확인: {}", verifyCode.getCode());
 
-        try {
-            String imageUrl = profileImageService.updateProfileImage(userId, file);
-            return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "이미지 업로드에 실패했습니다."));
+        String authCode = mailService.getAuthNum();
+        if (authCode != null && authCode.equals(verifyCode.getCode())) {
+            log.info("이메일 인증 성공");
+            return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+        } else {
+            throw new CustomException(ExceptionCode.EMAIL_CODE_MISMATCH);
         }
     }
 
-    @PostMapping("/mypage/{userId}/deleteProfileImage")
-    public ResponseEntity<Map<String, String>> deleteProfileImage(Principal principal) {
-        String userId = principal.getName();
-        profileImageService.deleteExistingProfileImage(userId);
-        return ResponseEntity.ok(Map.of("message", "프로필 이미지가 제거되었습니다."));
+
+    //아이디 중복 체크
+    @GetMapping("/check-userid")
+    public ResponseEntity<Map<String, Boolean>> checkUserId(@RequestParam String userId) {
+        boolean exists = memberService.existsByUserId(userId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
     }
-
-
-    @PostMapping("/mypage/{userId}/deleteAccount")
-    public ResponseEntity<String> deleteAccount(@PathVariable String userId) {
-        memberService.cancelAccount(userId);
-        return ResponseEntity.ok().body("계정이 탈퇴 되었습니다.");
-    }
-
 }
+
