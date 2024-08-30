@@ -32,8 +32,6 @@ public class ProfileImageService {
 
     private static final String DEFAULT_PROFILE_IMAGE = "/images/BeanContainer.png";
 
-
-
     public String updateProfileImage(String userId, MultipartFile image) throws IOException {
         String originalName = image.getOriginalFilename();
         String name = getFileName(originalName);

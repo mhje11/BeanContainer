@@ -44,7 +44,8 @@ public class SecurityConfig {
             "/api/cafe/{cafeId}", // 카페정보
             "/api/map/category", //카테고리 저장 후 검색
             "/api/randommap",
-            "/api/review/create"
+            "/api/review/create",
+            "/api/review/delete/{reviewId}", "/api/review/update/{reviewId}", //리뷰 작성, 수정, 삭제
 
     };
 
@@ -59,7 +60,6 @@ public class SecurityConfig {
             "/mypage/{userId}", "/api/profileImage/**", "/api/mypage/{userId}/deleteProfileImage", //마이페이지, 프로필 변경
             "/mymap","/mymap/update/{mapId}",
             "/api/mymap/delete/{mapId}", "/api/mymap/update/{mapId}", "/api/mymap", //나만의 지도
-            "/api/review/delete/{reviewId}", "/api/review/update/{reviewId}", //리뷰 작성, 수정, 삭제
             "/chat/**" //모든 채팅
     };
 

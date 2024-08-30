@@ -7,6 +7,7 @@ import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
+import com.beancontainer.global.service.AuthorizationService;
 import com.beancontainer.global.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ import java.util.Map;
 public class PostRestController {
     private final PostService postService;
     private final MemberService memberService;
+    private final AuthorizationService authorizationService;
 
     @PostMapping("/post/create")    // 게시글 작성
     public ResponseEntity<Map<String, String>> createPost(@RequestPart("postRequestDto") PostRequestDto postRequestDto,
@@ -64,17 +66,6 @@ public class PostRestController {
     @GetMapping("/postList/{postId}")   // 게시글 상세 정보
     public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = (userDetails != null) ? userDetails.getUserId() : null;
-        if (userId != null) {
-            try {
-                // userId를 UTF-8로 인코딩하여 다시 문자열로 변환
-                userId = new String(userId.getBytes("UTF-8"), "UTF-8");
-                System.out.println("Converted UserID: " + userId);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("UserID is null");
-        }
         PostDetailsResponseDto post = postService.postDetails(postId, userId);
         return ResponseEntity.ok(post);
     }

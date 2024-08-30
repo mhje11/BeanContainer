@@ -9,6 +9,34 @@ const categories = [
 ];
 const selectedCategories = new Set();
 
+const districts = {
+    '강남구': {lat: 37.5172, lng: 127.0473},
+    '강동구': {lat: 37.5301, lng: 127.1238},
+    '강북구': {lat: 37.6396, lng: 127.0255},
+    '강서구': {lat: 37.5509, lng: 126.8495},
+    '관악구': {lat: 37.4789, lng: 126.9516},
+    '광진구': {lat: 37.5385, lng: 127.0823},
+    '구로구': {lat: 37.4955, lng: 126.8879},
+    '금천구': {lat: 37.4600, lng: 126.9002},
+    '노원구': {lat: 37.6543, lng: 127.0563},
+    '도봉구': {lat: 37.6688, lng: 127.0477},
+    '동대문구': {lat: 37.5743, lng: 127.0398},
+    '동작구': {lat: 37.5124, lng: 126.9392},
+    '마포구': {lat: 37.5637, lng: 126.9087},
+    '서대문구': {lat: 37.5791, lng: 126.9368},
+    '서초구': {lat: 37.4837, lng: 127.0323},
+    '성동구': {lat: 37.5634, lng: 127.0371},
+    '성북구': {lat: 37.5894, lng: 127.0167},
+    '송파구': {lat: 37.5145, lng: 127.1056},
+    '양천구': {lat: 37.5162, lng: 126.8665},
+    '영등포구': {lat: 37.5265, lng: 126.8965},
+    '용산구': {lat: 37.5323, lng: 126.9908},
+    '은평구': {lat: 37.6027, lng: 126.9290},
+    '종로구': {lat: 37.5733, lng: 126.9793},
+    '중구': {lat: 37.5636, lng: 126.9976},
+    '중랑구': {lat: 37.6063, lng: 127.0928}
+};
+
 function initMap() {
     const mapContainer = document.getElementById('map');
     const mapOption = {
@@ -41,6 +69,18 @@ function initMap() {
         console.log('excludeBrands:', excludeBrands);
         clearMarkers();
         searchPlacesByCenter(map.getCenter());
+    });
+
+    document.getElementById('districts').addEventListener('change', function () {
+        const district = this.value;
+        if (district && districts[district]) {
+            const center = new kakao.maps.LatLng(districts[district].lat, districts[district].lng);
+            map.setCenter(center);
+            map.setLevel(3);
+            if (!isCategorySearch) {
+                searchPlacesByCenter(center);
+            }
+        }
     });
 
     loadMapDetails();

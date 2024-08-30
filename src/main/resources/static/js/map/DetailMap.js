@@ -56,14 +56,15 @@ function displayMarker(cafe) {
         console.log("Formatted averageScore:", averageScore);
 
         const content = `
-            <div style="padding:10px; font-size:14px;">
+            <div id="custom-infowindow" class="kakao-infowindow-content" style="padding:5px; font-size:12px;">
                 <strong>${cafe.name}</strong><br>
                 ${cafe.address}<br>
-                <strong>평점:</strong> ${averageScore} / 5.0<br>
-                <strong>카테고리:</strong> ${Array.from(cafe.topCategories).join(', ')}<br>
-                <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
+                <class="place-name">평점:</> ${averageScore} / 5.0<br>
+                <class="place-address">카테고리:</> ${Array.from(cafe.topCategories).join(', ')}<br>
+                <a href="/review/${cafe.id}" class="infowindow-link" target="_blank">리뷰 페이지로 이동</a>
             </div>
         `;
+
         infowindow.setContent(content);
         infowindow.open(map, marker);
     });
