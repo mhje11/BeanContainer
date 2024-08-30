@@ -6,7 +6,7 @@ import com.beancontainer.domain.comment.dto.CommentRequestDto;
 import com.beancontainer.domain.comment.service.CommentService;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
-import com.beancontainer.global.service.CustomUserDetails;
+import com.beancontainer.global.auth.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
