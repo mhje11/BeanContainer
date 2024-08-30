@@ -73,8 +73,6 @@ public class MapRestController {
     @DeleteMapping("/api/mymap/delete/{mapId}")
     public ResponseEntity<String> deleteMap(@PathVariable("mapId") Long mapId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Map map = mapService.findById(mapId);
-        log.info("userDetails {}", userDetails.getUserId());
-        log.info("mapUserId {}", map.getMember().getUserId());
         if (userDetails == null) {
             throw new CustomException(ExceptionCode.UNAUTHORIZED);
         } else if (!userDetails.getUserId().equals(map.getMember().getUserId())) {

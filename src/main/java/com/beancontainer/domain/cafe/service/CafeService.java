@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Slf4j
 public class CafeService {
     private final CafeRepository cafeRepository;
@@ -33,8 +32,7 @@ public class CafeService {
     }
 
 
-
-
+    @Transactional(readOnly = true)
     public CafeResponseDto getCafeById(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new CustomException(ExceptionCode.CAFE_NOT_FOUND));
         Double average = reviewRepository.calculateAverageScoreByCafeId(cafeId);
@@ -42,7 +40,7 @@ public class CafeService {
     }
 
     //카페가 존재하지 않을경우 저장하고 리뷰페이지로 이동하는 로직
-    @Transactional
+    @Transactional(readOnly = true)
     public CafeResponseDto getCafeByKakaoIdOrSave(String kakaoId, CafeSaveDto cafeSaveDto) {
         return cafeRepository.findByKakaoId(kakaoId)
                 .map(cafe -> {
@@ -106,6 +104,7 @@ public class CafeService {
     }
 
 
+    @Transactional(readOnly = true)
     public List<CafeResponseDto> getCafesByCategories(Set<String> categories, Boolean excludeBrands) {
         List<Cafe> cafes = cafeRepository.findByCategories(categories, excludeBrands);
         return cafes.stream()

@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Slf4j
 public class MapService {
     private final MapRepository mapRepository;
@@ -39,7 +38,6 @@ public class MapService {
     @Transactional
     public Long createMap(MapCreateDto mapCreateDto, Member member) {
         Map map = new Map(mapCreateDto.getMapName(), member, mapCreateDto.getIsPublic());
-        log.info("isPublic {}", mapCreateDto.getIsPublic());
         mapRepository.save(map);
         Set<String> kakaoIds = mapCreateDto.getKakaoIds();
 
@@ -53,6 +51,7 @@ public class MapService {
         return map.getId();
     }
 
+    @Transactional(readOnly = true)
     public List<MapListResponseDto> getMapList(Member member) {
 //        return mapRepository.findAllByMember(member).stream()
 //                .map(map -> new MapListResponseDto(map.getMapName(), map.getMember().getNickname(), map.getId()))
@@ -60,6 +59,7 @@ public class MapService {
         return mapRepository.getMapList(member);
     }
 
+    @Transactional(readOnly = true)
     public MapDetailResponseDto getMapDetail(Long mapId) {
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
         List<CafeResponseDto> cafes = mapCafeRepository.findAllByMapId(map.getId()).stream()
@@ -129,10 +129,12 @@ public class MapService {
         mapRepository.delete(map);
     }
 
+    @Transactional(readOnly = true)
     public Map findById(Long mapId) {
         return mapRepository.findById(mapId).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public List<MapListResponseDto> findRandomPublicMap() {
         return mapRepository.findRandomMaps(3);
     }

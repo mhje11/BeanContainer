@@ -32,7 +32,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor //생성자 자동 주입
 @Slf4j
-@Transactional(readOnly = true)
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
@@ -43,6 +42,7 @@ public class MemberService implements UserDetailsService {
     private final LikeRepository likeRepository;
 
 
+    @Transactional(readOnly = true)
     //ID로 유저 찾기
     public Member findByUserId(String userId) {
         log.info("Finding member for userId: {}", userId);
@@ -62,6 +62,7 @@ public class MemberService implements UserDetailsService {
         log.info("사용자 {} 의 닉네임이 {}로 변경되었습니다.", userId, newNickname);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         log.info("Error : ", userId);
@@ -75,6 +76,7 @@ public class MemberService implements UserDetailsService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     //유저 존재 여부
     public boolean existsByUserId(String userId) {
         return memberRepository.existsByUserId(userId);
