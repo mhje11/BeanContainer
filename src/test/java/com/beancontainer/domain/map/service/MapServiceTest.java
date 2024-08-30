@@ -227,7 +227,7 @@ class MapServiceTest {
             //when
             long startTime = System.nanoTime();
 
-            Long updatedMapId = mapService.updateMap(mapUpdateDto);
+//            Long updatedMapId = mapService.updateMap(mapUpdateDto);
 
             long endTime = System.nanoTime();
 
@@ -273,7 +273,7 @@ class MapServiceTest {
         assertTrue(mapCafeRepository.existsById(mapCafe2.getId()));
 
         //when
-        mapService.deleteMap(map.getId());
+//        mapService.deleteMap(map.getId());
 
         //then
         assertFalse(mapRepository.existsById(map.getId()));

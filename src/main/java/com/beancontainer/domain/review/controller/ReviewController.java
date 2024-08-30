@@ -18,7 +18,7 @@ public class ReviewController {
 
 
     //카페 저장 안돼있으면 저장하고 이동하게 하는 로직
-    @PostMapping("/review/{kakaoId}")
+    @PostMapping("/api/cafes/{kakaoId}")
     @ResponseBody
     public ResponseEntity<?> getCafeOrElseSaveAndGet(@PathVariable("kakaoId") String kakaoId, @RequestBody CafeSaveDto cafeSaveDto) {
             CafeResponseDto cafe = cafeService.getCafeByKakaoIdOrSave(kakaoId, cafeSaveDto);

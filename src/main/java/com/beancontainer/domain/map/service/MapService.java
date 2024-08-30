@@ -17,6 +17,7 @@ import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,9 +81,14 @@ public class MapService {
     }
 
     @Transactional
-    public Long updateMap(MapUpdateDto mapUpdateDto) {
+    public Long updateMap(MapUpdateDto mapUpdateDto, UserDetails userDetails, String userId) {
+        if (userDetails == null) {
+            throw new CustomException(ExceptionCode.NO_LOGIN);
+        }
+        if (!userDetails.getUsername().equals(userId)) {
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
+        }
         Map map = mapRepository.findById(mapUpdateDto.getMapId()).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
-
         List<MapCafe> existingMapCafes = mapCafeRepository.findAllByMapId(map.getId());
 
         //업데이트 할 카페목록
@@ -120,7 +126,13 @@ public class MapService {
     }
 
     @Transactional
-    public void deleteMap(Long mapId) {
+    public void deleteMap(Long mapId, UserDetails userDetails, String userId) {
+        if (userDetails == null) {
+            throw new CustomException(ExceptionCode.NO_LOGIN);
+        }
+        if (!userDetails.getUsername().equals(userId)) {
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
+        }
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
 
         List<MapCafe> mapCafes = mapCafeRepository.findAllByMapId(mapId);

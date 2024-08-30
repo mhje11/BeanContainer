@@ -8,7 +8,6 @@ import com.beancontainer.domain.review.dto.ReviewUpdateDto;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.service.ReviewService;
 import com.beancontainer.global.auth.service.CustomUserDetails;
-import com.beancontainer.global.service.AuthorizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,38 +26,32 @@ public class ReviewRestController {
 
     private final ReviewService reviewService;
     private final MemberService memberService;
-    private final AuthorizationService authorizationService;
 
-    @PostMapping("/api/review/create")
+    @PostMapping("/api/reviews")
     public ResponseEntity<String> createReview(@RequestBody ReviewCreateDto reviewCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
-        authorizationService.checkLogin(userDetails);
         Member member = memberService.findByUserId(userDetails.getUsername());
-        reviewService.createReview(reviewCreateDto, userDetails.getUsername());
+        reviewService.createReview(reviewCreateDto, userDetails);
 
         return ResponseEntity.ok("리뷰 등록 완료");
     }
 
-    @GetMapping("/api/reviewlist/{cafeId}")
+    @GetMapping("/api/cafes/{cafeId}/reviews")
     public ResponseEntity<Page<ReviewResponseDto>> findAllReviewList(@PathVariable("cafeId") Long cafeId, Pageable pageable) {
         Page<ReviewResponseDto> reviews = reviewService.findReviewByCafeId(cafeId, pageable);
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
-    @PutMapping("/api/review/update/{reviewId}")
+    @PutMapping("/api/reviews/{reviewId}/update")
     public ResponseEntity<String> updateReview(@PathVariable("reviewId") Long reviewId, @RequestBody ReviewUpdateDto reviewUpdateDto, @AuthenticationPrincipal UserDetails userDetails) {
         Review review = reviewService.findById(reviewId);
-        authorizationService.checkLogin(userDetails);
-        authorizationService.checkReview(userDetails, review.getMember().getUserId());
-        reviewService.updateReview(reviewId, reviewUpdateDto);
+        reviewService.updateReview(reviewId, reviewUpdateDto, userDetails, review.getMember().getUserId());
         return ResponseEntity.ok("리뷰 수정 완료");
     }
 
-    @DeleteMapping("/api/review/delete/{reviewId}")
+    @DeleteMapping("/api/reviews/{reviewId}/delete")
     public ResponseEntity<String> deleteReview(@PathVariable("reviewId")Long reviewId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Review review = reviewService.findById(reviewId);
-        authorizationService.checkLogin(userDetails);
-        authorizationService.checkReview(userDetails, review.getMember().getUserId());
-        reviewService.deleteReview(reviewId);
+        reviewService.deleteReview(reviewId, userDetails, review.getMember().getUserId());
 
         return ResponseEntity.ok("리뷰 삭제 완료");
     }

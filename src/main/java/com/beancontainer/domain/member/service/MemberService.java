@@ -110,7 +110,6 @@ public class MemberService implements UserDetailsService {
 
             List<Review> reviews = reviewRepository.findAllByMember(member);
             reviewRepository.deleteAll(reviews);
-
             memberRepository.delete(member);
         }
     }

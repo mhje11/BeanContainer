@@ -171,7 +171,7 @@ function checkAndSaveCafe(kakaoId, name, address, latitude, longitude, city, dis
         district: district
     };
 
-    fetch(`/review/${kakaoId}`, {
+    fetch(`/api/cafes/${kakaoId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -257,7 +257,7 @@ function searchPlacesByCategory(categories) {
 
     const excludeBrands = document.getElementById('brand-exclude-checkbox').checked;
 
-    fetch(`/api/map/category?` + new URLSearchParams({
+    fetch(`/api/cafes?` + new URLSearchParams({
         categories: Array.from(categories).join(','),
         excludeBrands: excludeBrands // 브랜드 제외 파라미터 추가
     }))
@@ -275,7 +275,7 @@ function searchPlacesByCategory(categories) {
 // 랜덤 지도를 불러와서 카드 형태로 표시하는 함수
 async function loadRandomMaps() {
     try {
-        const response = await fetch('/api/randommap');
+        const response = await fetch('/api/maps/random');
         if (!response.ok) {
             throw new Error('랜덤 지도를 불러오는데 실패했습니다.');
         }

@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/com/beancontainer/global/exception/GlobalExceptionHandler.java
 package com.beancontainer.global.exception;
-========
-package com.beancontainer.global.exception.handler;
->>>>>>>> 4dadc9c23daba249e5553ec25a9ffd0e93512b6f:src/main/java/com/beancontainer/global/exception/handler/GlobalExceptionHandler.java
 
 import com.beancontainer.global.exception.*;
 import lombok.Getter;

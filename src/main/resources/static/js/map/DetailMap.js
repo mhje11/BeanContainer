@@ -16,7 +16,7 @@ async function initMap() {
 
     const mapId = window.location.pathname.split("/").pop();
     try {
-        const response = await fetch(`/api/mymap/${mapId}`);
+        const response = await fetch(`/api/maps/${mapId}`);
         const mapDetail = await response.json();
 
         document.getElementById('map-name').innerText = `${mapDetail.mapName}`;

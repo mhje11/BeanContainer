@@ -19,6 +19,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +39,11 @@ public class ReviewService {
     private final CafeService cafeService;
 
     @Transactional
-    public void createReview(ReviewCreateDto reviewCreateDto, String userLoginId) {
-        Member member = memberRepository.findByUserId(userLoginId).orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
+    public void createReview(ReviewCreateDto reviewCreateDto, UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new CustomException(ExceptionCode.NO_LOGIN);
+        }
+        Member member = memberRepository.findByUserId(userDetails.getUsername()).orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
         Cafe cafe = cafeRepository.findById(reviewCreateDto.getCafeId()).orElseThrow(() -> new CustomException(ExceptionCode.CAFE_NOT_FOUND));
 
         Review review = new Review(member, cafe, reviewCreateDto.getContent(), reviewCreateDto.getScore(), new HashSet<>());
@@ -69,7 +73,15 @@ public class ReviewService {
     }
 
     @Transactional
-    public Long updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto) {
+    public Long updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto, UserDetails userDetails, String userId) {
+            if (userDetails == null) {
+                throw new CustomException(ExceptionCode.NO_LOGIN);
+            }
+
+            if (!userDetails.getUsername().equals(userId)) {
+                throw new CustomException(ExceptionCode.ACCESS_DENIED);
+            }
+
         Review existingReview = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(ExceptionCode.REVIEW_NOT_FOUND));
         Set<ReviewCategory> updateCategories = reviewUpdateDto.getCategoryNames().stream()
                 .map(categoryName -> {
@@ -85,7 +97,14 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Long reviewId) {
+    public void deleteReview(Long reviewId, UserDetails userDetails, String userId) {
+        if (userDetails == null) {
+            throw new CustomException(ExceptionCode.NO_LOGIN);
+        }
+
+        if (!userDetails.getUsername().equals(userId)) {
+            throw new CustomException(ExceptionCode.ACCESS_DENIED);
+        }
         reviewRepository.deleteById(reviewId);
     }
 

@@ -8,7 +8,6 @@ import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.service.PostService;
 import com.beancontainer.global.auth.service.CustomUserDetails;
-import com.beancontainer.global.service.AuthorizationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +32,6 @@ import java.util.Map;
 public class PostRestController {
     private final PostService postService;
     private final MemberService memberService;
-    private final AuthorizationService authorizationService;
 
     @PostMapping("/post/create")    // 게시글 작성
     public ResponseEntity<Map<String, String>> createPost(@RequestPart("postRequestDto") PostRequestDto postRequestDto,

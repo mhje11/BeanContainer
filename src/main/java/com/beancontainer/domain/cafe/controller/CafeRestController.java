@@ -16,21 +16,22 @@ import java.util.Set;
 public class CafeRestController {
     private final CafeService cafeService;
 
-    @PostMapping("/api/save/cafe")
+    @PostMapping("/api/cafes")
     public ResponseEntity<String> saveCafe(@RequestBody CafeSaveDto cafeSaveDto) {
         Long cafeId = cafeService.saveCafe(cafeSaveDto);
         return new ResponseEntity<>("카페 저장완료 " + cafeId, HttpStatus.CREATED);
     }
 
 
-    @GetMapping("/api/cafe/{cafeId}")
+    @GetMapping("/api/cafes/{cafeId}")
     public ResponseEntity<CafeResponseDto> getCafe(@PathVariable("cafeId")Long cafeId) {
         CafeResponseDto cafe = cafeService.getCafeById(cafeId);
         return new ResponseEntity<>(cafe, HttpStatus.OK);
     }
 
 
-    @GetMapping("/api/map/category")
+//    @GetMapping("/api/map/category")
+    @GetMapping("/api/cafes?categories={categories}&excludeBrands={excludeBrands}")
     public ResponseEntity<List<CafeResponseDto>> findByCategory(@RequestParam Set<String> categories,
                                                                 @RequestParam(required = false) boolean excludeBrands) {
         List<CafeResponseDto> cafes = cafeService.getCafesByCategories(categories, excludeBrands);

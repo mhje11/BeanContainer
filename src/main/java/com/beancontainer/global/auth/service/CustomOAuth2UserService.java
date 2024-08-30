@@ -5,7 +5,6 @@ import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.entity.Role;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.auth.oauth2.dto.*;
-import com.beancontainer.global.oauth2.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
