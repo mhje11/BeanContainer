@@ -22,12 +22,9 @@ public class ReviewController {
     @ResponseBody
     public ResponseEntity<?> getCafeOrElseSaveAndGet(@PathVariable("kakaoId") String kakaoId, @RequestBody CafeSaveDto cafeSaveDto) {
         try {
-            log.info("Received request to check and save cafe with Cafe ID: {}", kakaoId);
             CafeResponseDto cafe = cafeService.getCafeByKakaoIdOrSave(kakaoId, cafeSaveDto);
-            log.info("Returning cafe details: {}", cafe);
             return ResponseEntity.ok(cafe);
         } catch (Exception e) {
-            log.error("Error while saving cafe: {}", e.getMessage());
             return ResponseEntity.status(500).body("{\"error\":\"" + e.getMessage() + "\"}");
 
         }

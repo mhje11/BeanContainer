@@ -1,7 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #EDE3D5;
-    margin: 0;
+    background-color: #F2EFE8;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -9,6 +8,7 @@ body {
 }
 
 #container {
+    margin-top: 10px;
     display: flex;
     flex-direction: row;
     height: calc(100vh - 60px); /* 전체 화면에서 헤더 높이(예: 60px)만큼을 뺀 높이 */
@@ -80,7 +80,7 @@ body {
 
 #sidebar {
     width: 25%;
-    height: 600px;
+    height: 640px;
     margin: 10px;
     display: flex;
     flex-direction: column;
@@ -159,7 +159,7 @@ body {
     font-size: 14px; /* 축소된 폰트 크기 */
     border: 2px solid #7B6155;
     border-radius: 8px;
-    background-color: #EDE3D5;
+    background-color: #F2EFE8;
     color: #333;
 }
 
@@ -275,7 +275,7 @@ body {
     cursor: pointer;
     top: 0;
     left: 0;
-    right: 0;
+    right: -2px;
     bottom: 0;
     background-color: #ccc;
     transition: .4s;

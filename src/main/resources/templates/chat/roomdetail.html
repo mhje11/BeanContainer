@@ -27,7 +27,8 @@
             <button class="btn btn-primary" type="button" @click="sendMessage">보내기</button>
         </div>
     </div>
-    <ul class="list-group">
+    <button class="btn btn-danger mt-3" @click="exitRoom">나가기</button> <!-- 나가기 버튼 추가 -->
+    <ul class="list-group mt-3">
         <li class="list-group-item" v-for="message in messages">
             {{ message.senderNickname }} - {{ message.message }}
         </li>
@@ -46,13 +47,13 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            roomId: '',
+            roomId: /*[[${roomId}]]*/,  // roomId를 템플릿에서 전달받도록 수정
             room: {},
             message: '',
             messages: []
         },
         created() {
-            this.roomId = [[${roomId}]];
+            this.roomId = /*[[${roomId}]]*/; // roomId를 올바르게 설정
             this.findRoom();
         },
         methods: {
@@ -76,6 +77,16 @@
                     "type": recv.type,
                     "senderNickname": recv.type == 'ENTER' ? '[알림]' : recv.senderNickname,
                     "message": recv.message
+                });
+            },
+            exitRoom: function() {  // 나가기 메서드 수정
+                axios.put('/chat/room/quit', null, {
+                    params: { roomId: this.roomId }  // roomId를 params로 전달
+                }).then(response => {
+                    alert("채팅방에서 나왔습니다.");
+                    location.href = "/chat/room"; // 나간 후 방 목록 페이지로 이동
+                }).catch(error => {
+                    console.error("방 나가기 실패:", error);
                 });
             }
         }

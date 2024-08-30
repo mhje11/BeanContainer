@@ -69,3 +69,45 @@ body {
 .cafe-box a:hover {
     text-decoration: underline;
 }
+.kakao-infowindow-content {
+    max-width: 200px; /* 인포창의 최대 너비를 설정합니다. */
+    white-space: normal; /* 줄바꿈을 허용합니다. */
+    word-wrap: break-word; /* 긴 단어를 줄바꿈합니다. */
+    word-break: break-all; /* 단어가 너무 길어도 줄바꿈합니다. */
+    overflow: hidden; /* 텍스트가 넘칠 경우 숨깁니다. */
+}
+#custom-infowindow {
+    font-size: 13px;
+    max-width: 250px;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow: hidden;
+}
+
+#custom-infowindow .place-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#custom-infowindow .place-address {
+    font-size: 14px;
+    color: #555;
+}
+
+#custom-infowindow .infowindow-link {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 12px;
+    display: contents;
+    margin-top: 5px;
+}
+
+#custom-infowindow .infowindow-link:hover {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+
+
