@@ -37,6 +37,24 @@
         .chat-room:hover {
             background-color: #f1f3f5;
         }
+        .btn-create-room {
+            background-color: #7B6155 ;
+            border-color:  #7B6155 ;
+            color: white;
+        }
+        .btn-create-room:hover {
+            background-color: #755c51;
+            border-color:  #755c51 ;
+            color: white;
+        }
+        .badge-room-count {
+            background-color: #F4B844;
+            color: white;
+        }
+        .badge-room-full {
+            background-color: #f44336;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -51,16 +69,16 @@
             <input type="number" class="form-control" v-model="room_capacity" min="2" max="100" placeholder="최대 인원">
         </div>
         <div class="col-md-2">
-            <button class="btn btn-primary btn-block" @click="createRoom">채팅방 개설</button>
+            <button class="btn btn-create-room btn-block" @click="createRoom">채팅방 개설</button>
         </div>
     </div>
     <div class="chat-list">
         <div class="chat-room p-3 mb-2 border rounded" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId)">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">{{item.name}}</h5>
-                <span class="badge" :class="{'badge-primary': item.currentUserCount < item.capacity, 'badge-secondary': item.currentUserCount >= item.capacity}">
-                    {{item.currentUserCount}}/{{item.capacity}}
-                </span>
+                <span class="badge" :class="{'badge-room-count': item.currentUserCount < item.capacity, 'badge-room-full': item.currentUserCount >= item.capacity}">
+                        {{item.currentUserCount}}/{{item.capacity}}
+                    </span>
             </div>
         </div>
     </div>
