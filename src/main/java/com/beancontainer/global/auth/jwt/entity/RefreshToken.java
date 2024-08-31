@@ -24,20 +24,19 @@ public class RefreshToken {
     public RefreshToken(String userId, String refresh) {
         this.userId = userId;
         this.refresh = refresh;
-        this.expiration = Instant.now().plusSeconds(7 * 24 * 60 * 60); // 7일 후 만료
     }
 
     //업데이트 후 만료 시간 재설정
     //로그인 연장 가능
     public void updateRefresh(String newRefreshToken) {
         this.refresh = newRefreshToken;
-        this.expiration = Instant.now().plusSeconds(7 * 24 * 60 * 60); // 7일 후 만료
     }
 
     //만료 체크
     public boolean isExpired() {
         return this.expiration.isBefore(Instant.now());
     }
+
 
 
 }

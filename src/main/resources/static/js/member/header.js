@@ -59,39 +59,49 @@ function refreshAccessToken() {
 }
 
 // API 요청 함수
-function makeApiRequest(url, method = 'GET', data = null) {
+async function makeApiRequest(url, method = 'GET', data = null) {
     console.log(`Making API request to ${url}`);
-    return fetch(url, {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: data ? JSON.stringify(data) : null
-    }).then(response => {
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: data ? JSON.stringify(data) : null
+        });
+
         if (response.status === 401 || response.status === 403) {
-            return response.text().then(errorMessage => {
-                if (errorMessage === 'JWT 토큰이 만료되었습니다.' || errorMessage === '유효하지 않은 리프레시 토큰입니다.') {
-                    console.log('Token expired, attempting refresh');
-                    return refreshAccessToken().then(success => {
-                        if (success) {
-                            console.log('Token refreshed, retrying original request');
-                            return makeApiRequest(url, method, data);
-                        } else {
-                            console.log('Token refresh failed, redirecting to login');
-                            window.location.href = '/login';
-                            throw new Error('로그인 만료');
-                        }
-                    });
+            const errorMessage = await response.text();
+            console.log('Received error message:', errorMessage);
+
+            if (errorMessage.includes('토큰이 만료되었습니다') || errorMessage.includes('유효하지 않은 리프레시 토큰')) {
+                console.log('Token expired or invalid, attempting refresh');
+                const refreshSuccess = await refreshAccessToken();
+                if (refreshSuccess) {
+                    console.log('Token refreshed, retrying original request');
+                    return makeApiRequest(url, method, data);
                 } else {
-                    console.log('Authentication failed, redirecting to login');
+                    console.log('Token refresh failed, redirecting to login');
                     window.location.href = '/login';
-                    throw new Error('Authentication failed');
+                    throw new Error('로그인 만료');
                 }
-            });
+            } else {
+                console.log('Authentication failed, redirecting to login');
+                window.location.href = '/login';
+                throw new Error('Authentication failed: ' + errorMessage);
+            }
         }
-        return response.json();
-    });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('API request error:', error);
+        throw error;
+    }
 }
 
 // 전역 스코프에 함수들 노출
