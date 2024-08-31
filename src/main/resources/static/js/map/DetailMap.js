@@ -58,10 +58,9 @@ function displayMarker(cafe) {
         const content = `
             <div id="custom-infowindow" class="kakao-infowindow-content" style="padding:5px; font-size:12px;">
                 <strong>${cafe.name}</strong><br>
-                ${cafe.address}<br>
                 <class="place-name">평점:</> ${averageScore} / 5.0<br>
                 <class="place-address">카테고리:</> ${Array.from(cafe.topCategories).join(', ')}<br>
-                <a href="/review/${cafe.id}" class="infowindow-link" target="_blank">리뷰 페이지로 이동</a>
+                <button class="infowindow-link" onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 보기</button>
             </div>
         `;
 
@@ -80,7 +79,7 @@ function addCafeToSidebar(cafe) {
             <h4>${cafe.name}</h4>
             <p><strong>카테고리:</strong> ${Array.from(cafe.topCategories).join(', ')}</p>
             <p><strong>평점:</strong> ${cafe.averageScore.toFixed(1)} / 5.0</p>
-            <a href="/review/${cafe.id}" target="_blank">리뷰 페이지로 이동</a>
+            <a href="/review/${cafe.id}" target="_blank">리뷰 보기</a>
         `;
 
     // 카드 클릭 시 해당 마커 위치로 이동하고 인포윈도우 닫기 및 마커 이미지 변경

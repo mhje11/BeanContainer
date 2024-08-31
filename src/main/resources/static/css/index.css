@@ -1,7 +1,17 @@
 html, body {
-    font-family: Arial, sans-serif;
     background-color: #F2EFE8;
     height: 100%;
+}
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 전체 폰트 설정 */
+.container, .left-section, .right-section, button, input, select, label, .category-item, .map-card, .place-name{
+    font-family: 'ChosunGu', Arial, sans-serif; !important;
 }
 
 .container {
@@ -170,6 +180,7 @@ html, body {
 #map {
     width: 100%;
     height: 100%;
+    border-radius: 8px;
 }
 
 #map-cards-container {
@@ -360,9 +371,7 @@ input:checked + .slider:before {
     text-decoration: none;
 }
 
-.custom-overlay-content a:hover {
-    text-decoration: underline;
-}
+
 .kakao-infowindow-content {
     max-width: 200px; /* 인포창의 최대 너비를 설정합니다. */
     white-space: normal; /* 줄바꿈을 허용합니다. */
@@ -389,9 +398,11 @@ input:checked + .slider:before {
     font-size: 12px;
     color: #555;
 }
+.place-name {
+    margin-left: 5px;
+}
 
-#custom-infowindow .infowindow-link {
-    color: #007bff;
+#custom-infowindow {
     text-decoration: none;
     cursor: pointer;
     font-size: 12px;
@@ -399,10 +410,30 @@ input:checked + .slider:before {
     margin-top: 5px;
 }
 
-#custom-infowindow .infowindow-link:hover {
-    color: #0056b3;
+#custom-infowindow {
     text-decoration: none;
 }
+
+.infowindow-link {
+    background-color: #7B6155; /* 초록색 배경 */
+    color: white;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block; /* 인라인 블록 */
+    font-size: 10px; /* 폰트 크기 */
+    cursor: pointer; /* 커서 포인터 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    height: 20px;
+    width: 60px;
+    margin-left: 40px;
+    margin-bottom: 5px;
+}
+
+.infowindow-link:hover {
+    background-color: #5b4a42; /* 호버 시 더 진한 초록색 */
+}
+
 
 
 

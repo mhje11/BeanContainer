@@ -1,5 +1,4 @@
 body {
-    font-family: Arial, sans-serif;
     background-color: #F2EFE8;
     margin: 0;
     height: 100vh;
@@ -8,13 +7,24 @@ body {
     overflow: hidden;
 }
 
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 #container {
     display: flex;
     flex-direction: row;
     height: calc(100vh - 60px); /* 전체 화면에서 헤더 높이(예: 60px)만큼을 뺀 높이 */
+    font-family: 'ChosunGu', Arial, sans-serif;
+}
+.font{
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 
 #map-container {
+    font-family: 'ChosunGu', Arial, sans-serif;
     position: relative;
     width: 70%;
     height: 615px; /* 지도 높이를 컨테이너 높이에 맞춤 */
@@ -26,6 +36,7 @@ body {
 #map {
     width: 100%;
     height: calc(100% - 60px);
+    border-radius: 8px;
 }
 
 #cafe-cards {
@@ -35,6 +46,8 @@ body {
     max-height: 80%;
     overflow-y: auto;
     z-index: 1;
+    font-family: 'ChosunGu', Arial, sans-serif;
+
 }
 
 #search-box {
@@ -51,12 +64,13 @@ body {
     cursor: pointer;
     font-size: 12px; /* 축소된 폰트 크기 */
     margin-left: 10px; /* 약간의 간격 */
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 
 .cafe-card {
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     padding: 8px; /* 축소된 카드 내부 패딩 */
     margin-bottom: 8px;
     width: 180px; /* 축소된 카드 너비 */
@@ -161,6 +175,8 @@ body {
     border-radius: 8px;
     background-color: #F2EFE8;
     color: #333;
+    font-family: 'ChosunGu', Arial, sans-serif;
+
 }
 
 #search-results div:hover {
@@ -176,6 +192,7 @@ body {
     border-radius: 8px;
     margin-top: 10px;
     font-size: 12px; /* 축소된 폰트 크기 */
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 
 .button-container button {
@@ -187,10 +204,13 @@ body {
     cursor: pointer;
     font-size: 13px;
     transition: background-color 0.3s ease;
+    font-family: 'ChosunGu', Arial, sans-serif;
+
 }
 
 .button-container button:hover {
     background-color: #5b4a42;
+
 }
 
 #brand-exclude input[type="checkbox"],
@@ -307,4 +327,44 @@ input:checked + .slider {
 /* Move the slider when checked */
 input:checked + .slider:before {
     transform: translateX(26px);
+}
+
+
+.infowindow-link {
+    background-color: #7B6155; /* 초록색 배경 */
+    color: white;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block; /* 인라인 블록 */
+    font-size: 9px; /* 폰트 크기 */
+    cursor: pointer; /* 커서 포인터 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    height: 20px;
+    width: 60px;
+    margin-top: 5px;
+    font-family: 'ChosunGu', Arial, sans-serif;
+}
+
+.infowindow-link:hover {
+    background-color: #5b4a42; /* 호버 시 더 진한 초록색 */
+}
+
+.remove-btn {
+    background-color: #7B6155; /* 초록색 배경 */
+    color: white;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block; /* 인라인 블록 */
+    font-size: 10px; /* 폰트 크기 */
+    cursor: pointer; /* 커서 포인터 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    height: 20px;
+    width: 30px;
+    margin-top: 5px;
+}
+
+.remove-btn:hover {
+    background-color: #5b4a42; /* 호버 시 더 진한 초록색 */
 }
