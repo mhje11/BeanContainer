@@ -3,6 +3,8 @@ package com.beancontainer.global.auth.service;
 
 import com.beancontainer.global.auth.jwt.repository.RefreshTokenRepository;
 import com.beancontainer.global.auth.jwt.entity.RefreshToken;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,15 @@ public class RefreshTokenService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
+    @Transactional
+    public void deleteAndSaveNewRefreshToken(String userId, String oldRefreshToken, String newRefreshToken) {
+        // 기존 토큰 삭제
+        refreshTokenRepository.deleteByRefresh(oldRefreshToken);
+
+        // 새 토큰 저장
+        RefreshToken newToken = new RefreshToken(userId, newRefreshToken);
+        refreshTokenRepository.save(newToken);
+    }
 
     //RefreshToken 저장, 업데이트
     @Transactional(readOnly = false)
@@ -29,13 +40,6 @@ public class RefreshTokenService {
     //DB에서 RefreshToken 값 조회
     public Optional<RefreshToken> findByRefresh(String refresh) {
         return refreshTokenRepository.findByRefresh(refresh);
-    }
-
-    //accessToken 재발급 할 때 DB에 있는 refreshToken 업데이트
-    @Transactional
-    public void updateRefreshToken(RefreshToken refreshToken, String newRefreshTokenValue) {
-        refreshToken.updateRefresh(newRefreshTokenValue);
-        refreshTokenRepository.save(refreshToken);
     }
 
     //RefreshToken 삭제

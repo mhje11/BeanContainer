@@ -84,12 +84,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String token = null;
-
         // 헤더에서 토큰 확인
         String authorization = request.getHeader("Authorization");
         if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
             token = authorization.substring(7);
-            log.info("Token found in header: {}", token.substring(0, Math.min(token.length(), 10)));
             return token;
         }
 
@@ -99,12 +97,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
                     token = cookie.getValue();
-                    log.info("Token found in cookie: {}", token.substring(0, Math.min(token.length(), 10)));
                     return token;
                 }
             }
         }
-
         log.info("토큰 없음 !! ");
         return null;
     }

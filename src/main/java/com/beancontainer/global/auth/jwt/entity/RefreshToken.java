@@ -34,5 +34,10 @@ public class RefreshToken {
         this.expiration = Instant.now().plusSeconds(7 * 24 * 60 * 60); // 7일 후 만료
     }
 
+    //만료 체크
+    public boolean isExpired() {
+        return this.expiration.isBefore(Instant.now());
+    }
+
 
 }
