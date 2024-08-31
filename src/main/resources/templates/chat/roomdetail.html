@@ -101,10 +101,9 @@
                 });
             },
             sendExitRequest: function() {
-                return axios.put('/chat/room/quit', null, {
-                    params: { roomId: this.roomId }
-                });
+                return axios.post(`/chat/room/${this.roomId}/exit`);
             },
+
             beforeUnloadHandler: function(e) {
                 // 나가기 버튼이 클릭된 경우 이 핸들러를 실행하지 않음
                 if (!this.isExiting) {
