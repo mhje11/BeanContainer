@@ -67,9 +67,7 @@ public class MemberController {
                 member.getNickname(),
                 member.getProfileImageUrl()
         );
-        log.info("MemberDTO created: {}", memberDTO);
         model.addAttribute("member", memberDTO);
-        log.info("Member found for userId: {}", userId);
 
 
         return "member/myPage";

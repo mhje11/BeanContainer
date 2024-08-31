@@ -51,12 +51,35 @@ public class RefreshTokenService {
         refreshTokenRepository.deleteByRefresh(refresh);
     }
 
-    public void addRefreshToken(RefreshToken refreshToken) {
-        refreshTokenRepository.save(refreshToken);
-    }
 
     public boolean isRefreshTokenValid(String refreshToken) {
         return findByRefresh(refreshToken).isPresent() && !jwtTokenizer.isRefreshTokenExpired(refreshToken);
+    }
+
+    @Transactional
+    public String[] refreshToken(String refreshToken) {
+        if (refreshToken == null) {
+            throw new CustomException(ExceptionCode.UNAUTHORIZED);
+        }
+
+        RefreshToken storedToken = findByRefresh(refreshToken)
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
+
+        if (jwtTokenizer.isRefreshTokenExpired(refreshToken)) {
+            throw new CustomException(ExceptionCode.JWT_TOKEN_EXPIRED);
+        }
+
+        String newAccessToken = jwtTokenizer.newAccessToken(refreshToken);
+        String newRefreshToken = jwtTokenizer.createRefreshToken(
+                storedToken.getId(),
+                storedToken.getUserId(),
+                jwtTokenizer.parseRefreshToken(refreshToken).get("name", String.class),
+                jwtTokenizer.parseRefreshToken(refreshToken).get("role", String.class)
+        );
+
+        updateRefreshToken(storedToken, newRefreshToken);
+
+        return new String[]{newAccessToken, newRefreshToken};
     }
 
 
