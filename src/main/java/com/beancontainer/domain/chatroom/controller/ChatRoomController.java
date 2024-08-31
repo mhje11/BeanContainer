@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@Slf4j
 @Controller
 @RequestMapping("/chat")
 public class ChatRoomController {
@@ -44,14 +43,9 @@ public class ChatRoomController {
 
     @GetMapping("/room/enter/{roomId}")
     public String roomDetail(Model model, @PathVariable Long roomId, @AuthenticationPrincipal UserDetails userDetails) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("찾을수없는룸"));
-        if (chatRoom.getCurrentUserCount() >= chatRoom.getCapacity()) {
-            return "/chat/room";
-        }
+        String username = chatRoomService.enterRoom(roomId, userDetails.getUsername());
         model.addAttribute("roomId", roomId);
-        model.addAttribute("userId", userDetails.getUsername());
-        chatRoom.incrementUserCount();
-        chatRoomRepository.save(chatRoom);
+        model.addAttribute("userId", username);
         return "/chat/roomdetail";
     }
 
@@ -64,9 +58,7 @@ public class ChatRoomController {
     @PutMapping("/room/quit")
     @ResponseBody
     public void exitRoom(@RequestParam Long roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("방못찾음"));
-        chatRoom.decrementUserCount();
-        chatRoomRepository.save(chatRoom);
+        chatRoomService.exitRoom(roomId);
     }
 }
 

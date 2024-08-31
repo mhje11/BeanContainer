@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">
     <link rel="icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/js/uikit-icons.min.js"></script>
+    <script th:src="@{/js/member/header.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <style>
         [v-cloak] {
             display: none;
@@ -13,6 +18,7 @@
     </style>
 </head>
 <body>
+<div th:replace="fragments/header :: header"></div>
 <div class="container" id="app" v-cloak>
     <div>
         <h2>{{ room.name }}</h2>
