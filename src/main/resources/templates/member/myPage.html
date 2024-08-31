@@ -65,7 +65,7 @@
         const formData = new FormData();
         formData.append('file', file);
 
-        fetch('/api/mypage/' + userId + '/uploadProfileImage', {
+        fetch('/api/mypage/' + userId + '/profile-image', {
             method: 'POST',
             body: formData
         })
@@ -88,8 +88,8 @@
 
     function deleteProfileImage() {
         if (confirm('프로필 이미지를 제거하시겠습니까?')) {
-            fetch('/api/mypage/{userId}/deleteProfileImage', {
-                method: 'POST',
+            fetch('/api/mypage/' + userId + '/profile-image', {
+                method: 'DELETE',
                 credentials: 'include'
             })
                 .then(response => {
@@ -117,7 +117,7 @@
     function changeNickname() {
         var newNickname = document.getElementById('newNickname').value;
         if (newNickname) {
-            fetch('/api/mypage/' + userId + '/updateNickname', {
+            fetch('/api/mypage/' + userId + '/nickname', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,13 +150,20 @@
 
     function deleteAccount() {
         if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-            $.post('/api/mypage/' + userId + '/deleteAccount')
-                .done(function (response) {
-                    alert('계정이 삭제되었습니다.');
-                    window.location.href = '/';
+            fetch('/api/mypage/' + userId + '/account', {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('계정이 삭제되었습니다.');
+                        window.location.href = '/';
+                    } else {
+                        throw new Error('계정 삭제 실패');
+                    }
                 })
-                .fail(function (error) {
-                    alert('계정 삭제에 실패했습니다: ' + error.responseText);
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('계정 삭제에 실패했습니다: ' + error.message);
                 });
         }
     }
