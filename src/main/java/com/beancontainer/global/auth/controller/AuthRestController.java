@@ -32,7 +32,6 @@ public class AuthRestController {
     private final RefreshTokenService refreshTokenService;
 
 
-    //리프레시 토큰 수정 필요
     @PostMapping("/login")
     public ResponseEntity<LoginRequestDTO> login(@RequestBody @Valid LoginRequestDTO userLoginRequestDto,
                                      BindingResult bindingResult, HttpServletResponse response) {
@@ -57,8 +56,8 @@ public class AuthRestController {
         }
 
         //토큰 발급
-        String accessToken = jwtTokenizer.createAccessToken(member);
-        String refreshToken = jwtTokenizer.createRefreshToken(member);
+        String accessToken = jwtTokenizer.createAccessToken(member.getId(), member.getUserId(), member.getName(), member.getRole().name());
+        String refreshToken = jwtTokenizer.createRefreshToken(member.getId(), member.getUserId(), member.getName(), member.getRole().name());
 
         //리프레시토큰을 디비에 저장.
         RefreshToken refreshTokenEntity = new RefreshToken(member.getUserId(), refreshToken);
@@ -87,6 +86,7 @@ public class AuthRestController {
     @PostMapping("/refreshToken")
     public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = getCookieValue(request, "refreshToken");
+        log.info("기존 리프레쉬 토큰 : " + refreshToken);
 
         //refreshToken 이 없다면 401 코드 보냄
         if (refreshToken == null) {
@@ -97,9 +97,22 @@ public class AuthRestController {
             RefreshToken storedToken = refreshTokenService.findByRefresh(refreshToken)
                     .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
 
-            Member member = memberService.findByUserId(storedToken.getUserId());
-            String newAccessToken = jwtTokenizer.createAccessToken(member);
-            String newRefreshToken = jwtTokenizer.createRefreshToken(member);
+            if (jwtTokenizer.isRefreshTokenExpired(refreshToken)) {
+                throw new CustomException(ExceptionCode.JWT_TOKEN_EXPIRED);
+            }
+
+            String newAccessToken = jwtTokenizer.newAccessToken(refreshToken);
+            String newRefreshToken = jwtTokenizer.createRefreshToken(
+                    storedToken.getId(),
+                    storedToken.getUserId(),
+                    jwtTokenizer.parseRefreshToken(refreshToken).get("name", String.class),
+                    jwtTokenizer.parseRefreshToken(refreshToken).get("role", String.class)
+            );
+
+            // 기존 refresh token을 새로운 것으로 업데이트
+            refreshTokenService.updateRefreshToken(storedToken, newRefreshToken);
+            log.info("새로운 리프레쉬 토큰 : " + newRefreshToken);
+            log.info("새로운 엑세스 토큰  :  " + newAccessToken);
 
             // 새로운 Access Token을 쿠키에 설정
             addCookie(response, "accessToken", newAccessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
@@ -107,8 +120,6 @@ public class AuthRestController {
             // 새로운 Refresh Token을 쿠키에 설정
             addCookie(response, "refreshToken", newRefreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
 
-            // 기존 refresh token 삭제 및 새로운 refresh token 저장
-            refreshTokenService.deleteAndSaveNewRefreshToken(storedToken.getUserId(), refreshToken, newRefreshToken);
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {

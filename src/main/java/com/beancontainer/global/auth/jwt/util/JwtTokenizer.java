@@ -20,7 +20,7 @@ public class JwtTokenizer {
     private final byte[] accessSecret;
     private final byte[] refreshSecret;
 
-    public static Long ACCESS_TOKEN_EXPIRE_COUNT = 30 * 60 * 1000L; //30분
+    public static Long ACCESS_TOKEN_EXPIRE_COUNT = 30 * 1000L; //30분
     public static Long REFRESH_TOKEN_EXPIRE_COUNT=7*24*60*60*1000L; //7일
 
     public JwtTokenizer(@Value("${jwt.secretKey}") String accessSecret, @Value("${jwt.refreshKey}") String refreshSecret){
@@ -28,108 +28,113 @@ public class JwtTokenizer {
         this.refreshSecret = refreshSecret.getBytes(StandardCharsets.UTF_8);
     }
 
-    // 토큰 생성
-    private String createToken(String userId, String name, String role, long expire, byte[] secretKey) {
+    /**
+     * Jwts 빌더를 이용한 token 생성
+     */
+    private String createToken(Long id, String userId, String name, String role, long expire, byte[] secretKey) {
+        Claims claims = Jwts.claims().setSubject(userId);
+        claims.put("id", id);
+        claims.put("name", name);
+        claims.put("role", role);
+
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + expire);
+
         return Jwts.builder()
-                .setSubject(userId)
-                .claim("name", name)
-                .claim("role", role)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expire))
-                .signWith(getSigningKey(secretKey), SignatureAlgorithm.HS256)
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .signWith(SignatureAlgorithm.HS256, getSigningKey(secretKey))
                 .compact();
     }
 
+    /**
+     * byte 형식의 secretKey
+     */
     public static Key getSigningKey(byte[] secretKey){
         return Keys.hmacShaKeyFor(secretKey);
     }
 
-
-    public String createAccessToken(Member member) {
-        return createToken(
-                member.getUserId(),
-                member.getName(),
-                member.getRole().name(),
-                ACCESS_TOKEN_EXPIRE_COUNT,
-                accessSecret
-        );
-    }
-
-    public String createRefreshToken(Member member) {
-        return createToken(
-                member.getUserId(),
-                member.getName(),
-                member.getRole().name(),
-                REFRESH_TOKEN_EXPIRE_COUNT,
-                refreshSecret
-        );
+    /**
+     * Accesstoken 생성
+     */
+    public String createAccessToken(Long id, String username, String name, String role) {
+        return createToken(id, username, name, role, ACCESS_TOKEN_EXPIRE_COUNT, accessSecret);
     }
 
 
+    /**
+     * RefreshToken 생성
+     */
+    public String createRefreshToken(Long id, String username, String name, String role) {
+        return createToken(id, username, name, role, REFRESH_TOKEN_EXPIRE_COUNT, refreshSecret);
+    }
 
+
+    /**
+     * access token 파싱
+     */
     public Claims parseAccessToken(String accessToken) {
         return parseToken(accessToken, accessSecret);
     }
 
+    /**
+     * refresh token 파싱
+     */
     public Claims parseRefreshToken(String refreshToken) {
         return parseToken(refreshToken, refreshSecret);
     }
 
+    /**
+     * token 파싱
+     * @param token access/refresh
+     * @param secretKey token 값
+     * @return
+     */
     private Claims parseToken(String token, byte[] secretKey) {
         log.debug("Parsing token: {}", token.substring(0, Math.min(token.length(), 10)));
         log.debug("Using secret key: {}", new String(secretKey, 0, Math.min(secretKey.length, 10)));
 
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            log.error("Error parsing token", e);
-            throw e;
-        }
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey(secretKey))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
     }
 
-    public boolean validateTokenHeader(String token) {
+    /**
+     * 토큰 만료 확인
+     */
+    public boolean isTokenExpired(String token, byte[] secretKey) {
         try {
-            String[] chunks = token.split("\\.");
-            if (chunks.length < 2) {
-                return false;
-            }
-
-            Base64.Decoder decoder = Base64.getUrlDecoder();
-            String header = new String(decoder.decode(chunks[0]));
-
-            // 헤더에 "alg"와 "typ" 필드가 있는지 확인
-            return header.contains("\"alg\"") && header.contains("\"typ\"") && header.contains("\"JWT\"");
-        } catch (Exception e) {
-            log.error("Error validating token header", e);
+            Jwts.parserBuilder().setSigningKey(getSigningKey(secretKey)).build().parseClaimsJws(token).getBody();
             return false;
-        }
-    }
-
-    public boolean validateToken(String token) {
-        if (!validateTokenHeader(token)) {
-            return false;
-        }
-
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey(accessSecret))
-                    .build()
-                    .parseClaimsJws(token);
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT signature.");
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT token.");
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT token.");
-        } catch (IllegalArgumentException e) {
-            log.info("JWT token compact of handler are invalid.");
         }
-        return false;
+    }
+
+    public boolean isAccessTokenExpired(String accessToken) {
+        return isTokenExpired(accessToken, accessSecret);
+    }
+
+    public boolean isRefreshTokenExpired(String refreshToken) {
+        return isTokenExpired(refreshToken, refreshSecret);
+    }
+
+    /**
+     * accessToken 만료 시 refreshToken 으로 재발급
+     */
+    public String newAccessToken(String refreshToken) {
+        Claims claims = parseRefreshToken(refreshToken);
+
+        Long id = claims.get("id", Long.class);
+        String userId = claims.getSubject();
+        String name = claims.get("name", String.class);
+        String role = claims.get("role", String.class);
+
+        return createAccessToken(id, userId, name, role);
     }
 
 

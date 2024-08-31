@@ -1,28 +1,16 @@
 package com.beancontainer.domain.member.controller;
 
-import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.dto.SignUpRequestDTO;
 import com.beancontainer.domain.member.dto.VerifyCodeDTO;
-import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.AuthService;
 import com.beancontainer.domain.member.service.MailService;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
-import com.beancontainer.global.auth.jwt.entity.RefreshToken;
-import com.beancontainer.global.auth.jwt.util.JwtTokenizer;
-import com.beancontainer.global.auth.service.RefreshTokenService;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -37,9 +25,6 @@ import java.util.Map;
 public class MemberRestController {
     private final AuthService authService;
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenizer jwtTokenizer;
-    private final RefreshTokenService refreshTokenService;
     private final MailService mailService;
 
 
