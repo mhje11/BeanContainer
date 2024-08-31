@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/mypage")
 @RequiredArgsConstructor
 @Slf4j
 public class MyPageRestController {
@@ -23,30 +23,50 @@ public class MyPageRestController {
     private final ProfileImageService profileImageService;
 
 
-    @PostMapping("/mypage/{userId}/updateNickname")
+    @PostMapping("/{userId}/nickname")
     public ResponseEntity<Map<String, String>> updateNickname(@PathVariable String userId,
-                                                              @RequestBody Map<String, String> payload) {
+                                                              @RequestBody Map<String, String> payload, Principal principal) {
+        // 현재 로그인한 사용자와 userId가 일치하는지 확인
+        if (!userId.equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         String newNickname = payload.get("newNickname");
         memberService.updateNickname(userId, newNickname);
         return ResponseEntity.ok(Map.of("message", "닉네임 변경 완료", "newNickname", newNickname));
     }
 
-    @PostMapping("/mypage/{userId}/uploadProfileImage")
-    public ResponseEntity<Map<String, String>> uploadProfileImage( @PathVariable String userId, @RequestParam("file") MultipartFile file) throws IOException {
+    @PostMapping("/{userId}/profile-image")
+    public ResponseEntity<Map<String, String>> uploadProfileImage( @PathVariable String userId, @RequestParam("file") MultipartFile file, Principal principal) throws IOException {
+
+        // 현재 로그인한 사용자와 userId가 일치하는지 확인
+        if (!userId.equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         String imageUrl = profileImageService.updateProfileImage(userId, file);
         return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
     }
 
-    @PostMapping("/mypage/{userId}/deleteProfileImage")
-    public ResponseEntity<Map<String, String>> deleteProfileImage(Principal principal) {
-        String userId = principal.getName();
+    @DeleteMapping("/{userId}/profile-image")
+    public ResponseEntity<Map<String, String>> deleteProfileImage(@PathVariable String userId,
+                                                                  Principal principal) {
+        // 현재 로그인한 사용자와 userId가 일치하는지 확인
+        if (!userId.equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         profileImageService.deleteExistingProfileImage(userId);
         return ResponseEntity.ok(Map.of("message", "프로필 이미지가 제거되었습니다."));
     }
 
-    @PostMapping("/mypage/{userId}/deleteAccount")
-    public ResponseEntity<String> deleteAccount(@PathVariable String userId) {
+    @DeleteMapping("/{userId}/account")
+    public ResponseEntity<String> deleteAccount(@PathVariable String userId,
+                                                Principal principal) {
+        // 현재 로그인한 사용자와 userId가 일치하는지 확인
+        if (!userId.equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         memberService.cancelAccount(userId);
         return ResponseEntity.ok().body("계정이 탈퇴 되었습니다.");
     }

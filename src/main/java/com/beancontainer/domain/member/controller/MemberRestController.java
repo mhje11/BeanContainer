@@ -52,7 +52,7 @@ public class MemberRestController {
 
 
     //아이디 중복 체크
-    @GetMapping("/check-userid")
+    @GetMapping("/signup/check-userid")
     public ResponseEntity<Map<String, Boolean>> checkUserId(@RequestParam String userId) {
         boolean exists = memberService.existsByUserId(userId);
         Map<String, Boolean> response = new HashMap<>();
