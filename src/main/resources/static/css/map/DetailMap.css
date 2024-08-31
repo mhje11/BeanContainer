@@ -46,6 +46,7 @@ body {
     background-color: #fff;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+    border-radius: 8px;
 }
 
 .cafe-box h4 {
@@ -75,6 +76,7 @@ body {
     word-wrap: break-word; /* 긴 단어를 줄바꿈합니다. */
     word-break: break-all; /* 단어가 너무 길어도 줄바꿈합니다. */
     overflow: hidden; /* 텍스트가 넘칠 경우 숨깁니다. */
+    border-radius: 8px;
 }
 #custom-infowindow {
     font-size: 13px;
@@ -83,6 +85,7 @@ body {
     word-wrap: break-word;
     word-break: break-all;
     overflow: hidden;
+    margin-left: 5px;
 }
 
 #custom-infowindow .place-name {
@@ -94,20 +97,33 @@ body {
     font-size: 14px;
     color: #555;
 }
+.place-name {
+    margin-left: 5px;
+}
 
-#custom-infowindow .infowindow-link {
-    color: #007bff;
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 12px;
-    display: contents;
+
+
+.infowindow-link {
+    background-color: #7B6155; /* 초록색 배경 */
+    color: white;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block; /* 인라인 블록 */
+    font-size: 10px; /* 폰트 크기 */
+    cursor: pointer; /* 커서 포인터 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    height: 20px;
+    width: 60px;
+    margin-left: 35px;
     margin-top: 5px;
 }
 
-#custom-infowindow .infowindow-link:hover {
-    color: #0056b3;
-    text-decoration: none;
+.infowindow-link:hover {
+    background-color: #5b4a42; /* 호버 시 더 진한 초록색 */
 }
+
+
 
 
 

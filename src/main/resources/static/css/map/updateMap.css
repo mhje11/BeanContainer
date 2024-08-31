@@ -26,6 +26,7 @@ body {
 #map {
     width: 100%;
     height: calc(100% - 60px);
+    border-radius: 8px;
 }
 
 #cafe-cards {
@@ -55,8 +56,8 @@ body {
 
 .cafe-card {
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     padding: 8px; /* 축소된 카드 내부 패딩 */
     margin-bottom: 8px;
     width: 180px; /* 축소된 카드 너비 */
@@ -307,4 +308,43 @@ input:checked + .slider {
 /* Move the slider when checked */
 input:checked + .slider:before {
     transform: translateX(26px);
+}
+
+
+.infowindow-link {
+    background-color: #7B6155; /* 초록색 배경 */
+    color: white;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block; /* 인라인 블록 */
+    font-size: 10px; /* 폰트 크기 */
+    cursor: pointer; /* 커서 포인터 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    height: 20px;
+    width: 60px;
+    margin-top: 5px;
+}
+
+.infowindow-link:hover {
+    background-color: #5b4a42; /* 호버 시 더 진한 초록색 */
+}
+
+.remove-btn {
+    background-color: #7B6155; /* 초록색 배경 */
+    color: white;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block; /* 인라인 블록 */
+    font-size: 10px; /* 폰트 크기 */
+    cursor: pointer; /* 커서 포인터 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    height: 20px;
+    width: 30px;
+    margin-top: 5px;
+}
+
+.remove-btn:hover {
+    background-color: #5b4a42; /* 호버 시 더 진한 초록색 */
 }
