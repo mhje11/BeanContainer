@@ -70,10 +70,7 @@
                     alert("최대 인원은 2명에서 100명 사이여야 합니다.");
                     return;
                 } else {
-                    var params = new URLSearchParams();
-                    params.append("name", this.room_name);
-                    params.append("capacity", this.room_capacity);
-                    axios.post('/chat/room', params)
+                    axios.post(`/chat/room/${this.room_name}/${this.room_capacity}`)
                         .then(
                             response => {
                                 alert(response.data.name + " 방 개설에 성공하였습니다.")
@@ -82,8 +79,9 @@
                                 this.findAllRoom();
                             }
                         )
-                        .catch(response => {
+                        .catch(error => {
                             alert("채팅방 개설에 실패하였습니다.");
+                            console.error(error);
                         });
                 }
             },
