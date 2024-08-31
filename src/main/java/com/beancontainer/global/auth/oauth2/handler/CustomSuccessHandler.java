@@ -42,8 +42,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
 
         //accessToken, RefreshToken 발급
-        String accessToken = jwtTokenizer.createAccessToken(member);
-        String refreshToken = jwtTokenizer.createRefreshToken(member);
+        String accessToken = jwtTokenizer.createAccessToken(member.getId(), member.getUserId(), member.getName(), member.getRole().name());
+        String refreshToken = jwtTokenizer.createRefreshToken(member.getId(), member.getUserId(), member.getName(), member.getRole().name());
 
         //발급받은 토큰을 쿠키에 저장
         // Access Token 쿠키 설정
@@ -54,7 +54,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // Refresh Token DB 저장
         RefreshToken refreshTokenEntity = new RefreshToken(String.valueOf(member.getId()), refreshToken);
-        refreshTokenService.addRefreshToken(refreshTokenEntity);
+        refreshTokenService.saveRefreshToken(refreshTokenEntity);
 
         // 로그인 성공 후 리다이렉트
         getRedirectStrategy().sendRedirect(request, response, "/");

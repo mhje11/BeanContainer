@@ -4,6 +4,7 @@ import com.beancontainer.global.auth.jwt.filter.JwtAuthenticationFilter;
 import com.beancontainer.global.auth.jwt.util.JwtTokenizer;
 import com.beancontainer.global.auth.oauth2.handler.CustomSuccessHandler;
 import com.beancontainer.global.auth.service.CustomOAuth2UserService;
+import com.beancontainer.global.auth.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,17 +18,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.sql.Ref;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtTokenizer jwtTokenizer;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final RefreshTokenService refreshTokenService;
 
-    public SecurityConfig(JwtTokenizer jwtTokenizer, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
+    public SecurityConfig(JwtTokenizer jwtTokenizer, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, RefreshTokenService refreshTokenService) {
         this.jwtTokenizer = jwtTokenizer;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
+        this.refreshTokenService = refreshTokenService;
     }
 
     //모든 유저 허용
@@ -85,7 +90,7 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
                         .authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorization"))
                         .successHandler(customSuccessHandler))
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenizer), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenizer, refreshTokenService), UsernamePasswordAuthenticationFilter.class);
         http
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")

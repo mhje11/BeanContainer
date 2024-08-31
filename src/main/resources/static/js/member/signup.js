@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // 서버에 아이디 중복 확인 요청
-        fetch(`/api/auth/check-userid?userId=${encodeURIComponent(userIdValue)}`)
+        fetch(`/api/auth/signup/check-userid?userId=${encodeURIComponent(userIdValue)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

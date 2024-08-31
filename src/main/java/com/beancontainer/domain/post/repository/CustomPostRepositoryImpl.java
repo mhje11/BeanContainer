@@ -1,19 +1,11 @@
 package com.beancontainer.domain.post.repository;
 
-import com.beancontainer.domain.like.entity.QLikes;
-import com.beancontainer.domain.member.entity.QMember;
 import com.beancontainer.domain.post.dto.PostDetailsResponseDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
-import com.beancontainer.domain.post.entity.Post;
-import com.beancontainer.domain.post.entity.QPost;
-import com.beancontainer.domain.postimg.entity.QPostImg;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.ExpressionUtils;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.*;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
