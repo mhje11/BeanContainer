@@ -207,8 +207,7 @@ function displayMarker(place) {
         var content = `
         <div id="custom-infowindow" class="kakao-infowindow-content">
             <strong class="place-name">${place.place_name}</strong><br>
-            <span class="place-address">${place.road_address_name || place.address_name}</span><br>
-            <a href="#" class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 페이지로 이동</a>
+        <button class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 보기</button>
         </div>
     `;
         infowindow.setContent(content);
@@ -237,7 +236,7 @@ function displayDbMarker(cafe) {
        
             <strong>${cafe.name}</strong><br>
             ${cafe.address}<br>
-            <a href="#" onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 페이지로 이동</a>
+            <button onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 보기</button>
         </div>
     `;
         infowindow.setContent(content);
@@ -432,7 +431,7 @@ function openInfoWindow(marker, place) {
             ${place.road_address_name || place.address_name}<br>
             <div style="margin-top: 10px;">
                 <button style="padding: 5px 10px; margin-right: 5px;" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-                <button style="padding: 5px 10px;" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 페이지로 이동</button>
+                <button style="padding: 5px 10px;" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 보기</button>
             </div>
         </div>
     `;

@@ -71,11 +71,9 @@ public class MapService {
                 .collect(Collectors.toList());
 
         if (map.getMember().getDeletedAt() != null) {
-            System.out.println("탈퇴한 회원");
             return new MapDetailResponseDto(map.getMapName(), "탈퇴한 회원", cafes, map.getIsPublic());
         }
 
-        System.out.println(map.getMember().getNickname());
         return new MapDetailResponseDto(map.getMapName(), map.getMember().getNickname(), cafes, map.getIsPublic());
 
     }

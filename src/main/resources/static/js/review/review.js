@@ -132,6 +132,7 @@ function updatePagination() {
     if (currentPage > 0) {
         const prevButton = document.createElement('button');
         prevButton.innerText = '이전';
+        prevButton.classList.add('font')
         prevButton.onclick = previousPage;
         paginationDiv.appendChild(prevButton);
     }
@@ -149,6 +150,7 @@ function updatePagination() {
     if (currentPage < totalPages - 1) {
         const nextButton = document.createElement('button');
         nextButton.innerText = '다음';
+        nextButton.classList.add('font')
         nextButton.onclick = nextPage;
         paginationDiv.appendChild(nextButton);
     }

@@ -5,6 +5,8 @@ import com.beancontainer.domain.chatroom.entity.ChatRoom;
 import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,38 +34,35 @@ public class ChatRoomService {
     public ChatRoomDto findRoomById(Long id) {
         return chatRoomRepository.findById(id)
                 .map(ChatRoomDto::from)
-                .orElseThrow(() -> new RuntimeException("Chat room not found"));
+                .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
     }
 
     @Transactional
     public ChatRoomDto createChatRoom(String name, int capacity, String userId) {
         Member creator = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
         ChatRoom chatRoom = new ChatRoom(name, creator, capacity);
         chatRoom = chatRoomRepository.save(chatRoom);
         return ChatRoomDto.from(chatRoom);
     }
 
     @Transactional
-    public void enterChatRoom(Long roomId, String userId) {
+    public String enterRoom(Long roomId, String username) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Chat room not found"));
-
-        if (chatRoom.isFull()) {
-            throw new RuntimeException("Chat room is full");
+                .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
+        if (chatRoom.getCurrentUserCount() >= chatRoom.getCapacity()) {
+            throw new  CustomException(ExceptionCode.CHATROOM_FULL);
         }
-
         chatRoom.incrementUserCount();
         chatRoomRepository.save(chatRoom);
+        return username;
     }
 
     @Transactional
-    public void leaveChatRoom(Long roomId, String userId) {
+    public void exitRoom(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Chat room not found"));
-
+                .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
         chatRoom.decrementUserCount();
         chatRoomRepository.save(chatRoom);
     }
-
 }

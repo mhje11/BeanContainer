@@ -50,8 +50,7 @@ public enum ExceptionCode {
      *  채팅방 관련
      */
     CHAT_ROOM_NOT_FOUND(404, HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
-    CHAT_LIST_NOT_FOUND(404, HttpStatus.NOT_FOUND, "채팅 리스트를 찾을 수 없습니다."),
-    CHAT_MESSAGE_NOT_FOUND(404, HttpStatus.NOT_FOUND, "채팅 메시지를 찾을 수 없습니다."),
+    CHATROOM_FULL(409, HttpStatus.CONFLICT, "채팅방이 가득 찼습니다."),
 
 
     /**
