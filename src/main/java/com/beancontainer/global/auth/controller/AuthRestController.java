@@ -101,19 +101,14 @@ public class AuthRestController {
             String newAccessToken = jwtTokenizer.createAccessToken(member);
             String newRefreshToken = jwtTokenizer.createRefreshToken(member);
 
-            refreshTokenService.updateRefreshToken(storedToken, newRefreshToken);
-
             // 새로운 Access Token을 쿠키에 설정
             addCookie(response, "accessToken", newAccessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
 
             // 새로운 Refresh Token을 쿠키에 설정
-            addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
-
+            addCookie(response, "refreshToken", newRefreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
 
             // 기존 refresh token 삭제 및 새로운 refresh token 저장
-            refreshTokenService.deleteRefreshToken(refreshToken);
-            RefreshToken newRefreshTokenEntity = new RefreshToken(member.getUserId(), newRefreshToken);
-            refreshTokenService.addRefreshToken(newRefreshTokenEntity);
+            refreshTokenService.deleteAndSaveNewRefreshToken(storedToken.getUserId(), refreshToken, newRefreshToken);
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {
