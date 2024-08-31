@@ -27,32 +27,15 @@ public class MyPageRestController {
     public ResponseEntity<Map<String, String>> updateNickname(@PathVariable String userId,
                                                               @RequestBody Map<String, String> payload) {
         String newNickname = payload.get("newNickname");
-
-        try {
-            memberService.updateNickname(userId, newNickname);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "닉네임 변경 완료");
-            response.put("newNickname", newNickname);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("닉네임 변경 중 오류 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "닉네임 변경 중 오류가 발생했습니다."));
-        }
+        memberService.updateNickname(userId, newNickname);
+        return ResponseEntity.ok(Map.of("message", "닉네임 변경 완료", "newNickname", newNickname));
     }
 
     @PostMapping("/mypage/{userId}/uploadProfileImage")
-    public ResponseEntity<Map<String, String>> uploadProfileImage(
-            @PathVariable String userId,
-            @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, String>> uploadProfileImage( @PathVariable String userId, @RequestParam("file") MultipartFile file) throws IOException {
 
-        try {
-            String imageUrl = profileImageService.updateProfileImage(userId, file);
-            return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "이미지 업로드에 실패했습니다."));
-        }
+        String imageUrl = profileImageService.updateProfileImage(userId, file);
+        return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
     }
 
     @PostMapping("/mypage/{userId}/deleteProfileImage")
@@ -61,7 +44,6 @@ public class MyPageRestController {
         profileImageService.deleteExistingProfileImage(userId);
         return ResponseEntity.ok(Map.of("message", "프로필 이미지가 제거되었습니다."));
     }
-
 
     @PostMapping("/mypage/{userId}/deleteAccount")
     public ResponseEntity<String> deleteAccount(@PathVariable String userId) {

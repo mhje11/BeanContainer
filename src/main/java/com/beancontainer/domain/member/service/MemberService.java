@@ -45,7 +45,6 @@ public class MemberService implements UserDetailsService {
     @Transactional(readOnly = true)
     //ID로 유저 찾기
     public Member findByUserId(String userId) {
-        log.info("Finding member for userId: {}", userId);
         return memberRepository.findByUserId(userId)
                 .orElseThrow(() ->
                         new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
@@ -59,13 +58,11 @@ public class MemberService implements UserDetailsService {
                 .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
         member.updateNickname(newNickname);
         memberRepository.save(member);
-        log.info("사용자 {} 의 닉네임이 {}로 변경되었습니다.", userId, newNickname);
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        log.info("Error : ", userId);
         Member member = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
 
@@ -79,7 +76,11 @@ public class MemberService implements UserDetailsService {
     @Transactional(readOnly = true)
     //유저 존재 여부
     public boolean existsByUserId(String userId) {
-        return memberRepository.existsByUserId(userId);
+        try {
+            return memberRepository.existsByUserId(userId);
+        } catch (Exception e) {
+            throw new CustomException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
     }
 
     @Transactional

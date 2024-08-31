@@ -1,6 +1,8 @@
 package com.beancontainer.domain.member.service;
 
 import com.beancontainer.domain.member.dto.MemberDTO;
+import com.beancontainer.global.exception.CustomException;
+import com.beancontainer.global.exception.ExceptionCode;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -76,21 +78,22 @@ public class MailService {
 
     //메일 발송
     //등록해둔 javaMail 객체를 이용해서 이메일 전송함
-    public String sendSimpleMessage(String sendEmail) throws Exception {
-        authNum = createCode(); //랜덤 인증번호 생성
-
-        MimeMessage message = createMessage(sendEmail); //메일 발송
+    public String sendSimpleMessage(String sendEmail) {
+        authNum = createCode();
         try {
+            MimeMessage message = createMessage(sendEmail);
             javaMailSender.send(message);
-        } catch (MailException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException();
+        } catch (Exception e) {
+            throw new CustomException(ExceptionCode.EMAIL_SEND_FAILURE);
         }
         return authNum;
     }
 
-    //저장된 인증 코드 반환
-    public String getAuthNum() {
-        return this.authNum;
+
+    //이메일 인증 코드 확인
+    public void verifyEmailCode(String code) {
+        if (authNum == null || !authNum.equals(code)) {
+            throw new CustomException(ExceptionCode.EMAIL_CODE_MISMATCH);
+        }
     }
 }

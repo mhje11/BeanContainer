@@ -31,7 +31,6 @@ public class MemberRestController {
     //회원가입
     @PostMapping("/signup")
     public ResponseEntity<Map<String, String>> signUp(@Valid @RequestBody SignUpRequestDTO signUpRequestDTO) {
-        log.info("Received signup request for user: " + signUpRequestDTO.getUserId());
         authService.signUp(signUpRequestDTO);
         return ResponseEntity.ok(Collections.singletonMap("message", "회원가입이 성공적으로 완료되었습니다.")); //JSON 형태로 응답
     }
@@ -39,27 +38,16 @@ public class MemberRestController {
     //이메일 인증 코드 발송
     @PostMapping("/signup/email-send")
     public ResponseEntity<String> sendEmailCode(@RequestParam(value = "email", required = false) String email) {
-        try {
-            String authCode = mailService.sendSimpleMessage(email);
-            log.info("인증 코드 : " + authCode);
-            return ResponseEntity.ok("인증 코드가 전송 되었습니다.");
-        } catch (Exception e) {
-            throw new CustomException(ExceptionCode.EMAIL_SEND_FAILURE);
-        }
+        String authCode = mailService.sendSimpleMessage(email);
+        log.info("인증 코드 : " + authCode);
+        return ResponseEntity.ok("인증 코드가 전송 되었습니다.");
     }
 
     //이메일 인증 코드 확인
     @PostMapping("/signup/check-code")
     public ResponseEntity<String> verifyEmailCode(@RequestBody VerifyCodeDTO verifyCode) {
-        log.info("발송 된 인증번호 확인: {}", verifyCode.getCode());
-
-        String authCode = mailService.getAuthNum();
-        if (authCode != null && authCode.equals(verifyCode.getCode())) {
-            log.info("이메일 인증 성공");
-            return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
-        } else {
-            throw new CustomException(ExceptionCode.EMAIL_CODE_MISMATCH);
-        }
+        mailService.verifyEmailCode(verifyCode.getCode());
+        return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
     }
 
 
