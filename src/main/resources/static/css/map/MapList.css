@@ -1,4 +1,21 @@
 /* Container styling */
+
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+.container, #cafe-info, .left-section{
+    font-family: 'ChosunGu', Arial, sans-serif;
+}
+
+.font {
+    font-family: 'ChosunGu', Arial, sans-serif;
+}
+#font {
+    font-family: 'ChosunGu', Arial, sans-serif;
+}
 .container {
     display: flex;
     justify-content: space-between;

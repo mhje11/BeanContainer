@@ -1,5 +1,4 @@
 body {
-    font-family: Arial, sans-serif;
     background-color: #F2EFE8;
     height: 100vh;
     display: flex;
@@ -7,7 +6,15 @@ body {
     overflow: hidden;
 }
 
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 #container {
+    font-family: 'ChosunGu', Arial, sans-serif;
     margin-top: 10px;
     display: flex;
     flex-direction: row;
@@ -52,6 +59,7 @@ body {
     cursor: pointer;
     font-size: 12px; /* 축소된 폰트 크기 */
     margin-left: 10px; /* 약간의 간격 */
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 
 .cafe-card {
@@ -162,6 +170,7 @@ body {
     border-radius: 8px;
     background-color: #F2EFE8;
     color: #333;
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 
 #search-results div:hover {
@@ -188,6 +197,7 @@ body {
     cursor: pointer;
     font-size: 13px;
     transition: background-color 0.3s ease;
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 
 .button-container button:hover {
@@ -317,12 +327,13 @@ input:checked + .slider:before {
     text-align: center;
     text-decoration: none;
     display: inline-block; /* 인라인 블록 */
-    font-size: 10px; /* 폰트 크기 */
+    font-size: 9px; /* 폰트 크기 */
     cursor: pointer; /* 커서 포인터 */
     border-radius: 4px; /* 모서리 둥글게 */
     height: 20px;
     width: 60px;
     margin-top: 5px;
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 
 .infowindow-link:hover {

@@ -33,7 +33,7 @@
                 <a href="/mymap/${map.mapId}">${map.mapName}</a>
                 <div class="button-container">
                     <a href="/mymap/update/${map.mapId}" class="btn btn-primary">수정</a>
-                    <button data-map-id="${map.mapId}" class="btn btn-danger" onclick="deleteMap(this)">삭제</button>
+                    <button data-map-id="${map.mapId}" class="btn btn-danger" id="font" onclick="deleteMap(this)">삭제</button>
                 </div>
             `;
     mapListElement.appendChild(listItem);
