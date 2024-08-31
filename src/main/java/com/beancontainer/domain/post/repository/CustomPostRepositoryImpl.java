@@ -165,5 +165,4 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
             return post.createdAt.desc();
         }
     }
-
 }

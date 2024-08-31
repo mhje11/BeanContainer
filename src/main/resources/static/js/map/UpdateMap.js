@@ -232,11 +232,10 @@ function displayMarker(place) {
 function openInfoWindow(marker, place) {
     const parsedAddress = parseAddress(place.road_address_name || place.address_name);
     const content = `
-            <div style="padding:10px; font-size:14px;">
+            <div style="padding:5px; font-size:12px; justify-content: center">
                 <strong>${place.place_name}</strong><br>
-                ${place.road_address_name || place.address_name}<br>
-                <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-                <button onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 페이지로 이동</button>
+                <button class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가</button>
+                <button class="infowindow-link" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 보기</button>
             </div>
         `;
     infowindow.setContent(content);
@@ -257,7 +256,7 @@ function addCafeToSet(kakaoId, name, address, latitude, longitude) {
         card.innerHTML = `
                 <h4>${name}</h4>
                 <p>${address}</p>
-                <button onclick="removeCafe('${kakaoId}')">삭제</button>
+                <button class="remove-btn" onclick="removeCafe('${kakaoId}')">삭제</button>
             `;
 
         card.addEventListener('click', () => handleCardClick(kakaoId));
