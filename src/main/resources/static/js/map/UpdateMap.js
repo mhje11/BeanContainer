@@ -256,7 +256,7 @@ function addCafeToSet(kakaoId, name, address, latitude, longitude) {
         card.innerHTML = `
                 <h4>${name}</h4>
                 <p>${address}</p>
-                <button class="remove-btn" onclick="removeCafe('${kakaoId}')">삭제</button>
+                <button class="remove-btn font" onclick="removeCafe('${kakaoId}')">삭제</button>
             `;
 
         card.addEventListener('click', () => handleCardClick(kakaoId));

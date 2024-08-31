@@ -1,7 +1,17 @@
 html, body {
-    font-family: Arial, sans-serif;
     background-color: #F2EFE8;
     height: 100%;
+}
+@font-face {
+    font-family: 'ChosunGu';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 전체 폰트 설정 */
+.container, .left-section, .right-section, button, input, select, label, .category-item, .map-card, .place-name{
+    font-family: 'ChosunGu', Arial, sans-serif; !important;
 }
 
 .container {
