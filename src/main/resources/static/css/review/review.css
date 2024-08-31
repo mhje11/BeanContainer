@@ -16,6 +16,9 @@ body {
     font-family: 'ChosunGu', Arial, sans-serif;
 }
 
+.font{
+    font-family: 'ChosunGu', Arial, sans-serif;
+}
 /* 컨테이너 배경색 설정 */
 .container {
     /*background-color: #EDE3D5; !* 컨테이너 배경색을 바디 배경색과 동일하게 설정 *!*/
@@ -120,6 +123,7 @@ body {
     background-color: #4b362d;
     font-weight: bold;
     cursor: default;
+    font-family: 'ChosunGu', Arial, sans-serif;
 }
 .categories label {
     display: inline-block;
@@ -165,6 +169,8 @@ button#submit-review {
     cursor: pointer;
     transition: background-color 0.3s;
     margin-top: 1rem;
+    font-family: 'ChosunGu', Arial, sans-serif;
+
 }
 
 button#submit-review:hover {
@@ -187,10 +193,14 @@ button.cancel-button {
     cursor: pointer;
     margin-right: 5px;
     border-radius: 4px;
+    font-family: 'ChosunGu', Arial, sans-serif;
+
 }
 
 button.delete-button {
     background-color: #5a453c;
+    font-family: 'ChosunGu', Arial, sans-serif;
+
 }
 
 button.cancel-button {
