@@ -3,6 +3,7 @@ package com.beancontainer.domain.member.controller;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.member.profileimage.service.ProfileImageService;
 import com.beancontainer.global.auth.service.CookieService;
+import com.beancontainer.global.auth.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class MyPageRestController {
     private final MemberService memberService;
     private final ProfileImageService profileImageService;
     private final CookieService cookieService;
+    private final RefreshTokenService refreshTokenService;
 
 
     @PostMapping("/{userId}/nickname")
@@ -74,7 +76,10 @@ public class MyPageRestController {
         // 관련된 모든 쿠키 삭제
         cookieService.deleteCookie(response, "accessToken");
         cookieService.deleteCookie(response, "refreshToken");
+
         return ResponseEntity.ok().body("계정이 탈퇴 되었습니다.");
+
+
     }
 
 }
