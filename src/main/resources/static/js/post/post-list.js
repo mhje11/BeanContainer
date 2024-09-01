@@ -10,7 +10,7 @@ document.getElementById('sort-select').addEventListener('change', function() {
 // 게시글 데이터를 가져오는 함수
 async function fetchPosts(page = 0) {
     try {
-        const response = await fetch(`/api/postList?page=${page + 1}&size=${pageSize}&sortBy=${sortBy}`);
+        const response = await fetch(`/api/posts/list?page=${page + 1}&size=${pageSize}&sortBy=${sortBy}`);
         if (!response.ok) {
             throw new Error('게시글 목록을 가져오는 데 실패하였습니다.');
         }
@@ -25,7 +25,7 @@ async function fetchPosts(page = 0) {
             const row = document.createElement('tr');
             row.innerHTML = `
                     <td>${post.id}</td>
-                    <td><a href="/postList/${post.id}">${post.title}</a></td>
+                    <td><a href="/posts/${post.id}">${post.title}</a></td>
                     <td>${post.nickname}</td>
                     <td>${post.commentCount}</td>
                     <td>${post.likeCount}</td>
