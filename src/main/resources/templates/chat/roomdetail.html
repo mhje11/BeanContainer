@@ -16,35 +16,62 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            background-color:  #F2EFE8;
+            background-color: #F2EFE8;
         }
         .chat-container {
-            max-width: 600px;
+            max-width: 800px; /* Reduced from 600px */
             margin: 20px auto;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
+            padding: 15px; /* Reduced from 20px */
         }
         .chat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Reduced from 20px */
         }
         .chat-messages {
-            height: 300px;
+            height: 350px; /* Reduced from 300px */
             overflow-y: auto;
             border: 1px solid #e0e0e0;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            flex-direction: column-reverse;
+        }
+        .message {
+            margin-bottom: 5px;
         }
         .message-input {
             display: flex;
+            align-items: stretch;
+            height: 40px;
         }
         .message-input input {
             flex-grow: 1;
-            margin-right: 10px;
+            margin-right: 5px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        .message-input button {
+            background-color: #7B6155;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            height: 100%;
+            flex-shrink: 0;
+            display: flex; /* Use flexbox to center the text */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            text-align: center; /* Ensure text is centered */
+        }
+        .message-input button:hover {
+            background-color: #755c51;
+            border-color:  #755c51 ;
+            color: white;
         }
         .exit-button {
             background-color: #f0506e;
@@ -53,6 +80,7 @@
             padding: 10px 20px;
             border-radius: 4px;
             cursor: pointer;
+            margin-top: 10px; /* Reduced from uk-margin-top */
         }
     </style>
 </head>
@@ -63,16 +91,16 @@
         <h2>{{ room.name }}</h2>
         <p>참가자 수: {{ room.currentUserCount }} / {{ room.capacity }}</p>
     </div>
-    <div class="chat-messages">
-        <div v-for="message in messages">
+    <div class="chat-messages" ref="chatMessages">
+        <div v-for="message in messages" class="message">
             {{ message.senderNickname }}: {{ message.message }}
         </div>
     </div>
     <div class="message-input">
-        <input type="text" class="uk-input" v-model="message" v-on:keypress.enter="sendMessage" placeholder="메시지를 입력하세요...">
-        <button class="uk-button uk-button-primary" @click="sendMessage">보내기</button>
+        <input type="text" v-model="message" v-on:keypress.enter="sendMessage" placeholder="메시지를 입력하세요...">
+        <button @click="sendMessage">보내기</button>
     </div>
-    <button class="exit-button uk-margin-top" @click="exitRoom">나가기</button>
+    <button class="exit-button" @click="exitRoom">나가기</button>
 </div>
 <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
 <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
@@ -118,12 +146,22 @@
                 }
             },
             recvMessage: function(recv) {
-                this.messages.unshift({
+                this.messages.push({
                     "type": recv.type,
                     "senderNickname": recv.type == 'ENTER' ? '[알림]' : recv.senderNickname,
                     "message": recv.message
                 });
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
             },
+            scrollToBottom: function() {
+                const chatMessages = this.$refs.chatMessages;
+                if (chatMessages) {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            },
+
             exitRoom: function() {
                 this.isExiting = true;  // 나가기 버튼이 클릭되었음을 표시
                 this.sendExitRequest().then(() => {
@@ -149,6 +187,15 @@
                     e.returnValue = '';
                 }
             }
+        },
+        mounted() {
+            this.$nextTick(() => {
+                this.scrollToBottom();
+                this.findRoom();
+            });
+        },
+        updated() {
+            this.scrollToBottom();
         }
     });
 
