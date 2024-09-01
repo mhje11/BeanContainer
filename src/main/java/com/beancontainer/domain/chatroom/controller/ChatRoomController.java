@@ -6,6 +6,7 @@ import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
 import com.beancontainer.domain.chatroom.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -35,9 +36,9 @@ public class ChatRoomController {
         return chatRoomService.findAllRoom();
     }
 
-    @PostMapping("/room")
+    @PostMapping("/room/{name}/{capacity}")
     @ResponseBody
-    public ChatRoomDto createRoom(@RequestParam String name, @RequestParam int capacity, @AuthenticationPrincipal UserDetails userDetails) {
+    public ChatRoomDto createRoom(@PathVariable String name, @PathVariable int capacity, @AuthenticationPrincipal UserDetails userDetails) {
         return chatRoomService.createChatRoom(name, capacity, userDetails.getUsername());
     }
 
@@ -55,9 +56,9 @@ public class ChatRoomController {
         return chatRoomService.findRoomById(roomId);
     }
 
-    @PutMapping("/room/quit")
-    @ResponseBody
-    public void exitRoom(@RequestParam Long roomId) {
+    @PostMapping("/room/{roomId}/exit")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void exitRoom(@PathVariable Long roomId) {
         chatRoomService.exitRoom(roomId);
     }
 }
