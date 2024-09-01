@@ -21,7 +21,10 @@ public class CustomUserDetails implements UserDetails {
     //ROLE 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+        if (this.role != null && !this.role.isEmpty()) {
+            return Collections.singletonList(new SimpleGrantedAuthority(this.role));
+        }
+        return Collections.emptyList();
     }
 
     @Override
