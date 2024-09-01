@@ -26,6 +26,7 @@ public class ChatRoomService {
     @Transactional(readOnly = true)
     public List<ChatRoomDto> findAllRoom() {
         return chatRoomRepository.findAll().stream()
+                .filter(room -> room.getCurrentUserCount() > 0)
                 .map(ChatRoomDto::from)
                 .collect(Collectors.toList());
     }
@@ -33,6 +34,7 @@ public class ChatRoomService {
     @Transactional(readOnly = true)
     public ChatRoomDto findRoomById(Long id) {
         return chatRoomRepository.findById(id)
+                .filter(room -> room.getCurrentUserCount() > 0)
                 .map(ChatRoomDto::from)
                 .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
     }
@@ -64,5 +66,8 @@ public class ChatRoomService {
                 .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
         chatRoom.decrementUserCount();
         chatRoomRepository.save(chatRoom);
+        if (chatRoom.getCurrentUserCount() == 0) {
+            chatRoomRepository.delete(chatRoom);
+        }
     }
 }

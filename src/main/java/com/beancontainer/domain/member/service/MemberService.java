@@ -13,6 +13,9 @@ import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.domain.post.repository.PostRepository;
 import com.beancontainer.domain.review.entity.Review;
 import com.beancontainer.domain.review.repository.ReviewRepository;
+import com.beancontainer.global.auth.jwt.entity.RefreshToken;
+import com.beancontainer.global.auth.jwt.repository.RefreshTokenRepository;
+import com.beancontainer.global.auth.service.RefreshTokenService;
 import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -40,6 +44,9 @@ public class MemberService implements UserDetailsService {
     private final MapRepository mapRepository;
     private final ReviewRepository reviewRepository;
     private final LikeRepository likeRepository;
+    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
+
 
 
     @Transactional(readOnly = true)
@@ -83,15 +90,24 @@ public class MemberService implements UserDetailsService {
         }
     }
 
+    // 회원 계정 비활성화
     @Transactional
     public void cancelAccount(String userId) {
         Member existMember = memberRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
         existMember.cancelAccount();
+
+        // RefreshToken 조회 및 삭제
+        Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByUserId(userId);
+        refreshTokenOpt.ifPresent(refreshToken ->
+                refreshTokenService.deleteRefreshToken(refreshToken.getRefresh())
+        );
+        //회원 삭제
         memberRepository.save(existMember);
     }
 
+    // 비활성화 후 3년 뒤 자동 삭제
     @Transactional
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *") //삭제는 새벽 3시에 진행
     public void autoDeleteInactiveMember() {
         LocalDateTime threeYearsAgo = LocalDateTime.now().minusYears(3);
 
