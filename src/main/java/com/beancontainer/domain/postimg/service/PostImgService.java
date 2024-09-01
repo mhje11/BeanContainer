@@ -1,5 +1,6 @@
 package com.beancontainer.domain.postimg.service;
 
+import com.beancontainer.domain.postimg.dto.PostImgResponseDto;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import com.beancontainer.domain.postimg.repository.PostImgRepository;
 import com.beancontainer.global.exception.CustomException;
@@ -32,7 +33,7 @@ public class PostImgService {
     private final PostImgRepository postImgRepository;
 
     @Transactional
-    public String saveImage(MultipartFile image) throws IOException {
+    public PostImgResponseDto saveImage(MultipartFile image) throws IOException {
 
         checkImageFormat(image);    // 이미지 파일 형식 검사
 
@@ -48,7 +49,9 @@ public class PostImgService {
                 RequestBody.fromInputStream(image.getInputStream(), image.getSize())    // 파일의 본체
         );
 
-        return generateImageUrl(name);
+        String imageUrl = generateImageUrl(name);   // S3 url
+
+        return new PostImgResponseDto(originalName, name, imageUrl);
     }
 
     // 이미지 판별
@@ -70,6 +73,7 @@ public class PostImgService {
         return UUID.randomUUID() + "." + extractExtension(originalName);
     }
 
+    // S3 이미지 url
     private String generateImageUrl(String name) {
         return String.format("https://%s.s3.amazonaws.com/%s", bucketname, name);
         // https://{bucket-name}.s3.{region}.amazonaws.com/{object-key}
@@ -88,7 +92,6 @@ public class PostImgService {
                         .key(fileName)
                         .build()
         );
-        log.info("Delete img from S3: {}", imageUrl);
     }
 
     private String fileNameFromUrl(String imageUrl) {

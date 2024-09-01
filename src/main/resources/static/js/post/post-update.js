@@ -1,15 +1,19 @@
 import { initEditor } from './editor.js';
 
 let editor;
+let uploadedImages = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     initEditor('#editor')
-        .then(newEditor => {
-            editor = newEditor;
+        .then(result => {
+            editor = result.editor;
+            uploadedImages = result.getUploadedImages();
         })
         .catch(error => {
             console.log('CKEditor 초기화 오류: ', error);
         });
+
+    fetchPost();
 });
 
 async function fetchPost() {
@@ -46,7 +50,7 @@ async function fetchPost() {
     }
 };
 
-document.addEventListener('DOMContentLoaded', fetchPost);
+// document.addEventListener('DOMContentLoaded', fetchPost);
 
 document.getElementById('updateForm').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -62,16 +66,18 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         title: document.getElementById('title').value,
         content: editor.getData(),  // document.getElementById('content').value
         deleteImages: Array.from(document.querySelectorAll('input[name="deleteImages"]:checked'))
-            .map(checkbox => parseInt(checkbox.value))
+            .map(checkbox => parseInt(checkbox.value)),
+        imageUrls: uploadedImages,
+        unusedImageUrls: []
     };
 
     formData.append('postRequestDto', new Blob([JSON.stringify(postRequestDto)], {type: 'application/json'}));
 
-    const images = document.getElementById('images').files; // 새로운 이미지
+    /*const images = document.getElementById('images').files; // 새로운 이미지
 
     for (let i = 0; i < images.length && i < 5; i++) {  // 이미지 최대 5장
         formData.append('images', images[i]);
-    }
+    }*/
 
     const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
 
@@ -98,7 +104,7 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         });
 });
 
-document.getElementById('images').addEventListener('change', function() {
+/*document.getElementById('images').addEventListener('change', function() {
     const fileInput = document.getElementById('images');
     const fileNameDisplay = document.getElementById('fileName');
 
@@ -107,7 +113,7 @@ document.getElementById('images').addEventListener('change', function() {
     } else {
         fileNameDisplay.textContent = '선택된 파일 없음';
     }
-});
+});*/
 
 document.getElementById('cancel-button').addEventListener('click', function () {
     window.history.back();  // 이전 페이지로 돌아가기
