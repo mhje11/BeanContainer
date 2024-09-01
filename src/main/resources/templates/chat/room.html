@@ -13,11 +13,18 @@
     <script th:src="@{/js/member/header.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <style>
+        @font-face {
+            font-family: 'ChosunGu';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
         body, html {
             height: 80%;
             margin: 0;
             padding: 0;
             background-color:  #F2EFE8;
+            font-family: 'ChosunGu', sans-serif;
         }
         .container {
             background-color: white;
@@ -25,22 +32,27 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             padding: 20px;
             margin-top: 50px;
+            font-family: 'ChosunGu', sans-serif;
         }
         .chat-list {
             max-height: 600px;
             overflow-y: auto;
+            font-family: 'ChosunGu', sans-serif;
         }
         .chat-room {
             cursor: pointer;
             transition: background-color 0.3s;
+            font-family: 'ChosunGu', sans-serif;
         }
         .chat-room:hover {
             background-color: #f1f3f5;
+            font-family: 'ChosunGu', sans-serif;
         }
         .btn-create-room {
             background-color: #7B6155 ;
             border-color:  #7B6155 ;
             color: white;
+            font-family: 'ChosunGu', sans-serif;
         }
         .btn-create-room:hover {
             background-color: #755c51;
@@ -50,10 +62,15 @@
         .badge-room-count {
             background-color: #F4B844;
             color: white;
+            font-family: 'ChosunGu', sans-serif;
         }
         .badge-room-full {
             background-color: #f44336;
             color: white;
+            font-family: 'ChosunGu', sans-serif;
+        }
+        #app h3, #app .chat-room h5 {
+            font-family: 'ChosunGu', sans-serif !important;
         }
     </style>
 </head>
