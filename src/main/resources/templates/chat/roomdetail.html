@@ -12,35 +12,68 @@
     <script th:src="@{/js/member/header.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <style>
-        [v-cloak] {
-            display: none;
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color:  #F2EFE8;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .message-input {
+            display: flex;
+        }
+        .message-input input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .exit-button {
+            background-color: #f0506e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
-<div class="container" id="app" v-cloak>
-    <div>
+<div class="chat-container" id="app" v-cloak>
+    <div class="chat-header">
         <h2>{{ room.name }}</h2>
         <p>참가자 수: {{ room.currentUserCount }} / {{ room.capacity }}</p>
     </div>
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <label class="input-group-text">내용</label>
-        </div>
-        <input type="text" class="form-control" v-model="message" v-on:keypress.enter="sendMessage">
-        <div class="input-group-append">
-            <button class="btn btn-primary" type="button" @click="sendMessage">보내기</button>
+    <div class="chat-messages">
+        <div v-for="message in messages">
+            {{ message.senderNickname }}: {{ message.message }}
         </div>
     </div>
-    <button class="btn btn-danger mt-3" @click="exitRoom">나가기</button> <!-- 나가기 버튼 추가 -->
-    <ul class="list-group mt-3">
-        <li class="list-group-item" v-for="message in messages">
-            {{ message.senderNickname }} - {{ message.message }}
-        </li>
-    </ul>
+    <div class="message-input">
+        <input type="text" class="uk-input" v-model="message" v-on:keypress.enter="sendMessage" placeholder="메시지를 입력하세요...">
+        <button class="uk-button uk-button-primary" @click="sendMessage">보내기</button>
+    </div>
+    <button class="exit-button uk-margin-top" @click="exitRoom">나가기</button>
 </div>
-
 <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
 <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
 <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
@@ -101,10 +134,9 @@
                 });
             },
             sendExitRequest: function() {
-                return axios.put('/chat/room/quit', null, {
-                    params: { roomId: this.roomId }
-                });
+                return axios.post(`/chat/room/${this.roomId}/exit`);
             },
+
             beforeUnloadHandler: function(e) {
                 // 나가기 버튼이 클릭된 경우 이 핸들러를 실행하지 않음
                 if (!this.isExiting) {
