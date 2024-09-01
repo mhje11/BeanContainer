@@ -83,6 +83,7 @@ public class MemberService implements UserDetailsService {
         }
     }
 
+    // 회원 계정 비활성화
     @Transactional
     public void cancelAccount(String userId) {
         Member existMember = memberRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
@@ -90,8 +91,9 @@ public class MemberService implements UserDetailsService {
         memberRepository.save(existMember);
     }
 
+    // 비활성화 후 3년 뒤 자동 삭제
     @Transactional
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *") //삭제는 새벽 3시에 진행
     public void autoDeleteInactiveMember() {
         LocalDateTime threeYearsAgo = LocalDateTime.now().minusYears(3);
 
