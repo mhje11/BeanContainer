@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function fetchPost() {
     try {
-        const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
-        const response = await fetch(`/api/postList/${postId}`);
+        const postId = window.location.pathname.split('/')[2];   // URL에서 postId 추출
+        const response = await fetch(`/api/posts/${postId}`);
         if (!response.ok) {
             throw new Error('게시글을 가져오는 데 실패하였습니다.');
         }
@@ -73,9 +73,10 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         formData.append('images', images[i]);
     }
 
-    const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
+    const postId = window.location.pathname.split('/')[2];   // URL에서 postId 추출
+    console.log('Extracted postId:', postId);
 
-    fetch(`/api/post/update/${postId}`, {
+    fetch(`/api/posts/${postId}/update`, {
         method: 'PUT',
         body: formData
     })
@@ -90,7 +91,7 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         .then(data => {
             console.log(data);
             alert('게시글이 수정되었습니다.');
-            window.location.href = `/postList/${postId}`; // 수정 후 게시글 상세 페이지로 리다이렉트
+            window.location.href = `/posts/${postId}`; // 수정 후 게시글 상세 페이지로 리다이렉트
         })
         .catch(error => {
             alert(error.message);

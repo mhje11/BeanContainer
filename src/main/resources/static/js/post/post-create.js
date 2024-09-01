@@ -34,7 +34,7 @@ document.getElementById('postForm').addEventListener('submit', function (event) 
         formData.append('images', images[i]);
     }
 
-    fetch('/api/post/create', {
+    fetch('/api/posts', {
         method: 'POST',
         body: formData
     })
@@ -48,7 +48,7 @@ document.getElementById('postForm').addEventListener('submit', function (event) 
         })
         .then(data => {
             console.log(data);
-            window.location.href = '/postList/' + data.postId;
+            window.location.href = '/posts/' + data.postId;
         })
         .catch(error => {
             alert(error.message);
