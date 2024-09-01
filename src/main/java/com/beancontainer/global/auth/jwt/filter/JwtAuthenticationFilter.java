@@ -40,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             if (StringUtils.hasText(accessToken)) {
                 Authentication authentication = getAuthentication(accessToken);
+                log.debug("Authentication: {}", authentication);
+                log.debug("User authorities: {}", authentication.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else if (StringUtils.hasText(refreshToken)) {
                 handleRefreshToken(request, response, refreshToken);
@@ -75,6 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Claims claims = jwtTokenizer.parseAccessToken(token);
         String userId = claims.getSubject();
         String role = claims.get("role", String.class);
+        log.debug("Parsed token - userId: {}, role: {}", userId, role);
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
         CustomUserDetails userDetails = new CustomUserDetails(userId, "");
         return new JwtAuthenticationToken(authorities, userDetails, null);
