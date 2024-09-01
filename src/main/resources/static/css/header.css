@@ -6,6 +6,21 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'BMJUA';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'KCCMurukmuruk';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCCMurukmuruk.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
 .header {
     background-color: #EDE3D5;
     width: 100%;
@@ -20,13 +35,17 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
+    font-family: 'ChosunGu', sans-serif;
+    font-weight: 900;
 }
 
 .uk-navbar-left .uk-logo {
     color: #7B6155;
-    font-size: 18px;
+    font-size: 25px;
     display: flex;
     align-items: center;
+    font-family: 'KCCMurukmuruk', sans-serif;
+
 }
 
 .uk-navbar-right {
@@ -55,6 +74,7 @@
 
 .uk-nav-default > li > a {
     color: #1F4935;
+    font-family: 'ChosunGu', sans-serif;
 }
 
 .uk-nav-default > li > a:hover {
