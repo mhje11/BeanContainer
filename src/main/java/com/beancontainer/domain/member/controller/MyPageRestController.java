@@ -2,6 +2,8 @@ package com.beancontainer.domain.member.controller;
 
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.member.profileimage.service.ProfileImageService;
+import com.beancontainer.global.auth.service.CookieService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class MyPageRestController {
     private final MemberService memberService;
     private final ProfileImageService profileImageService;
+    private final CookieService cookieService;
 
 
     @PostMapping("/{userId}/nickname")
@@ -61,13 +64,16 @@ public class MyPageRestController {
 
     @DeleteMapping("/{userId}/account")
     public ResponseEntity<String> deleteAccount(@PathVariable String userId,
-                                                Principal principal) {
+                                                Principal principal, HttpServletResponse response) {
         // 현재 로그인한 사용자와 userId가 일치하는지 확인
         if (!userId.equals(principal.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         memberService.cancelAccount(userId);
+        // 관련된 모든 쿠키 삭제
+        cookieService.deleteCookie(response, "accessToken");
+        cookieService.deleteCookie(response, "refreshToken");
         return ResponseEntity.ok().body("계정이 탈퇴 되었습니다.");
     }
 
