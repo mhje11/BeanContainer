@@ -75,15 +75,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Claims claims = jwtTokenizer.parseAccessToken(token);
         String userId = claims.getSubject();
         String role = claims.get("role", String.class);
-        List<GrantedAuthority> authorities = getGrantedAuthorities(role);
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
         CustomUserDetails userDetails = new CustomUserDetails(userId, "");
         return new JwtAuthenticationToken(authorities, userDetails, null);
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(String role) {
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+        if (role != null && role.startsWith("ROLE_")) {
+            return Collections.singletonList(new SimpleGrantedAuthority(role));
+        } else {
+            return Collections.emptyList();
+        }
     }
-
     private String getToken(HttpServletRequest request, String tokenName) {
         String token = request.getHeader("Authorization");
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
