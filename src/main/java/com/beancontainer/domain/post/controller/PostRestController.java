@@ -68,7 +68,6 @@ public class PostRestController {
     }
 
     @DeleteMapping("/post/delete/{postId}") // 게시글 삭제
-    @RequireAdmin
     public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         boolean isAdmin = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN"));

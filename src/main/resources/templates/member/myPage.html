@@ -19,31 +19,33 @@
     <div class="mypage-box" th:if="${member != null}">
         <h1 id="userNickname" th:text="'안녕하세요, ' + ${member.nickname} + '님!'"></h1>
 
-        <div class="profile-image"
-             th:style="'background-image: url(' + ${member.profileImageUrl != null ? member.profileImageUrl : '/images/BeanContainer.png'} + ');'">
-        </div>
-
-        <div class="profile">
-            <div class="profile-upload">
-                <form id="profileImageForm" enctype="multipart/form-data">
-                    <label for="file-upload" class="custom-file-upload"> 프로필 업로드 </label>
-                    <input id="file-upload" type="file" name="file" accept="image/*">
-                </form>
+        <div class="profile-section">
+            <div class="profile-left">
+                <div class="profile-image"
+                     th:style="'background-image: url(' + ${member.profileImageUrl != null ? member.profileImageUrl : '/images/BeanContainer.png'} + ');'">
+                </div>
+                <div class="profile-upload">
+                    <form id="profileImageForm" enctype="multipart/form-data">
+                        <label for="file-upload" class="profile-button"> 프로필 업로드 </label>
+                        <input id="file-upload" type="file" name="file" accept="image/*">
+                    </form>
+                </div>
+                <div class="profile-delete">
+                    <button class="profile-button" onclick="deleteProfileImage()">프로필 제거</button>
+                </div>
             </div>
-            <div class="profile-delete">
-                <button onclick="deleteProfileImage()">프로필 제거</button>
+
+            <div class="profile-right">
+                <label style="font-weight: bold">닉네임</label>
+                <div id="nicknameChangeForm">
+                    <input type="text" id="newNickname" th:value="${member.nickname}" placeholder="새 닉네임 입력">
+                    <button onclick="changeNickname()">수정</button>
+                </div>
             </div>
+
         </div>
 
-
-        <button onclick="showNicknameChangeForm()">닉네임 변경</button>
-
-        <div id="nicknameChangeForm" style="display: none;">
-            <input type="text" id="newNickname" th:value="${member.nickname}" placeholder="새 닉네임 입력">
-            <button onclick="changeNickname()">변경 완료</button>
-        </div>
-
-        <div>
+        <div class="account-delete">
             <button onclick="deleteAccount()">회원 탈퇴</button>
         </div>
     </div>
@@ -112,9 +114,6 @@
         }
     }
 
-    function showNicknameChangeForm() {
-        document.getElementById('nicknameChangeForm').style.display = 'block';
-    }
 
     function changeNickname() {
         var newNickname = document.getElementById('newNickname').value;
