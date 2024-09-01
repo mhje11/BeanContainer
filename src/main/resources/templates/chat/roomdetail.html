@@ -12,11 +12,18 @@
     <script th:src="@{/js/member/header.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <style>
+        @font-face {
+            font-family: 'ChosunGu';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunGu.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
         body, html {
             height: 100%;
             margin: 0;
             padding: 0;
             background-color: #F2EFE8;
+            font-family: 'ChosunGu', sans-serif;
         }
         .chat-container {
             max-width: 800px; /* Reduced from 600px */
@@ -25,12 +32,14 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 15px; /* Reduced from 20px */
+            font-family: 'ChosunGu', sans-serif;
         }
         .chat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px; /* Reduced from 20px */
+            font-family: 'ChosunGu', sans-serif;
         }
         .chat-messages {
             height: 350px; /* Reduced from 300px */
@@ -39,20 +48,24 @@
             padding: 10px;
             margin-bottom: 15px;
             flex-direction: column-reverse;
+            font-family: 'ChosunGu', sans-serif;
         }
         .message {
             margin-bottom: 5px;
+            font-family: 'ChosunGu', sans-serif;
         }
         .message-input {
             display: flex;
             align-items: stretch;
             height: 40px;
+            font-family: 'ChosunGu', sans-serif;
         }
         .message-input input {
             flex-grow: 1;
             margin-right: 5px;
             height: 100%;
             box-sizing: border-box;
+            font-family: 'ChosunGu', sans-serif;
         }
         .message-input button {
             background-color: #7B6155;
@@ -67,11 +80,13 @@
             justify-content: center; /* Center horizontally */
             align-items: center; /* Center vertically */
             text-align: center; /* Ensure text is centered */
+            font-family: 'ChosunGu', sans-serif;
         }
         .message-input button:hover {
             background-color: #755c51;
             border-color:  #755c51 ;
             color: white;
+            font-family: 'ChosunGu', sans-serif;
         }
         .exit-button {
             background-color: #f0506e;
@@ -81,6 +96,10 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 10px; /* Reduced from uk-margin-top */
+            font-family: 'ChosunGu', sans-serif;
+        }
+        #app h2 {
+            font-family: 'ChosunGu', sans-serif !important;
         }
     </style>
 </head>
