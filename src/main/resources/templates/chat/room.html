@@ -133,7 +133,8 @@
                             alert(response.data.name + " 방 개설에 성공하였습니다.")
                             this.room_name = '';
                             this.room_capacity = 10;
-                            this.findAllRoom();
+                            // 방 생성 후 바로 입장
+                            this.enterRoom(response.data.roomId);
                         })
                         .catch(error => {
                             alert("채팅방 개설에 실패하였습니다.");
@@ -143,11 +144,10 @@
             },
             enterRoom: function(roomId) {
                 var room = this.chatrooms.find(room => room.roomId === roomId);
-                if (room.currentUserCount >= room.capacity) {
+                if (room && room.currentUserCount >= room.capacity) {
                     alert("채팅방이 꽉 찼습니다.");
                 } else {
                     location.href = "/chat/room/enter/" + roomId;
-                    this.findAllRoom();
                 }
             }
         }
