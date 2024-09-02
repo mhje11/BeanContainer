@@ -3,6 +3,7 @@ package com.beancontainer.domain.chatroom.controller;
 import com.beancontainer.domain.chatroom.dto.ChatMessageDto;
 import com.beancontainer.domain.chatroom.service.ChatMessageService;
 import com.beancontainer.domain.chatroom.service.ChatRoomService;
+import com.beancontainer.global.auth.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -19,6 +20,7 @@ public class ChatController {
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageService chatMessageService;
 
+    //websocket 사용으로 principal을 사용해야함
     @MessageMapping("/chat/message")
     public void message(ChatMessageDto messageDto, Principal principal) {
         String userId = principal.getName();
