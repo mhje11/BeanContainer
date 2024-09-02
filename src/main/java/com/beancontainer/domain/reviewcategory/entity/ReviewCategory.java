@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "review_categories")
+@Table(name = "review_category")
 public class ReviewCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
