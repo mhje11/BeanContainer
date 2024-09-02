@@ -1,19 +1,21 @@
 import { initEditor } from './editor.js';
 
-let editor;
-let uploadedImages = [];
+let editorInstance;
+let initialImageUrls = [];  // 기존 이미지 url 저장 변수
 
 document.addEventListener('DOMContentLoaded', function() {
     initEditor('#editor')
-        .then(result => {
-            editor = result.editor;
-            uploadedImages = result.getUploadedImages();
+        .then(({editor, getUploadedImages}) => {
+            editorInstance = {
+                editor: editor,
+                getUploadedImages: getUploadedImages
+            };
+            fetchPost();
         })
         .catch(error => {
             console.log('CKEditor 초기화 오류: ', error);
         });
 
-    fetchPost();
 });
 
 async function fetchPost() {
@@ -25,66 +27,58 @@ async function fetchPost() {
         }
 
         const post = await response.json();
-        console.log('Fetched Post: ', post)
         document.getElementById('title').value = post.title;
-        // document.getElementById('content').value = post.content;
 
         // CKEditor에 기존 콘텐츠 로드
-        if (editor) {
-            editor.setData(post.content);
+        if (editorInstance.editor) {
+            editorInstance.editor.setData(post.content);
         }
 
-        if (post.imageUrls && post.imageUrls.length > 0) {
-            const imagesDiv = document.getElementById('existing-images');
-            post.imageUrls.forEach((url, index) => {
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <img src="${url}" alt="게시글 이미지">
-                    <input type="checkbox" name="deleteImages" value="${post.imageIds[index]}"> 삭제
-                `;
-                imagesDiv.appendChild(div);
-            });
-        }
+        // 기존 이미지 url 추출
+        initialImageUrls = extractImagesFromContent(post.content);
+
     } catch(error) {
         console.error('게시글을 불러오는 중 오류가 발생하였습니다.', error);
     }
 };
 
-// document.addEventListener('DOMContentLoaded', fetchPost);
 
 document.getElementById('updateForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    if (!editor) {
-        alert('Editor not initialized yet.');
+    if (!editorInstance || !editorInstance.editor) {
+        alert('에디터가 아직 초기화되지 않았습니다.');
         return;
     }
 
-    const formData = new FormData();
+    // const formData = new FormData();
+    const editorContent = editorInstance.editor.getData();
+    const uploadedImages = editorInstance.getUploadedImages();
+
+    // 수정된 내용에서 이미지 url 추출
+    const updatedImagesUrls = extractImagesFromContent(editorContent);
+
+    // 사용된 이미지 정보
+    const imageInfo = uploadedImages.filter(image => updatedImagesUrls.includes(image.url));
+
+    // 사용되지 않은 이미지 url 찾기
+    const unusedImages = initialImageUrls.filter(url => !updatedImagesUrls.includes(url));
 
     const postRequestDto = {
         title: document.getElementById('title').value,
-        content: editor.getData(),  // document.getElementById('content').value
-        deleteImages: Array.from(document.querySelectorAll('input[name="deleteImages"]:checked'))
-            .map(checkbox => parseInt(checkbox.value)),
-        imageUrls: uploadedImages,
-        unusedImageUrls: []
+        content: editorContent,
+        imageInfos: imageInfo,
+        unusedImageUrls: unusedImages
     };
 
-    formData.append('postRequestDto', new Blob([JSON.stringify(postRequestDto)], {type: 'application/json'}));
-
-    /*const images = document.getElementById('images').files; // 새로운 이미지
-
-    for (let i = 0; i < images.length && i < 5; i++) {  // 이미지 최대 5장
-        formData.append('images', images[i]);
-    }*/
-
     const postId = window.location.pathname.split('/')[2];   // URL에서 postId 추출
-    console.log('Extracted postId:', postId);
 
     fetch(`/api/posts/${postId}/update`, {
         method: 'PUT',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postRequestDto)
     })
         .then(response => {
             if (!response.ok) {
@@ -105,16 +99,13 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         });
 });
 
-/*document.getElementById('images').addEventListener('change', function() {
-    const fileInput = document.getElementById('images');
-    const fileNameDisplay = document.getElementById('fileName');
+function extractImagesFromContent(content) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
+    const images = doc.getElementsByTagName('img');
+    return Array.from(images).map(img => img.src);
+}
 
-    if (fileInput.files.length > 0) {
-        fileNameDisplay.textContent = Array.from(fileInput.files).map(file => file.name).join(', ');
-    } else {
-        fileNameDisplay.textContent = '선택된 파일 없음';
-    }
-});*/
 
 document.getElementById('cancel-button').addEventListener('click', function () {
     window.history.back();  // 이전 페이지로 돌아가기
