@@ -39,7 +39,7 @@ document.getElementById('postForm').addEventListener('submit', function (event) 
         title: document.getElementById('title').value,
         content: editorContent,
         imageInfos: imageInfo,
-        unusedImageUrls: unusedImages
+        usedImageUrls: usedImagesUrls
     }
 
     fetch('/api/posts', {
