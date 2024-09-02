@@ -20,6 +20,7 @@ public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
 
+    // 메시지를 저장하고 이를 DTO로 반환
     @Transactional
     public ChatMessageDto saveMessage(ChatMessageDto messageDto, String userId) {
         ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getRoomId())
@@ -46,12 +47,11 @@ public class ChatMessageService {
         return ChatMessageDto.from(chatMessage);
     }
 
+    // 메시지 ID로 메시지 조회
     @Transactional(readOnly = true)
     public ChatMessageDto findMessageById(Long id) {
         return chatMessageRepository.findById(id)
                 .map(ChatMessageDto::from)
                 .orElseThrow(() -> new RuntimeException("Message not found"));
     }
-
-    // 필요에 따라 다른 메서드들을 추가할 수 있습니다.
 }
