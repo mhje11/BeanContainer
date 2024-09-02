@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,14 +26,13 @@ public class MyPageRestController {
     private final MemberService memberService;
     private final ProfileImageService profileImageService;
     private final CookieService cookieService;
-    private final RefreshTokenService refreshTokenService;
 
 
     @PostMapping("/{userId}/nickname")
     public ResponseEntity<Map<String, String>> updateNickname(@PathVariable String userId,
-                                                              @RequestBody Map<String, String> payload, Principal principal) {
+                                                              @RequestBody Map<String, String> payload, Authentication authentication) {
         // 현재 로그인한 사용자와 userId가 일치하는지 확인
-        if (!userId.equals(principal.getName())) {
+        if (!userId.equals(authentication.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String newNickname = payload.get("newNickname");
@@ -41,10 +41,10 @@ public class MyPageRestController {
     }
 
     @PostMapping("/{userId}/profile-image")
-    public ResponseEntity<Map<String, String>> uploadProfileImage( @PathVariable String userId, @RequestParam("file") MultipartFile file, Principal principal) throws IOException {
+    public ResponseEntity<Map<String, String>> uploadProfileImage( @PathVariable String userId, @RequestParam("file") MultipartFile file, Authentication authentication) throws IOException {
 
         // 현재 로그인한 사용자와 userId가 일치하는지 확인
-        if (!userId.equals(principal.getName())) {
+        if (!userId.equals(authentication.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -54,9 +54,9 @@ public class MyPageRestController {
 
     @DeleteMapping("/{userId}/profile-image")
     public ResponseEntity<Map<String, String>> deleteProfileImage(@PathVariable String userId,
-                                                                  Principal principal) {
+                                                                  Authentication authentication) {
         // 현재 로그인한 사용자와 userId가 일치하는지 확인
-        if (!userId.equals(principal.getName())) {
+        if (!userId.equals(authentication.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -66,9 +66,9 @@ public class MyPageRestController {
 
     @DeleteMapping("/{userId}/account")
     public ResponseEntity<String> deleteAccount(@PathVariable String userId,
-                                                Principal principal, HttpServletResponse response) {
+                                                Authentication authentication, HttpServletResponse response) {
         // 현재 로그인한 사용자와 userId가 일치하는지 확인
-        if (!userId.equals(principal.getName())) {
+        if (!userId.equals(authentication.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

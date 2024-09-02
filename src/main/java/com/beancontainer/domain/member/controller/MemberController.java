@@ -7,6 +7,7 @@ import com.beancontainer.global.auth.service.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -46,14 +47,12 @@ public class MemberController {
 
     //마이페이지
     @GetMapping("/mypage/{userId}")
-    public String showMyPage(@PathVariable String userId, Model model, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
+    public String showMyPage(@PathVariable String userId, Model model, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (customUserDetails == null) {
             return "redirect:/login";
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String authenticatedUserId = userDetails.getUserId();
-
+        String authenticatedUserId = customUserDetails.getUserId();
         if (!authenticatedUserId.equals(userId)) {
             return "redirect:/"; // 또는 에러 페이지로 리다이렉트
         }
