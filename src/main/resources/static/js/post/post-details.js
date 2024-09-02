@@ -50,6 +50,27 @@ class PostOperations {
         }
     }
 
+    async deletePost() {
+        if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+            try {
+                const response = await fetch(`/api/posts/${this.postId}/delete`, {
+                    method: 'DELETE',
+                });
+
+                if(response.ok) {
+                    alert('게시글이 삭제되었습니다.');
+                    window.location.href = '/posts/list';    // 삭제 후 게시판으로 리다이렉트
+                } else {
+                    const errorMsg = await response.text();
+                    alert(errorMsg || '게시글 삭제에 실패하였습니다.');
+                }
+            } catch (error) {
+                console.error('Error deleting post: ', error);
+                alert('게시글 삭제 중 오류가 발생하였습니다.');
+            }
+        }
+    }
+
     async toggleLike() {
         try {
             const response = await fetch(`/api/likes/${this.postId}`, {
@@ -103,25 +124,39 @@ class PostOperations {
                         <img src="${comment.profileImageUrl || '/images/BeanContainer.png'}" alt="프로필 이미지"/>
                     </div>
                     <div class="comment-content">
-                        <div class="comment-header">
-                            <span class="comment-author"><strong>${comment.nickname}</strong></span>
-                            <span class="comment-date">${new Date(comment.createdAt).toLocaleString()}</span>
-                        </div>
-                        <div class="comment-body" id="comment-content-${comment.id}">${comment.content}</div>
-                        <div class="comment-actions">
+                        <div class="comment-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span class="comment-author"><strong>${comment.nickname}</strong></span>
+                                <span class="comment-date">${new Date(comment.createdAt).toLocaleString()}</span>
+                            </div>
                             ${comment.authorCheck ? `
-                                <button onclick="postOps.updateComment(${comment.id}, '${comment.content}')">수정</button>
-                                <button onclick="postOps.deleteComment(${comment.id})">삭제</button>
+                            <i class="fas fa-ellipsis-v" onclick="postOps.toggleCommentOptions(${comment.id})" style="cursor: pointer;"></i>
                             ` : ''}
                         </div>
+                        <div class="comment-body" id="comment-content-${comment.id}">${comment.content}</div>
+                        <div class="comment-actions" id="comment-actions-${comment.id}" style="display: none; margin-top: 5px;">
+                            <button onclick="postOps.updateComment(${comment.id}, '${comment.content}')">수정</button>
+                            <button onclick="postOps.deleteComment(${comment.id})">삭제</button>
+                        </div>
                     </div>
-                    `;
+                `;
+
                 commentsDiv.appendChild(div);
             });
+
         } catch (error) {
             console.error('Error fetching comments', error);
             const commentsDiv = document.getElementById('comments');
             commentsDiv.innerHTML = '<p>댓글을 불러오는 중 오류가 발생하였습니다.</p>';
+        }
+    }
+
+    toggleCommentOptions(commentId) {
+        const commentActions = document.getElementById(`comment-actions-${commentId}`);
+        if (commentActions.style.display === 'none' || commentActions.style.display === '') {
+            commentActions.style.display = 'block';
+        } else {
+            commentActions.style.display = 'none';
         }
     }
 
@@ -158,25 +193,16 @@ class PostOperations {
         }
     }
 
-    async deletePost() {
-        if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-            try {
-                const response = await fetch(`/api/posts/${this.postId}/delete`, {
-                    method: 'DELETE',
-                });
+    cancelUpdate(commentId, content) {
+        const commentBody = document.getElementById(`comment-content-${commentId}`);
+        commentBody.innerHTML = content;
 
-                if(response.ok) {
-                    alert('게시글이 삭제되었습니다.');
-                    window.location.href = '/posts/list';    // 삭제 후 게시판으로 리다이렉트
-                } else {
-                    const errorMsg = await response.text();
-                    alert(errorMsg || '게시글 삭제에 실패하였습니다.');
-                }
-            } catch (error) {
-                console.error('Error deleting post: ', error);
-                alert('게시글 삭제 중 오류가 발생하였습니다.');
-            }
-        }
+        const commentActions = document.getElementById(`comment-actions-${commentId}`);
+        commentActions.innerHTML = `
+        <button onclick="postOps.updateComment(${commentId}, '${content}')">수정</button>
+        <button onclick="postOps.deleteComment(${commentId})">삭제</button>
+    `;
+        commentActions.style.display = 'none';  // 취소 시에는 다시 숨김
     }
 
     async deleteComment(commentId) {
@@ -202,20 +228,21 @@ class PostOperations {
 
     async updateComment(commentId, currentContent) {
         const commentBody = document.getElementById(`comment-content-${commentId}`);
+        const commentActions = document.getElementById(`comment-actions-${commentId}`);
+
+        // 댓글 내용을 텍스트 영역으로 변경하여 수정할 수 있게 함
         commentBody.innerHTML = `
-            <textarea id="update-content-${commentId}">${currentContent}</textarea>
-            <div class="comment-actions">
-                <button onclick="postOps.saveOrUpdateComment(true, ${commentId})">저장</button>
-                <button onclick="postOps.cancelUpdate(${commentId}, '${currentContent}')">취소</button>
-               
-            </div>
-        `;
+        <textarea id="update-content-${commentId}">${currentContent}</textarea>
+    `;
+
+        // "수정" 버튼을 "저장" 버튼으로 변경하고 취소 버튼 추가
+        commentActions.innerHTML = `
+        <button onclick="postOps.saveOrUpdateComment(true, ${commentId})">저장</button>
+        <button onclick="postOps.cancelUpdate(${commentId}, '${currentContent}')">취소</button>
+    `;
+        commentActions.style.display = 'block';  // 수정 시에는 항상 보이도록 함
     }
 
-    cancelUpdate(commentId, content) {
-        const commentBody = document.getElementById(`comment-content-${commentId}`);
-        commentBody.innerHTML = content;
-    }
 }
 
 const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
@@ -224,6 +251,6 @@ const postOps = new PostOperations(postId);
 document.addEventListener('DOMContentLoaded', () =>  {
     postOps.fetchPost();    // 페이지 로드 후 함수 호출
     document.getElementById('like-button').addEventListener('click', () => postOps.toggleLike());
+    document.getElementById('submit-comment').addEventListener('click', () => postOps.saveOrUpdateComment(false));
 });
 
-document.getElementById('submit-comment').addEventListener('click', () => postOps.saveOrUpdateComment(false));

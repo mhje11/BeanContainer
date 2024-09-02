@@ -45,6 +45,7 @@ public class PostImgService {
                 PutObjectRequest.builder()
                         .bucket(bucketname)
                         .key(name)
+                        .contentType(extractExtension(originalName))
                         .build(),
                 RequestBody.fromInputStream(image.getInputStream(), image.getSize())    // 파일의 본체
         );
