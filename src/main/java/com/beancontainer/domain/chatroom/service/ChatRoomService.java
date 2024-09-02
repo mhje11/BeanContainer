@@ -25,10 +25,12 @@ public class ChatRoomService {
 
     @Transactional(readOnly = true)
     public List<ChatRoomDto> findAllRoom() {
-        return chatRoomRepository.findAll().stream()
-                .filter(ChatRoom::isActive)
-                .map(ChatRoomDto::from)
-                .collect(Collectors.toList());
+//        return chatRoomRepository.findAll().stream()
+//                .filter(ChatRoom::isActive)
+//                .map(ChatRoomDto::from)
+//                .collect(Collectors.toList());
+
+        return chatRoomRepository.findAllActiveRooms();
     }
 
     @Transactional(readOnly = true)
