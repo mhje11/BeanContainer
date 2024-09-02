@@ -56,6 +56,11 @@ public class RefreshTokenService {
         return findByRefresh(refreshToken).isPresent() && !jwtTokenizer.isRefreshTokenExpired(refreshToken);
     }
 
+    //사용자ID로 RefreshToken 조회
+    public Optional<RefreshToken> findByUserId(String userId) {
+        return refreshTokenRepository.findByUserId(userId);
+    }
+
     @Transactional
     public String[] refreshToken(String refreshToken) {
         if (refreshToken == null) {

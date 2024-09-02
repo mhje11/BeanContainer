@@ -29,6 +29,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +54,7 @@ public class MemberService implements UserDetailsService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final OAuth2AuthorizedClientService authorizedClientService;
 
 
 
@@ -94,6 +97,53 @@ public class MemberService implements UserDetailsService {
         } catch (Exception e) {
             throw new CustomException(ExceptionCode.MEMBER_NOT_FOUND);
         }
+    }
+
+    //OAuth2 제공자 정보 불러오기(naver/kakao)
+    @Transactional(readOnly = true)
+    public String getProviderByUserId(String userId) {
+        Member member = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> {
+                    log.error("User not found with userId: {}", userId);
+                    return new CustomException(ExceptionCode.MEMBER_NOT_FOUND);
+                });
+
+        String provider = member.getProvider();
+        log.debug("Provider for userId {}: {}", userId, provider);
+
+        return provider;
+    }
+
+
+    @Transactional(readOnly = true)
+    public String getOAuth2AccessToken(String userId) {
+        Member member = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> {
+                    log.error("User not found: {}", userId);
+                    return new CustomException(ExceptionCode.MEMBER_NOT_FOUND);
+                });
+
+        String provider = member.getProvider();
+        log.debug("Provider for user {}: '{}'", userId, provider);
+
+        if (provider == null || provider.trim().isEmpty()) {
+            log.error("Provider is null or empty for user: {}", userId);
+            throw new CustomException(ExceptionCode.INVALID_OAUTH2_PROVIDER);
+        }
+
+        provider = provider.trim().toLowerCase();
+        if (!provider.equals("naver") && !provider.equals("kakao")) {
+            log.error("Invalid OAuth2 provider for user {}: '{}'", userId, provider);
+            throw new CustomException(ExceptionCode.INVALID_OAUTH2_PROVIDER);
+        }
+
+        OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(provider, userId);
+        if (authorizedClient == null || authorizedClient.getAccessToken() == null) {
+            log.error("OAuth2 token not found for user {} with provider {}", userId, provider);
+            throw new CustomException(ExceptionCode.INVALID_OAUTH2_PROVIDER);
+        }
+
+        return authorizedClient.getAccessToken().getTokenValue();
     }
 
     // 회원 계정 비활성화
