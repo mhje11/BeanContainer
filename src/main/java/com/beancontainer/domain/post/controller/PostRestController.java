@@ -1,6 +1,5 @@
 package com.beancontainer.domain.post.controller;
 
-import com.beancontainer.domain.admin.RequireAdmin;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.MemberService;
 import com.beancontainer.domain.post.dto.PostRequestDto;
@@ -18,27 +17,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 @Slf4j
 public class PostRestController {
     private final PostService postService;
     private final MemberService memberService;
 
-    @PostMapping("/post/create")    // 게시글 작성
-    public ResponseEntity<Map<String, String>> createPost(@RequestPart("postRequestDto") PostRequestDto postRequestDto,
-                                                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
-                                                          @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
-
-        postRequestDto.setImages(images);
+    @PostMapping    // 게시글 작성
+    public ResponseEntity<Map<String, String>> createPost(@RequestBody PostRequestDto postRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Member member = memberService.findByUserId(userDetails.getUserId());
 
@@ -48,10 +41,10 @@ public class PostRestController {
         response.put("message", "게시글생성 완료");
         response.put("postId", postId.toString());
 
-        return ResponseEntity.ok(response); // json 형식으로 반환
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/postList")    // 게시글 전체 조회
+    @GetMapping("/list")    // 게시글 전체 조회
     public ResponseEntity<Page<PostListResponseDto>> getAllPosts(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size,
                                                                  @RequestParam(defaultValue = "createdAt") String sortBy) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, sortBy));
@@ -60,14 +53,14 @@ public class PostRestController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/postList/{postId}")   // 게시글 상세 정보
+    @GetMapping("/{postId}")   // 게시글 상세 정보
     public ResponseEntity<PostDetailsResponseDto> postDetails(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = (userDetails != null) ? userDetails.getUserId() : null;
         PostDetailsResponseDto post = postService.postDetails(postId, userId);
         return ResponseEntity.ok(post);
     }
 
-    @DeleteMapping("/post/delete/{postId}") // 게시글 삭제
+    @DeleteMapping("/{postId}/delete") // 게시글 삭제
     public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         boolean isAdmin = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN"));
@@ -76,10 +69,9 @@ public class PostRestController {
         return ResponseEntity.ok("글 삭제가 완료되었습니다");
     }
 
-    @PutMapping("/post/update/{postId}")    // 게시글 수정
-    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestPart("postRequestDto") PostRequestDto postRequestDto,
-                                                             @RequestParam(value = "images", required = false) List<MultipartFile> images) throws IOException {
-        postRequestDto.setImages(images);
+    @PutMapping("/{postId}/update")    // 게시글 수정
+    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestPart("postRequestDto") PostRequestDto postRequestDto) throws IOException {
+//        postRequestDto.setImages(images);
 
         PostDetailsResponseDto updatedPost = postService.updatePost(postId, postRequestDto);
         return ResponseEntity.ok(updatedPost);

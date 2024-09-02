@@ -3,6 +3,7 @@ import {
     AccessibilityHelp,
     Alignment,
     AutoLink,
+    AutoImage,
     Autosave,
     BlockQuote,
     Bold,
@@ -16,6 +17,16 @@ import {
     Heading,
     Highlight,
     HorizontalLine,
+    ImageBlock,
+    ImageCaption,
+    ImageInline,
+    ImageInsert,
+    ImageInsertViaUrl,
+    ImageResize,
+    ImageStyle,
+    ImageTextAlternative,
+    ImageToolbar,
+    ImageUpload,
     Indent,
     IndentBlock,
     Italic,
@@ -24,6 +35,7 @@ import {
     ListProperties,
     Paragraph,
     SelectAll,
+    SimpleUploadAdapter,
     SpecialCharacters,
     SpecialCharactersArrows,
     SpecialCharactersCurrency,
@@ -55,6 +67,7 @@ const editorConfig = {
             'selectAll',
             '|',
             'heading',
+            'style',
             '|',
             'fontSize',
             'fontFamily',
@@ -70,6 +83,7 @@ const editorConfig = {
             'specialCharacters',
             'horizontalLine',
             'link',
+            'insertImage',
             'insertTable',
             'highlight',
             'blockQuote',
@@ -89,6 +103,7 @@ const editorConfig = {
     plugins: [
         AccessibilityHelp,
         Alignment,
+        AutoImage,
         AutoLink,
         Autosave,
         BlockQuote,
@@ -103,6 +118,16 @@ const editorConfig = {
         Heading,
         Highlight,
         HorizontalLine,
+        ImageBlock,
+        ImageCaption,
+        ImageInline,
+        ImageInsert,
+        ImageInsertViaUrl,
+        ImageResize,
+        ImageStyle,
+        ImageTextAlternative,
+        ImageToolbar,
+        ImageUpload,
         Indent,
         IndentBlock,
         Italic,
@@ -111,6 +136,7 @@ const editorConfig = {
         ListProperties,
         Paragraph,
         SelectAll,
+        // SimpleUploadAdapter,
         SpecialCharacters,
         SpecialCharactersArrows,
         SpecialCharactersCurrency,
@@ -181,6 +207,18 @@ const editorConfig = {
             }
         ]
     },
+    image: {
+        toolbar: [
+            'toggleImageCaption',
+            'imageTextAlternative',
+            '|',
+            'imageStyle:inline',
+            'imageStyle:wrapText',
+            'imageStyle:breakText',
+            '|',
+            'resizeImage'
+        ]
+    },
     language: 'ko',
     link: {
         addTargetToExternalLinks: true,
@@ -202,22 +240,95 @@ const editorConfig = {
             reversed: true
         }
     },
-    placeholder: 'Type or paste your content here!',
+    placeholder: '내용을 입력하세요.',
+    simpleUpload: {
+        uploadUrl: "/api/postimg/upload",
+        withCredentials: true
+    },
     table: {
         contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
     },
     translations: [translations]
 };
 
+let uploadedImages = [];
+
+class CustomUploadAdapter {
+    constructor(loader) {
+        this.loader = loader;
+    }
+
+    upload() {
+        return this.loader.file.then(file => {
+            return new Promise((resolve, reject) => {
+                if (uploadedImages.length >= 5) {
+                    reject(new Error(`이미지는 최대 5개까지만 업로드할 수 있습니다.`));
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('upload', file);
+
+                fetch('/api/postimg/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(error => {
+                                throw new Error(error.message);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(result => {
+                        if (result.url) {
+                            uploadedImages.push({
+                                originName: result.originName,
+                                name: result.name,
+                                url: result.url
+                            });
+                            resolve({default: result.url});
+                        } else {
+                            reject(new Error(result.message))
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error: ', error);
+                        reject(error);
+                    });
+            });
+        });
+    }
+
+    abort() {
+        // 업로드 중단 로직
+    }
+}
+
 export function initEditor(elementId) {
+
     return ClassicEditor
-        .create(document.querySelector(elementId), editorConfig)
+        .create(document.querySelector(elementId), {
+            ...editorConfig,
+            extraPlugins: [CustomUploadAdapterPlugin]
+        })
         .then(editor => {
             console.log('CKEditor 초기화 성공:', editor);
-            return editor;
+
+            return {
+                editor: editor,
+                getUploadedImages: () => [...uploadedImages]    // 배열의 복사본 반환
+            };
         })
         .catch(error => {
             console.error('CKEditor 초기화 오류: ', error);
             throw error;
         });
+}
+
+function CustomUploadAdapterPlugin(editor) {
+    editor.plugins.get('FileRepository').createUploadAdapter = loader => {
+        return new CustomUploadAdapter(loader);
+    };
 }

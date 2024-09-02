@@ -5,7 +5,7 @@ class PostOperations {
 
     async fetchPost() {
         try {
-            const response = await fetch(`/api/postList/${this.postId}`);
+            const response = await fetch(`/api/posts/${this.postId}`);
             if (!response.ok) {
                 throw new Error('게시글을 가져오는 데 실패하였습니다.');
             }
@@ -27,7 +27,7 @@ class PostOperations {
             }
 
             // 이미지
-            const imagesDiv = document.getElementById('images');
+            /*const imagesDiv = document.getElementById('images');
             if(post.imageUrls && post.imageUrls.length > 0) {
                 post.imageUrls.forEach(url => {
                     const img = document.createElement('img');
@@ -35,7 +35,7 @@ class PostOperations {
                     img.alt = '게시글 이미지';
                     imagesDiv.appendChild(img);
                 });
-            }
+            }*/
 
             // 좋아요
             document.getElementById('like-count').innerText = post.likes;
@@ -43,12 +43,12 @@ class PostOperations {
             const btnList = document.getElementById('btn-list');
             if (post.authorCheck) {  // DTO에서 isAuthor라는 변수명으로 return 했지만 Json으로 직렬화 되는 과정에서 필드명 변환될 수 있음
                 btnList.innerHTML = `
-                <button type="button" onclick="location.href='/post/post-list'">목록</button>
-                <button type="button" onclick="location.href='/postList/update/${this.postId}'">수정</button>
+                <button type="button" onclick="location.href='/posts/list'">목록</button>
+                <button type="button" onclick="location.href='/posts/${this.postId}/update'">수정</button>
                 <button type="button" onclick="postOps.deletePost()">삭제</button>
             `;  /*GET이 아닌 DELETE 요청이기 때문에 함수로 호출*/
             } else {
-                btnList.innerHTML = `<button type="button" onclick="location.href='/post/post-list'">목록</button>`;
+                btnList.innerHTML = `<button type="button" onclick="location.href='/posts/list'">목록</button>`;
             }
 
             // 댓글 불러오기
@@ -63,7 +63,7 @@ class PostOperations {
 
     async toggleLike() {
         try {
-            const response = await fetch(`/api/postlist/${this.postId}/like`, {
+            const response = await fetch(`/api/likes/${this.postId}`, {
                 method: 'POST'
             });
 
@@ -71,7 +71,7 @@ class PostOperations {
                 await this.updateLikeCount();
             } else {
                 // 이미 좋아요를 누른 상태라면 좋아요 삭제
-                const removeResponse = await fetch(`/api/postlist/${this.postId}/like/delete`, {
+                const removeResponse = await fetch(`/api/likes/${this.postId}/delete`, {
                     method: 'DELETE'
                 });
 
@@ -87,7 +87,7 @@ class PostOperations {
 
     async updateLikeCount() {
         try {
-            const response = await fetch(`/api/postlist/${this.postId}/likes/count`);
+            const response = await fetch(`/api/likes/${this.postId}/count`);
             const likeCount = await response.json();
             document.getElementById('like-count').innerText = likeCount;
         } catch (error) {
@@ -97,7 +97,7 @@ class PostOperations {
 
     async commentAll() {
         try {
-            const response = await fetch(`/api/postlist/comments/${this.postId}`);
+            const response = await fetch(`/api/comments/list/${this.postId}`);
             if (!response.ok) {
                 throw new Error('댓글을 가져오는 데 실패하였습니다.');
             }
@@ -146,8 +146,8 @@ class PostOperations {
         }
 
         const endpoint = isUpdate
-            ? `/api/postlist/${this.postId}/update/${commentId}`
-            : `/api/postlist/create/${this.postId}`;
+            ? `/api/comments/${this.postId}/${commentId}/update`
+            : `/api/comments/${this.postId}`;
 
         const method = isUpdate ? 'PUT' : 'POST';
 
@@ -172,13 +172,13 @@ class PostOperations {
     async deletePost() {
         if(confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
             try {
-                const response = await fetch(`/api/post/delete/${this.postId}`, {
+                const response = await fetch(`/api/posts/${this.postId}/delete`, {
                     method: 'DELETE',
                 });
 
                 if(response.ok) {
                     alert('게시글이 삭제되었습니다.');
-                    window.location.href = '/post/post-list';    // 삭제 후 게시판으로 리다이렉트
+                    window.location.href = '/posts/list';    // 삭제 후 게시판으로 리다이렉트
                 } else {
                     const errorMsg = await response.text();
                     alert(errorMsg || '게시글 삭제에 실패하였습니다.');
@@ -193,7 +193,7 @@ class PostOperations {
     async deleteComment(commentId) {
         if(confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
             try {
-                const response = await fetch(`/api/postlist/${this.postId}/delete/${commentId}`, {
+                const response = await fetch(`/api/comments/${this.postId}/${commentId}/delete`, {
                     method: 'DELETE',
                 });
 

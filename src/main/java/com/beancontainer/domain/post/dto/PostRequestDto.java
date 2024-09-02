@@ -1,7 +1,7 @@
 package com.beancontainer.domain.post.dto;
 
+import com.beancontainer.domain.postimg.dto.PostImgResponseDto;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import java.util.List;
 public class PostRequestDto {
     private String title;
     private String content;
-    private List<MultipartFile> images = new ArrayList<>();
+    private List<PostImgResponseDto> imageInfos = new ArrayList<>();
+    private List<String> unusedImageUrls = new ArrayList<>();
     private List<Long> deleteImages = new ArrayList<>();
 }

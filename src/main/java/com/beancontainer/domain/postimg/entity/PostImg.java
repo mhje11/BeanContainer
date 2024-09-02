@@ -25,10 +25,15 @@ public class PostImg {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public PostImg(String originName, String name, Post post) {
+    public PostImg(String originName, String name, String path, Post post) {
         this.originName = originName;
         this.name = name;
-        this.path = "";
+        this.path = path;
+        this.post = post;
+    }
+
+    public PostImg(String path, Post post) {
+        this.path = path;
         this.post = post;
     }
 
