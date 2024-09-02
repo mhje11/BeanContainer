@@ -5,17 +5,14 @@ import com.beancontainer.domain.chatroom.entity.ChatRoom;
 import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
 import com.beancontainer.domain.chatroom.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import software.amazon.awssdk.core.retry.RetryUtils;
 
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Controller

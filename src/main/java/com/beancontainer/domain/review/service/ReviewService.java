@@ -38,6 +38,7 @@ public class ReviewService {
     private final CategoryRepository categoryRepository;
     private final CafeService cafeService;
 
+    //리뷰 생성
     @Transactional
     public void createReview(ReviewCreateDto reviewCreateDto, UserDetails userDetails) {
         if (userDetails == null) {
@@ -63,7 +64,7 @@ public class ReviewService {
         cafeService.updatedCafeCategories(reviewCreateDto.getCafeId());
     }
 
-
+    //해당 카페의 리뷰 조회
     public Page<ReviewResponseDto> findReviewByCafeId(Long cafeId, Pageable pageable) {
 //        List<Review> cafes = reviewRepository.findAllByCafeId(cafeId);
 //        return cafes.stream()
@@ -72,6 +73,7 @@ public class ReviewService {
         return reviewRepository.findAllByCafeId(cafeId, pageable);
     }
 
+    //리뷰 수정
     @Transactional
     public Long updateReview(Long reviewId, ReviewUpdateDto reviewUpdateDto, UserDetails userDetails, String userId) {
             if (userDetails == null) {
@@ -96,6 +98,7 @@ public class ReviewService {
         return review.getId();
     }
 
+    //리뷰 삭제
     @Transactional
     public void deleteReview(Long reviewId, UserDetails userDetails, String userId) {
         if (userDetails == null) {
