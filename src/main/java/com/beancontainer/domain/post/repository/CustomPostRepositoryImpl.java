@@ -135,7 +135,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
         } else if (sortBy.equalsIgnoreCase("commentCount")) {
             return post.commentCount.desc();
         }
-            else {
+        else {
             return post.createdAt.desc();
         }
     }

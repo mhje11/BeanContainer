@@ -26,17 +26,6 @@ class PostOperations {
                 profileImage.src = '/images/BeanContainer.png';
             }
 
-            // 이미지
-            /*const imagesDiv = document.getElementById('images');
-            if(post.imageUrls && post.imageUrls.length > 0) {
-                post.imageUrls.forEach(url => {
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.alt = '게시글 이미지';
-                    imagesDiv.appendChild(img);
-                });
-            }*/
-
             // 좋아요
             document.getElementById('like-count').innerText = post.likes;
 

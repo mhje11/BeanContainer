@@ -62,55 +62,9 @@ body {
     color: #B0B0B0;
 }
 
-.existing-images {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.existing-images img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
-
 .box {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 20px;
-}
-
-.new-images {
-    display: flex;
-    align-items: center;
-}
-
-#images {
-    display: none;
-}
-
-label[for="images"], button {
-    display: inline-block;
-    background-color: #7B6155;
-    color: #FFFFFF;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    border: none;
-}
-
-label[for="images"]:hover,
-button:hover {
-    background-color: #884D33;
-}
-
-#fileName {
-    color: #7B6155;
-    font-size: 14px;
-    margin-left: 10px;
 }

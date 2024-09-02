@@ -17,11 +17,4 @@ public class CommentListResponseDto {
     private LocalDateTime createdAt;
     private boolean authorCheck;
 
-    public CommentListResponseDto(Comment comment, boolean authorCheck) {
-        this.id = comment.getId();
-        this.nickname = comment.getMember().getNickname();
-        this.content = comment.getContent();
-        this.createdAt = comment.getCreatedAt();
-        this.authorCheck = authorCheck;
-    }
 }

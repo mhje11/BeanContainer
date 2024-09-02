@@ -22,17 +22,6 @@ async function fetchPosts(page = 0) {
         postListDiv.innerHTML = ''; // 기존 내용 초기화
 
         posts.forEach(post => {
-            /*const row = document.createElement('tr');
-            row.innerHTML = `
-                    <td>${post.id}</td>
-                    <td><a href="/posts/${post.id}">${post.title}</a></td>
-                    <td>${post.nickname}</td>
-                    <td>${post.commentCount}</td>
-                    <td>${post.likeCount}</td>
-                    <td>${post.updatedAt ? new Date(post.updatedAt).toLocaleString() + ' (수정됨)' : new Date(post.createdAt).toLocaleString()}</td>
-                    <td>${post.views}</td>
-                `;
-            postListDiv.appendChild(row);*/
             const postItem = document.createElement('div');
             postItem.className = 'post-item';
             postItem.innerHTML = `
@@ -60,7 +49,6 @@ async function fetchPosts(page = 0) {
     } catch (error) {
         console.error('Error fetching posts:', error);
         const postListDiv = document.getElementById('post-list');
-        // postListDiv.innerHTML = '<tr><td colspan="5">게시글을 불러오는 중 오류가 발생했습니다.</td></tr>';
         postListDiv.innerHTML = '<div class="post-item">게시글을 불러오는 중 오류가 발생했습니다.</div>';
     }
 }
@@ -85,10 +73,6 @@ function updatePagination(totalPages, currentPage) {
             event.preventDefault();
             fetchPosts(i);
         });
-
-        /*if (i === currentPage) {
-            pageItem.style.fontWeight = 'bold'; // 현재 페이지는 굵게 표시
-        }*/
 
         paginationDiv.appendChild(pageItem);
     }

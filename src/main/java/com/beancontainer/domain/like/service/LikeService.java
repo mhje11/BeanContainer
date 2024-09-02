@@ -45,14 +45,17 @@ public class LikeService {
     public void removeLike(Long postId, String userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
+
         Member member = memberRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.MEMBER_NOT_FOUND));
+
         Likes like = likeRepository.findByPostAndMember(post, member)
                 .orElseThrow(() -> new CustomException(ExceptionCode.HISTORY_NOT_FOUND));
 
         likeRepository.delete(like);
 
         post.decrementLikeCount();
+
         postRepository.save(post);
     }
 

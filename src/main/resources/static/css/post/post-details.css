@@ -242,3 +242,7 @@ strong {
     display: table;
     clear: both;
 }
+
+.comment-body textarea {
+    resize: none;
+}

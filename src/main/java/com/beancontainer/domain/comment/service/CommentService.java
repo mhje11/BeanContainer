@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,13 +44,6 @@ public class CommentService {
     // 댓글 조회
     @Transactional(readOnly = true)
     public List<CommentListResponseDto> getAllComments(Long postId, Long currentUserId) {
-//        Post post = postRepository.findById(postId)
-//                .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
-//        List<Comment> comments = commentRepository.findByPost(post);
-//
-//        return comments.stream()
-//                .map(comment -> new CommentListResponseDto(comment, (currentUserId != null) && comment.getMember().getId().equals(currentUserId)))
-//                .collect(Collectors.toList());
         return commentRepository.getAllComments(postId, currentUserId);
     }
 
@@ -81,15 +73,20 @@ public class CommentService {
     public void updateComment(Long postId, Long commentId, String content, Member member) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.COMMENT_NOT_FOUND));
+
         if(!comment.getPost().getId().equals(post.getId())) {
             throw new CustomException(ExceptionCode.HISTORY_NOT_FOUND);
         }
+
         if(!comment.getMember().getId().equals(member.getId())) {
             throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
+
         comment.updateComment(content);
+
         commentRepository.save(comment);
     }
 }
