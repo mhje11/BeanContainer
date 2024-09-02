@@ -14,13 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/postimg")
+@RequestMapping("/api/postimages")
 @RequiredArgsConstructor
 @Slf4j
 public class PostImgRestController {
     private final PostImgService postImgService;
 
-    @PostMapping("/upload")
+    @PostMapping
     public ResponseEntity<PostImgResponseDto> uploadImage(@RequestParam("upload") MultipartFile image) throws IOException {
         PostImgResponseDto response = postImgService.saveImage(image);
         return ResponseEntity.ok(response);

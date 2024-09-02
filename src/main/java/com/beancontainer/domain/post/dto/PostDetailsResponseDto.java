@@ -22,8 +22,8 @@
         private Integer views;
         private Integer likes;
         private String content;
-        private List<String> imageUrls;
-        private List<Long> imageIds;
+//        private List<String> imageUrls;
+//        private List<Long> imageIds;
         private Boolean authorCheck;
 
         public PostDetailsResponseDto(Post updatedPost, int likesCount, Boolean authorCheck) {
@@ -36,12 +36,12 @@
             this.views = updatedPost.getViews();
             this.likes = likesCount;
             this.content = updatedPost.getContent();
-            this.imageUrls = updatedPost.getImages().stream()
-                    .map(PostImg::getPath)
-                    .collect(Collectors.toList());
-            this.imageIds = updatedPost.getImages().stream()
-                    .map(PostImg::getId)
-                    .collect(Collectors.toList());
+//            this.imageUrls = updatedPost.getImages().stream()
+//                    .map(PostImg::getPath)
+//                    .collect(Collectors.toList());
+//            this.imageIds = updatedPost.getImages().stream()
+//                    .map(PostImg::getId)
+//                    .collect(Collectors.toList());
             this.authorCheck = authorCheck;
         }
     }

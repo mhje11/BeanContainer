@@ -15,5 +15,4 @@ public class PostRequestDto {
     private String content;
     private List<PostImgResponseDto> imageInfos = new ArrayList<>();
     private List<String> unusedImageUrls = new ArrayList<>();
-    private List<Long> deleteImages = new ArrayList<>();
 }
