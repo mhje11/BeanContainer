@@ -32,11 +32,15 @@ public class ChatRoom {
     @Column(name = "current_participants", nullable = false)
     private int currentUserCount = 0;
 
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
+
     public ChatRoom(String name, Member creator, int capacity) {
         this.name = name;
         this.creator = creator;
         this.capacity = capacity;
         this.currentUserCount = 0;
+        this.active = true;
     }
 
     public boolean isFull() {
@@ -54,7 +58,16 @@ public class ChatRoom {
         if (currentUserCount > 0) {
             currentUserCount--;
         }
+        if (currentUserCount == 0) {
+            this.active = false;
+        }
     }
+
+    public void reactivate() {
+        this.active = true;
+    }
+
+
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> messages = new ArrayList<>();
 }
