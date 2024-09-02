@@ -11,7 +11,6 @@ import java.util.List;
 
 import static com.beancontainer.domain.chatroom.entity.QChatRoom.chatRoom;
 
-@Repository
 public class CustomChatRoomRepositoryImpl implements CustomChatRoomRepository{
 
     private final EntityManager em;

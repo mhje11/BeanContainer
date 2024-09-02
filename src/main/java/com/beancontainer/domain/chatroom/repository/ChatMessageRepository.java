@@ -8,5 +8,5 @@ import java.util.List;
 
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    List<ChatMessage> findAllByMember(Member member);
+    List<ChatMessage> findAllBySender(Member member);
 }
