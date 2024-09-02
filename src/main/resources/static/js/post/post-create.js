@@ -62,10 +62,9 @@ document.getElementById('postForm').addEventListener('submit', function (event) 
             window.location.href = '/posts/' + data.postId;
         })
         .catch(error => {
-            alert('게시글 생성 중 오류 발생: ' + error.message);
-            console.error('오류:', error)
+            alert(error.message);
+            console.error('Error:', error)
         });
-    console.error('오류:', error)
 });
 
 function extractImagesFromContent(content) {

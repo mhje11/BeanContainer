@@ -70,7 +70,7 @@ public class PostRestController {
     }
 
     @PutMapping("/{postId}/update")    // 게시글 수정
-    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestPart("postRequestDto") PostRequestDto postRequestDto) throws IOException {
+    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto) throws IOException {
 //        postRequestDto.setImages(images);
 
         PostDetailsResponseDto updatedPost = postService.updatePost(postId, postRequestDto);

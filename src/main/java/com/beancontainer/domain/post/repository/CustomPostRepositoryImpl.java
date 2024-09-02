@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.beancontainer.domain.like.entity.QLikes.likes;
@@ -103,11 +102,6 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
 
         PostDetailsResponseDto dto = null;
 
-        List<String> imageUrls = new ArrayList<>();
-        List<Long> imageIds = new ArrayList<>();
-
-
-
         for (Tuple result : results) {
             if (dto == null) {
                 String nickname = result.get(Expressions.stringPath("nickname"));
@@ -121,26 +115,13 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                         result.get(post.views).intValue(),
                         likesCount.intValue(),
                         result.get(post.content),
-                        imageUrls,
-                        imageIds,
                         result.get(authorCheckExpression)
                 );
-            }
-            if (result.get(postImg.path) != null) {
-                imageUrls.add(result.get(postImg.path));
-            }
-
-            if (result.get(postImg.id) != null) {
-                imageIds.add(result.get(postImg.id));
             }
         }
 
         return dto;
     }
-
-
-
-
 
     private OrderSpecifier<?> getOrderSpecifier(String sortBy) {
         if (sortBy.equalsIgnoreCase("createdAt")) {
