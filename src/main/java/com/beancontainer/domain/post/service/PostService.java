@@ -82,8 +82,6 @@ public class PostService {
     // 게시글 목록 조회
     @Transactional(readOnly = true)
     public Page<PostListResponseDto> getAllPosts(Pageable pageable, String sortBy) {
-//        Page<Post> postList = postRepository.findAll(pageable);
-//        return postList.map(PostListResponseDto::new);
         return postRepository.getAllPosts(pageable, sortBy);
     }
 
@@ -95,10 +93,6 @@ public class PostService {
         post.incrementViews();  // 조회수 증가
         postRepository.save(post);
 
-//        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
-//
-//        boolean authorCheck = (userId != null) && post.getMember().getUserId().equals(userId);
-//        return new PostDetailsResponseDto(post, likesCount, authorCheck);
         return postRepository.findPostDetailsById(postId, userId);
     }
 
@@ -135,7 +129,6 @@ public class PostService {
         List<String> updatedImageUrls = postRequestDto.getImageInfos().stream()
                 .map(PostImgResponseDto::getUrl)
                 .collect(Collectors.toList());
-
 
         // 사용되지 않는 이미지 처리
         List<PostImg> unusedImages = existingPostImages.stream()

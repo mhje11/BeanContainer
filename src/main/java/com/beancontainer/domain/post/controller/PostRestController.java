@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,8 +69,7 @@ public class PostRestController {
     }
 
     @PutMapping("/{postId}/update")    // 게시글 수정
-    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto) throws IOException {
-//        postRequestDto.setImages(images);
+    public ResponseEntity<PostDetailsResponseDto> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto) {
 
         PostDetailsResponseDto updatedPost = postService.updatePost(postId, postRequestDto);
         return ResponseEntity.ok(updatedPost);

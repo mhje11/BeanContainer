@@ -106,7 +106,6 @@ function extractImagesFromContent(content) {
     return Array.from(images).map(img => img.src);
 }
 
-
 document.getElementById('cancel-button').addEventListener('click', function () {
     window.history.back();  // 이전 페이지로 돌아가기
 });

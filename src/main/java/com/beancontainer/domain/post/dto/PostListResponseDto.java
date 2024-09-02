@@ -1,6 +1,5 @@
 package com.beancontainer.domain.post.dto;
 
-import com.beancontainer.domain.post.entity.Post;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,15 +18,4 @@ public class PostListResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int views;  // 조회수
-
-    public PostListResponseDto(Post post) {
-        this.id = post.getId();
-        this.title = post.getTitle();
-        this.nickname = post.getMember().getNickname();
-        this.commentCount = post.getCommentCount();
-        this.likeCount = post.getLikeCount();
-        this.createdAt = post.getCreatedAt();
-        this.updatedAt = post.getUpdatedAt();
-        this.views = post.getViews();
-    }
 }
