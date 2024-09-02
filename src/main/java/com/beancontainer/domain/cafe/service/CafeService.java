@@ -24,6 +24,7 @@ public class CafeService {
     private final CafeRepository cafeRepository;
     private final ReviewRepository reviewRepository;
 
+    //카페 저장
     @Transactional
     public Long saveCafe(CafeSaveDto cafeSaveDto) {
         Cafe cafe = cafeSaveDto.toEntity();
@@ -32,6 +33,7 @@ public class CafeService {
     }
 
 
+    //카페 정보 조회
     @Transactional(readOnly = true)
     public CafeResponseDto getCafeById(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new CustomException(ExceptionCode.CAFE_NOT_FOUND));
@@ -80,6 +82,7 @@ public class CafeService {
 //        cafeRepository.save(cafe);
 //    }
 
+    //카페 카테고리 업데이트
     @Transactional
     public void updatedCafeCategories(Long cafeId) {
         Cafe cafe = cafeRepository.findById(cafeId)
@@ -103,7 +106,7 @@ public class CafeService {
         cafeRepository.save(cafe);
     }
 
-
+    //동적 쿼리를 통한 카테고리로 카페 검색
     @Transactional(readOnly = true)
     public List<CafeResponseDto> getCafesByCategories(Set<String> categories, Boolean excludeBrands) {
         List<Cafe> cafes = cafeRepository.findByCategories(categories, excludeBrands);

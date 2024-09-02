@@ -30,7 +30,6 @@ public class CafeRestController {
     }
 
 
-//    @GetMapping("/api/map/category")
     @GetMapping("/api/cafes")
     public ResponseEntity<List<CafeResponseDto>> findByCategory(@RequestParam Set<String> categories,
                                                                 @RequestParam(required = false) boolean excludeBrands) {
