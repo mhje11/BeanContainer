@@ -134,10 +134,10 @@ public class MemberService implements UserDetailsService {
             List<Review> reviews = reviewRepository.findAllByMember(member);
             reviewRepository.deleteAll(reviews);
 
-            List<ChatMessage> messages = chatMessageRepository.findAllByMember(member);
+            List<ChatMessage> messages = chatMessageRepository.findAllBySender(member);
             chatMessageRepository.deleteAll(messages);
 
-            List<ChatRoom> chatRooms = chatRoomRepository.findAllByMember(member);
+            List<ChatRoom> chatRooms = chatRoomRepository.findAllByCreator(member);
             chatRoomRepository.deleteAll(chatRooms);
 
             memberRepository.delete(member);
