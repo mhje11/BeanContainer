@@ -1,13 +1,17 @@
 package com.beancontainer.domain.chatroom.dto;
 
 import com.beancontainer.domain.chatroom.entity.ChatRoom;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChatRoomDto {
     private Long roomId;
     private String name;
@@ -31,4 +35,6 @@ public class ChatRoomDto {
         }
         return dto;
     }
+
+
 }
