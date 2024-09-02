@@ -36,6 +36,7 @@ public class MapService {
     private final ReviewRepository reviewRepository;
 
 
+    //지도 생성
     @Transactional
     public Long createMap(MapCreateDto mapCreateDto, Member member) {
         Map map = new Map(mapCreateDto.getMapName(), member, mapCreateDto.getIsPublic());
@@ -52,6 +53,7 @@ public class MapService {
         return map.getId();
     }
 
+    //지도 리스트 조회
     @Transactional(readOnly = true)
     public List<MapListResponseDto> getMapList(Member member) {
 //        return mapRepository.findAllByMember(member).stream()
@@ -60,6 +62,7 @@ public class MapService {
         return mapRepository.getMapList(member);
     }
 
+    //지도 상세 조회
     @Transactional(readOnly = true)
     public MapDetailResponseDto getMapDetail(Long mapId) {
         Map map = mapRepository.findById(mapId).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
@@ -78,6 +81,7 @@ public class MapService {
 
     }
 
+    //지도 수정
     @Transactional
     public Long updateMap(MapUpdateDto mapUpdateDto, UserDetails userDetails, String userId) {
         if (userDetails == null) {
@@ -123,6 +127,7 @@ public class MapService {
         return map.getId();
     }
 
+    //지도 삭제
     @Transactional
     public void deleteMap(Long mapId, UserDetails userDetails, String userId) {
         if (userDetails == null) {
@@ -144,6 +149,7 @@ public class MapService {
         return mapRepository.findById(mapId).orElseThrow(() -> new CustomException(ExceptionCode.MAP_NOT_FOUND));
     }
 
+    //랜덤 지도 가져오기
     @Transactional(readOnly = true)
     public List<MapListResponseDto> findRandomPublicMap() {
         return mapRepository.findRandomMaps(3);
