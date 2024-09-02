@@ -18,13 +18,13 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/postlist")
+@RequestMapping("/api/comments")
 public class CommentRestController {
     private final CommentService commentService;
     private final MemberService memberService;
 
     // 댓글 등록
-    @PostMapping("/create/{postId}")
+    @PostMapping("/{postId}")
     public ResponseEntity<Map<String, String>> createComment(@PathVariable Long postId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Member member = memberService.findByUserId(userDetails.getUserId());
 
@@ -39,7 +39,7 @@ public class CommentRestController {
     }
 
     // 댓글 조회
-    @GetMapping("/comments/{postId}")
+    @GetMapping("/list/{postId}")
     public ResponseEntity<List<CommentListResponseDto>> getAllComments(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long currentUserId = null;
 
@@ -53,7 +53,7 @@ public class CommentRestController {
     }
 
     // 댓글 삭제
-    @DeleteMapping("/{postId}/delete/{commentId}")
+    @DeleteMapping("/{postId}/{commentId}/delete")
     @RequireAdmin
     public ResponseEntity<String> deleteComment(@PathVariable Long postId, @PathVariable Long commentId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         boolean isAdmin = userDetails.getAuthorities().stream()
@@ -66,7 +66,7 @@ public class CommentRestController {
     }
 
     // 댓글 수정
-    @PutMapping("/{postId}/update/{commentId}")
+    @PutMapping("/{postId}/{commentId}/update")
     public ResponseEntity<String> updateComment(@PathVariable Long postId, @PathVariable Long commentId,
                                                 @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Member member = memberService.findByUserId(userDetails.getUserId());

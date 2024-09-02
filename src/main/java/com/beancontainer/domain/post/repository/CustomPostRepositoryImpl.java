@@ -40,6 +40,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository{
                                 .when(post.member.deletedAt.isNull())
                                 .then(post.member.nickname)
                                 .otherwise("탈퇴한 회원"),
+                        post.member.profileImageUrl,
                         post.commentCount,
                         post.likeCount,
                         post.createdAt,

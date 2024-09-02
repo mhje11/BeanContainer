@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/postlist")
+@RequestMapping("/api/likes")
 public class LikeRestController {
     private final LikeService likeService;
 
     // 좋아요 추가
-    @PostMapping("/{postId}/like")
+    @PostMapping("/{postId}")
     public ResponseEntity<String> addLike(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = userDetails.getUserId();
         likeService.addLike(postId, userId);
@@ -23,14 +23,14 @@ public class LikeRestController {
     }
 
     // 좋아요 삭제
-    @DeleteMapping("/{postId}/like/delete")
+    @DeleteMapping("/{postId}/delete")
     public ResponseEntity<String> deleteLike(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         likeService.removeLike(postId, userDetails.getUserId());
         return ResponseEntity.ok("좋아요가 삭제되었습니다.");
     }
 
     // 게시글 좋아요수 조회
-    @GetMapping("/{postId}/likes/count")
+    @GetMapping("/{postId}/count")
     public ResponseEntity<Integer> countLikes(@PathVariable Long postId) {
         return ResponseEntity.ok(likeService.countLikes(postId));
     }

@@ -1,21 +1,25 @@
 import { initEditor } from './editor.js';
 
 let editor;
+let uploadedImages = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     initEditor('#editor')
-        .then(newEditor => {
-            editor = newEditor;
+        .then(result => {
+            editor = result.editor;
+            uploadedImages = result.getUploadedImages();
         })
         .catch(error => {
             console.log('CKEditor 초기화 오류: ', error);
         });
+
+    fetchPost();
 });
 
 async function fetchPost() {
     try {
-        const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
-        const response = await fetch(`/api/postList/${postId}`);
+        const postId = window.location.pathname.split('/')[2];   // URL에서 postId 추출
+        const response = await fetch(`/api/posts/${postId}`);
         if (!response.ok) {
             throw new Error('게시글을 가져오는 데 실패하였습니다.');
         }
@@ -46,7 +50,7 @@ async function fetchPost() {
     }
 };
 
-document.addEventListener('DOMContentLoaded', fetchPost);
+// document.addEventListener('DOMContentLoaded', fetchPost);
 
 document.getElementById('updateForm').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -62,20 +66,23 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         title: document.getElementById('title').value,
         content: editor.getData(),  // document.getElementById('content').value
         deleteImages: Array.from(document.querySelectorAll('input[name="deleteImages"]:checked'))
-            .map(checkbox => parseInt(checkbox.value))
+            .map(checkbox => parseInt(checkbox.value)),
+        imageUrls: uploadedImages,
+        unusedImageUrls: []
     };
 
     formData.append('postRequestDto', new Blob([JSON.stringify(postRequestDto)], {type: 'application/json'}));
 
-    const images = document.getElementById('images').files; // 새로운 이미지
+    /*const images = document.getElementById('images').files; // 새로운 이미지
 
     for (let i = 0; i < images.length && i < 5; i++) {  // 이미지 최대 5장
         formData.append('images', images[i]);
-    }
+    }*/
 
-    const postId = window.location.pathname.split('/').pop();   // URL에서 postId 추출
+    const postId = window.location.pathname.split('/')[2];   // URL에서 postId 추출
+    console.log('Extracted postId:', postId);
 
-    fetch(`/api/post/update/${postId}`, {
+    fetch(`/api/posts/${postId}/update`, {
         method: 'PUT',
         body: formData
     })
@@ -90,7 +97,7 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         .then(data => {
             console.log(data);
             alert('게시글이 수정되었습니다.');
-            window.location.href = `/postList/${postId}`; // 수정 후 게시글 상세 페이지로 리다이렉트
+            window.location.href = `/posts/${postId}`; // 수정 후 게시글 상세 페이지로 리다이렉트
         })
         .catch(error => {
             alert(error.message);
@@ -98,7 +105,7 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         });
 });
 
-document.getElementById('images').addEventListener('change', function() {
+/*document.getElementById('images').addEventListener('change', function() {
     const fileInput = document.getElementById('images');
     const fileNameDisplay = document.getElementById('fileName');
 
@@ -107,7 +114,7 @@ document.getElementById('images').addEventListener('change', function() {
     } else {
         fileNameDisplay.textContent = '선택된 파일 없음';
     }
-});
+});*/
 
 document.getElementById('cancel-button').addEventListener('click', function () {
     window.history.back();  // 이전 페이지로 돌아가기

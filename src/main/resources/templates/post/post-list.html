@@ -10,11 +10,12 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/header.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/post/post-list.css}">
     <link rel="icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 <div th:replace="fragments/header :: header"></div>
 
-<div class="container">
+<!--<div class="container">
     <div class="sort-div">
         <label for="sort-select">정렬 기준:</label>
         <select id="sort-select">
@@ -23,7 +24,7 @@
             <option value="likeCount">좋아요순</option>
             <option value="commentCount">댓글순</option>
         </select>
-        <button type="button" onclick="location.href='/post/create'" id="write-button" class="uk-button uk-button-primary">글쓰기</button>
+        <button type="button" onclick="location.href='/posts/create'" id="write-button" class="uk-button uk-button-primary">글쓰기</button>
     </div>
 
     <table>
@@ -43,6 +44,27 @@
     </table>
 
     <div id="pagination"></div>
+</div>-->
+
+<div class="container">
+    <div class="board-header">
+        <div class="sort-div">
+            <label for="sort-select">정렬:</label>
+            <select id="sort-select">
+                <option value="createdAt" selected>최신순</option>
+                <option value="views">조회수순</option>
+                <option value="likeCount">좋아요순</option>
+                <option value="commentCount">댓글순</option>
+            </select>
+        </div>
+        <button type="button" onclick="location.href='/posts/create'" id="write-button">글쓰기</button>
+    </div>
+
+    <div id="post-list" class="post-list">
+        <!-- 게시글이 여기에 동적으로 추가됩니다 -->
+    </div>
+
+    <div id="pagination" class="pagination"></div>
 </div>
 
 <script src="/js/post/post-list.js"></script>

@@ -8,6 +8,7 @@ import com.beancontainer.domain.post.dto.PostRequestDto;
 import com.beancontainer.domain.post.dto.PostListResponseDto;
 import com.beancontainer.domain.post.entity.Post;
 import com.beancontainer.domain.post.repository.PostRepository;
+import com.beancontainer.domain.postimg.dto.PostImgResponseDto;
 import com.beancontainer.domain.postimg.entity.PostImg;
 import com.beancontainer.domain.postimg.repository.PostImgRepository;
 import com.beancontainer.domain.postimg.service.PostImgService;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,24 +35,16 @@ public class PostService {
     private final PostImgRepository postImgRepository;
 
     // 이미지 처리
-    private void createImages(Post post, List<MultipartFile> images) throws IOException {
-        if (images != null && !images.isEmpty()) {
-            if(images.size() > 5) {
+    private void createImages(Post post, List<PostImgResponseDto> imageInfos) {
+        if (imageInfos != null && !imageInfos.isEmpty()) {
+            if(imageInfos.size() > 5) {
                 throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
             }
-            for (MultipartFile image : images) {
-                if (image.isEmpty()) continue;
+            for (PostImgResponseDto imageInfo : imageInfos) {
 
-                // S3에 이미지 저장 및 URL 생성
-                String imgUrl = postImgService.saveImage(image);
-                String originalName = image.getOriginalFilename();
-                String name = postImgService.getFileName(originalName);
-
-                PostImg postImg = new PostImg(originalName, name, post);
-                postImg.setPath(imgUrl);  // URL 저장
-
-                postImgService.save(postImg);
+                PostImg postImg = new PostImg(imageInfo.getOriginName(), imageInfo.getName(), imageInfo.getUrl(), post);
                 post.getImages().add(postImg);  // Post의 images 리스트에 추가
+                postImgService.save(postImg);
             }
         }
     }
@@ -67,8 +59,7 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public Long createPost(PostRequestDto postRequestDto, Member member) throws IOException {
-
+    public Long createPost(PostRequestDto postRequestDto, Member member) {
         Post post = new Post(
                 member,
                 postRequestDto.getTitle(),
@@ -77,7 +68,14 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
-        createImages(savedPost, postRequestDto.getImages());
+        createImages(savedPost, postRequestDto.getImageInfos());
+
+        // 사용되지 않은 이미지 S3에서 삭제
+        if (postRequestDto.getUnusedImageUrls() != null) {
+            for (String unusedImageUrl : postRequestDto.getUnusedImageUrls()) {
+                postImgService.deleteImage(unusedImageUrl);
+            }
+        }
 
         return savedPost.getId();
     }
@@ -135,8 +133,14 @@ public class PostService {
             deleteSelectedImages(post, deleteImageIds);
         }
 
+        // 새 이미지 처리
+        /*List<String> newImageUrls = postRequestDto.getImageUrls();
+        if (newImageUrls != null && !newImageUrls.isEmpty()) {
+            createImages(post, newImageUrls);
+        }*/
+
         // 이미지 수 제한
-        int existImagesCount = post.getImages().size(); // 기존 이미지 수
+        /*int existImagesCount = post.getImages().size(); // 기존 이미지 수
         int newImagesCount = postRequestDto.getImages() != null ? postRequestDto.getImages().size() : 0; // 새로운 이미지 수
         int totalImagesCount = existImagesCount + newImagesCount;
 
@@ -148,6 +152,16 @@ public class PostService {
         if (newImagesCount > 0) {
             // 새 이미지 저장
             createImages(post, postRequestDto.getImages());
+        }*/
+
+        if (post.getImages().size() > 5) {
+            throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
+        }
+
+        // 사용되지 않은 이미지 삭제
+        List<String> unusedImageUrls = postRequestDto.getUnusedImageUrls();
+        if (unusedImageUrls != null && !unusedImageUrls.isEmpty()) {
+            deleteExistImages(post);
         }
 
         Post updatedPost = postRepository.save(post);
