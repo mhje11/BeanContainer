@@ -26,7 +26,7 @@ public class ChatRoomService {
     @Transactional(readOnly = true)
     public List<ChatRoomDto> findAllRoom() {
         return chatRoomRepository.findAll().stream()
-                .filter(room -> room.getCurrentUserCount() > 0)
+                .filter(ChatRoom::isActive)
                 .map(ChatRoomDto::from)
                 .collect(Collectors.toList());
     }
@@ -34,7 +34,7 @@ public class ChatRoomService {
     @Transactional(readOnly = true)
     public ChatRoomDto findRoomById(Long id) {
         return chatRoomRepository.findById(id)
-                .filter(room -> room.getCurrentUserCount() > 0)
+                .filter(ChatRoom::isActive)
                 .map(ChatRoomDto::from)
                 .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
     }
@@ -51,11 +51,15 @@ public class ChatRoomService {
     @Transactional
     public String enterRoom(Long roomId, String username) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .filter(ChatRoom::isActive)
                 .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
-        if (chatRoom.getCurrentUserCount() >= chatRoom.getCapacity()) {
-            throw new  CustomException(ExceptionCode.CHATROOM_FULL);
+        if (chatRoom.isFull()) {
+            throw new CustomException(ExceptionCode.CHATROOM_FULL);
         }
         chatRoom.incrementUserCount();
+        if (!chatRoom.isActive()) {
+            chatRoom.reactivate();
+        }
         chatRoomRepository.save(chatRoom);
         return username;
     }
@@ -66,8 +70,5 @@ public class ChatRoomService {
                 .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
         chatRoom.decrementUserCount();
         chatRoomRepository.save(chatRoom);
-        if (chatRoom.getCurrentUserCount() == 0) {
-            chatRoomRepository.delete(chatRoom);
-        }
     }
 }
