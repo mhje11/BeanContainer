@@ -183,6 +183,10 @@ button#submit-review:hover {
     margin-bottom: 15px;
 }
 
+#edit-content {
+    resize: none;
+}
+
 button.edit-button,
 button.delete-button,
 button.save-button,

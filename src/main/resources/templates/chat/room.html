@@ -83,7 +83,7 @@
             <input type="text" class="form-control" v-model="room_name" placeholder="방제목" v-on:keyup.enter="createRoom">
         </div>
         <div class="col-md-2">
-            <input type="number" class="form-control" v-model="room_capacity" min="2" max="100" placeholder="최대 인원">
+            <input type="number" class="form-control" v-model="room_capacity" min="2" max="40" placeholder="채팅방 인원">
         </div>
         <div class="col-md-2">
             <button class="btn btn-create-room btn-block" @click="createRoom">채팅방 개설</button>
@@ -108,7 +108,7 @@
         el: '#app',
         data: {
             room_name: '',
-            room_capacity: 10,
+            room_capacity: '',
             chatrooms: []
         },
         created() {
@@ -124,15 +124,15 @@
                 if (this.room_name === "") {
                     alert("방 제목을 입력해 주십시오.");
                     return;
-                } else if (this.room_capacity < 2 || this.room_capacity > 100) {
-                    alert("최대 인원은 2명에서 100명 사이여야 합니다.");
+                } else if (this.room_capacity < 2 || this.room_capacity > 40) {
+                    alert("최대 인원은 2명에서 40명 사이여야 합니다.");
                     return;
                 } else {
                     axios.post(`/chat/room/${this.room_name}/${this.room_capacity}`)
                         .then(response => {
                             alert(response.data.name + " 방 개설에 성공하였습니다.")
                             this.room_name = '';
-                            this.room_capacity = 10;
+                            this.room_capacity = '';
                             // 방 생성 후 바로 입장
                             this.enterRoom(response.data.roomId);
                         })
