@@ -4,6 +4,7 @@ import com.beancontainer.domain.member.dto.LoginRequestDTO;
 import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.service.AuthService;
 import com.beancontainer.domain.member.service.MemberService;
+import com.beancontainer.global.auth.jwt.entity.RefreshToken;
 import com.beancontainer.global.auth.jwt.util.JwtTokenizer;
 import com.beancontainer.global.auth.service.CookieService;
 import com.beancontainer.global.auth.service.RefreshTokenService;
@@ -57,7 +58,7 @@ public class AuthRestController {
 
     //RefreshToken 을 통한 토큰 재발급
     @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<RefreshToken> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = cookieService.getCookieValue(request, "refreshToken");
         log.info("기존 리프레쉬 토큰 : " + refreshToken);
 
