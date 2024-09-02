@@ -1,5 +1,9 @@
 package com.beancontainer.domain.member.service;
 
+import com.beancontainer.domain.chatroom.entity.ChatMessage;
+import com.beancontainer.domain.chatroom.entity.ChatRoom;
+import com.beancontainer.domain.chatroom.repository.ChatMessageRepository;
+import com.beancontainer.domain.chatroom.repository.ChatRoomRepository;
 import com.beancontainer.domain.comment.repository.CommentRepository;
 import com.beancontainer.domain.like.entity.Likes;
 import com.beancontainer.domain.like.repository.LikeRepository;
@@ -46,6 +50,8 @@ public class MemberService implements UserDetailsService {
     private final LikeRepository likeRepository;
     private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
 
 
@@ -127,7 +133,15 @@ public class MemberService implements UserDetailsService {
 
             List<Review> reviews = reviewRepository.findAllByMember(member);
             reviewRepository.deleteAll(reviews);
+
+            List<ChatMessage> messages = chatMessageRepository.findAllByMember(member);
+            chatMessageRepository.deleteAll(messages);
+
+            List<ChatRoom> chatRooms = chatRoomRepository.findAllByMember(member);
+            chatRoomRepository.deleteAll(chatRooms);
+
             memberRepository.delete(member);
+
         }
     }
 }
