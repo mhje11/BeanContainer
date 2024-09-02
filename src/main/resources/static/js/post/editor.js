@@ -35,7 +35,6 @@ import {
     ListProperties,
     Paragraph,
     SelectAll,
-    SimpleUploadAdapter,
     SpecialCharacters,
     SpecialCharactersArrows,
     SpecialCharactersCurrency,
@@ -136,7 +135,6 @@ const editorConfig = {
         ListProperties,
         Paragraph,
         SelectAll,
-        // SimpleUploadAdapter,
         SpecialCharacters,
         SpecialCharactersArrows,
         SpecialCharactersCurrency,
@@ -242,7 +240,7 @@ const editorConfig = {
     },
     placeholder: '내용을 입력하세요.',
     simpleUpload: {
-        uploadUrl: "/api/postimg/upload",
+        uploadUrl: "/api/postimages",
         withCredentials: true
     },
     table: {
@@ -269,7 +267,7 @@ class CustomUploadAdapter {
                 const formData = new FormData();
                 formData.append('upload', file);
 
-                fetch('/api/postimg/upload', {
+                fetch('/api/postimages', {
                     method: 'POST',
                     body: formData
                 })

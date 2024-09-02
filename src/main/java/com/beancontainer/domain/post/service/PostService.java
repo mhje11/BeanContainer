@@ -21,8 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +41,6 @@ public class PostService {
                 throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
             }
             for (PostImgResponseDto imageInfo : imageInfos) {
-
                 PostImg postImg = new PostImg(imageInfo.getOriginName(), imageInfo.getName(), imageInfo.getUrl(), post);
                 post.getImages().add(postImg);  // Post의 images 리스트에 추가
                 postImgService.save(postImg);
@@ -50,7 +49,7 @@ public class PostService {
     }
 
     // 이미지 삭제
-    private void deleteExistImages(Post post) {
+    private void deleteImagesFromS3(Post post) {
         for(PostImg postImg : post.getImages()) {
             postImgService.deleteImage(postImg.getPath());
         }
@@ -112,8 +111,8 @@ public class PostService {
             throw new CustomException(ExceptionCode.ACCESS_DENIED);
         }
 
-        // S3에서 이미지 삭제
-        deleteExistImages(post);
+        // DB에서 이미지 삭제
+        deleteImagesFromS3(post);
 
         commentRepository.deleteByPostId(postId);
         likeRepository.deleteByPostId(postId);
@@ -122,62 +121,44 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) throws IOException {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
+    public PostDetailsResponseDto updatePost(Long postId, PostRequestDto postRequestDto) {
+        // 기존 게시글 찾기
+        Post existingPost = postRepository.findById(postId).orElseThrow(() -> new CustomException(ExceptionCode.POST_NOT_FOUND));
 
-        post.update(postRequestDto.getTitle(), postRequestDto.getContent());
+        // 수정 제목, 내용 게시글 update
+        existingPost.update(postRequestDto.getTitle(), postRequestDto.getContent());
 
-        // 기존 이미지 중 선택된 이미지 삭제
-        List<Long> deleteImageIds = postRequestDto.getDeleteImages();
-        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
-            deleteSelectedImages(post, deleteImageIds);
-        }
+        // 기존 이미지 조회
+        List<PostImg> existingPostImages = postImgRepository.findByPostId(postId);
 
-        // 새 이미지 처리
-        /*List<String> newImageUrls = postRequestDto.getImageUrls();
-        if (newImageUrls != null && !newImageUrls.isEmpty()) {
-            createImages(post, newImageUrls);
-        }*/
+        // 수정한 이미지 url
+        List<String> updatedImageUrls = postRequestDto.getImageInfos().stream()
+                .map(PostImgResponseDto::getUrl)
+                .collect(Collectors.toList());
 
-        // 이미지 수 제한
-        /*int existImagesCount = post.getImages().size(); // 기존 이미지 수
-        int newImagesCount = postRequestDto.getImages() != null ? postRequestDto.getImages().size() : 0; // 새로운 이미지 수
-        int totalImagesCount = existImagesCount + newImagesCount;
 
-        if(totalImagesCount > 5) {  // 이미지 최대 5장
-            throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
-        }
-
-        // 새로운 이미지가 있는 경우
-        if (newImagesCount > 0) {
-            // 새 이미지 저장
-            createImages(post, postRequestDto.getImages());
-        }*/
-
-        if (post.getImages().size() > 5) {
-            throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
-        }
-
-        // 사용되지 않은 이미지 삭제
-        List<String> unusedImageUrls = postRequestDto.getUnusedImageUrls();
-        if (unusedImageUrls != null && !unusedImageUrls.isEmpty()) {
-            deleteExistImages(post);
-        }
-
-        Post updatedPost = postRepository.save(post);
-        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
-        boolean authorCheck = post.getMember().getUserId().equals(post.getMember().getUserId());
-        return new PostDetailsResponseDto(updatedPost, likesCount, authorCheck);
-    }
-
-    private void deleteSelectedImages(Post post, List<Long> deleteImageIds) {
-        for (Long imageId : deleteImageIds) {
-
-            PostImg image = postImgRepository.findById(imageId).orElseThrow(() -> new CustomException(ExceptionCode.IMAGE_NOT_FOUND));
-
+        // 사용되지 않는 이미지 처리
+        List<PostImg> unusedImages = existingPostImages.stream()
+                        .filter(image -> !updatedImageUrls.contains(image.getPath()))
+                                .collect(Collectors.toList());
+        for(PostImg image : unusedImages) {
             postImgService.deleteImage(image.getPath());
-            post.getImages().remove(image);
-            postImgRepository.delete(image);
         }
+
+        postImgRepository.deleteAll(unusedImages);
+
+        // 새로운 이미지 추가
+        List<PostImgResponseDto> newImageInfos = postRequestDto.getImageInfos().stream()
+                .filter(imageInfo -> !existingPostImages.stream()
+                        .anyMatch(image -> image.getPath().equals(imageInfo.getUrl())))
+                .collect(Collectors.toList());
+
+        createImages(existingPost, newImageInfos);
+
+        Post updatedPost = postRepository.save(existingPost);
+
+        int likesCount = likeRepository.countByPostId(postId);  // 좋아요수
+        boolean authorCheck = existingPost.getMember().getUserId().equals(existingPost.getMember().getUserId());
+        return new PostDetailsResponseDto(updatedPost, likesCount, authorCheck);
     }
 }
