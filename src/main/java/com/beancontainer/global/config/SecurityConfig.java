@@ -126,6 +126,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.setAllowCredentials(true); // 쿠키 허용을 위해 필요
         config.setAllowedMethods(List.of("GET","POST","DELETE", "PUT"));
         source.registerCorsConfiguration("/**",config);
         return source;
