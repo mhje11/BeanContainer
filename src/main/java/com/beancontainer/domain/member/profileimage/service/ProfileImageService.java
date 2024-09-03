@@ -40,6 +40,7 @@ public class ProfileImageService {
                 PutObjectRequest.builder()
                         .bucket(bucketName)
                         .key(name)
+                        .contentType(extractExtension(originalName))
                         .build(),
                 RequestBody.fromInputStream(image.getInputStream(), image.getSize())
         );
