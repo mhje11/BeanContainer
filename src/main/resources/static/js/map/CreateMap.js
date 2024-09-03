@@ -342,8 +342,8 @@ function openInfoWindow(place) {
         <div style="padding:10px; font-size:14px;">
             <strong>${place.place_name}</strong><br>
             ${place.road_address_name || place.address_name}<br>
-            <button onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-            <button onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 페이지로 이동</button>
+           <button class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가</button>
+                    <button class="infowindow-link" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 보기</button>
         </div>
     `;
     infowindow.setContent(content);
@@ -498,11 +498,11 @@ function displayDbMarker(cafe) {
 
     kakao.maps.event.addListener(marker, 'click', function () {
         var content = `
-        <div style="padding:10px; font-size:14px;">
+        <div style="padding:5px; font-size:12px;">
             <strong>${cafe.name}</strong><br>
-            ${cafe.address}<br>
-            <button onclick="checkAndSaveCafe('${cafe.kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude}, '${cafe.city}', '${cafe.district}')">지도에 추가하기</button>
-            <a href="#" onclick="window.open('/review/${cafe.kakaoId}', '_blank')">리뷰 페이지로 이동</a>
+            <button class="infowindow-link" onclick="checkAndSaveCafe('${cafe.kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude}, '${cafe.city}', '${cafe.district}')">지도에 추가</button>
+            <button class="infowindow-link" onclick="window.open('/review/${cafe.kakaoId}', '_blank')">리뷰 보기</button>
+            
         </div>
     `;
         infowindow.setContent(content);

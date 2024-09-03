@@ -225,8 +225,8 @@ function displayDbMarker(cafe) {
 
     kakao.maps.event.addListener(marker, 'click', function () {
         var content = `
-        <div style="padding:10px;
-         font-size:14px;
+        <div style="padding:5px;
+         font-size:12px;
          max-width: 200px;
           white-space: normal;
           word-wrap: break-word;
@@ -235,8 +235,7 @@ function displayDbMarker(cafe) {
          ">
        
             <strong>${cafe.name}</strong><br>
-            ${cafe.address}<br>
-            <button onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 보기</button>
+            <button class="infowindow-link" onclick="window.open('/review/${cafe.kakaoId}', '_blank')">리뷰 보기</button>
         </div>
     `;
         infowindow.setContent(content);
@@ -423,22 +422,20 @@ function displaySearchResults(places) {
     });
 }
 
-function openInfoWindow(marker, place) {
+function openInfoWindow(place) {
+    const marker = markers[place.id];
     const parsedAddress = parseAddress(place.road_address_name || place.address_name);
     const content = `
-        <div style="padding:10px; font-size:14px; max-width: 250px; white-space: normal; word-wrap: break-word; word-break: break-all; overflow: hidden;">
+        <div style="padding:5px; font-size:12px;">
             <strong>${place.place_name}</strong><br>
-            ${place.road_address_name || place.address_name}<br>
-            <div style="margin-top: 10px;">
-                <button style="padding: 5px 10px; margin-right: 5px;" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가하기</button>
-                <button style="padding: 5px 10px;" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 보기</button>
-            </div>
+                    <button class="infowindow-link" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 보기</button>
         </div>
     `;
-
     infowindow.setContent(content);
     infowindow.open(map, marker);
 }
+
+
 
 function toggleDropdown() {
     var dropdown = document.getElementById('dropdown');
