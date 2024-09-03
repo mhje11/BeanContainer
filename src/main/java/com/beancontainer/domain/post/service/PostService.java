@@ -70,8 +70,16 @@ public class PostService {
         createImages(savedPost, postRequestDto.getImageInfos());
 
         // 사용되지 않은 이미지 S3에서 삭제
-        if (postRequestDto.getUnusedImageUrls() != null) {
-            for (String unusedImageUrl : postRequestDto.getUnusedImageUrls()) {
+        List<String> usedImageUrls = postRequestDto.getUsedImageUrls();
+        List<String> allImageUrls = postRequestDto.getImageInfos().stream()
+                .map(PostImgResponseDto::getUrl)
+                .collect(Collectors.toList());
+        List<String> unusedImageUrls = allImageUrls.stream()
+                .filter(url -> !usedImageUrls.contains(url))
+                .collect(Collectors.toList());
+
+        if (unusedImageUrls != null) {
+            for (String unusedImageUrl : unusedImageUrls) {
                 postImgService.deleteImage(unusedImageUrl);
             }
         }
@@ -126,25 +134,33 @@ public class PostService {
         List<PostImg> existingPostImages = postImgRepository.findByPostId(postId);
 
         // 수정한 이미지 url
-        List<String> updatedImageUrls = postRequestDto.getImageInfos().stream()
-                .map(PostImgResponseDto::getUrl)
-                .collect(Collectors.toList());
+        List<String> updatedImageUrls = postRequestDto.getUsedImageUrls();
+        List<String> allImageUrls = postRequestDto.getImageInfos() != null
+                ? postRequestDto.getImageInfos().stream().map(PostImgResponseDto::getUrl).collect(Collectors.toList())
+                : List.of();
 
         // 사용되지 않는 이미지 처리
+        log.info("수정된 사항에서의 이미지 url::::::::" + updatedImageUrls);
         List<PostImg> unusedImages = existingPostImages.stream()
                         .filter(image -> !updatedImageUrls.contains(image.getPath()))
                                 .collect(Collectors.toList());
-        for(PostImg image : unusedImages) {
-            postImgService.deleteImage(image.getPath());
+
+        if(!unusedImages.isEmpty()) {
+            log.info("unusedImages:::::::::" + unusedImages);
+            for(PostImg image : unusedImages) {
+                postImgService.deleteImage(image.getPath());
+            }
+            postImgRepository.deleteAll(unusedImages);
         }
 
-        postImgRepository.deleteAll(unusedImages);
 
         // 새로운 이미지 추가
-        List<PostImgResponseDto> newImageInfos = postRequestDto.getImageInfos().stream()
+        List<PostImgResponseDto> newImageInfos = postRequestDto.getImageInfos() != null
+                ? postRequestDto.getImageInfos().stream()
                 .filter(imageInfo -> !existingPostImages.stream()
                         .anyMatch(image -> image.getPath().equals(imageInfo.getUrl())))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : List.of();
 
         createImages(existingPost, newImageInfos);
 
