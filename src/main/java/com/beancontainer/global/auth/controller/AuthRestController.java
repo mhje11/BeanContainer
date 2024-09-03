@@ -34,6 +34,7 @@ public class AuthRestController {
     @PostMapping("/login")
     public ResponseEntity<LoginRequestDTO> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO,
                                                  BindingResult bindingResult, HttpServletResponse response) {
+        log.debug("Login attempt for user: {}", loginRequestDTO.getUserId());
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -43,8 +44,9 @@ public class AuthRestController {
         String refreshToken = tokens[1];
 
         cookieService.addCookie(response, "accessToken", accessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
+        log.info("AccessToken : " + accessToken);
         cookieService.addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
-
+        log.info("RefreshToken : " + refreshToken);
         Member member = memberService.findByUserId(loginRequestDTO.getUserId());
 
         LoginRequestDTO loginResponseDto = LoginRequestDTO.builder()

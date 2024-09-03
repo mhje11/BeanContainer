@@ -37,9 +37,7 @@ out/
 .vscode/
 
 # Ignore application.yml in resources
-src/main/resources/application.yml
-*.yml
-*.application
+
 
 # setting gradle
 settings.gradle
@@ -47,4 +45,7 @@ settings.gradle
 .DS_Store
 
 # 테스트 db
-src/test/resources/application-test.yml
+src/test/*
+
+
+
