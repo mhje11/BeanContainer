@@ -114,6 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
+        log.info("setAccessCookie : " + accessToken);
         response.addCookie(cookie);
     }
 }
