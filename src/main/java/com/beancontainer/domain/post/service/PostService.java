@@ -67,19 +67,23 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
-        createImages(savedPost, postRequestDto.getImageInfos());
-
         // 사용되지 않은 이미지 S3에서 삭제
-        List<String> usedImageUrls = postRequestDto.getUsedImageUrls();
+        /*List<String> usedImageUrls = postRequestDto.getUsedImageUrls();
         List<String> allImageUrls = postRequestDto.getImageInfos().stream()
                 .map(PostImgResponseDto::getUrl)
                 .collect(Collectors.toList());
         List<String> unusedImageUrls = allImageUrls.stream()
                 .filter(url -> !usedImageUrls.contains(url))
                 .collect(Collectors.toList());
+        log.info("사용된 이미지 URLs: " + usedImageUrls);
+        log.info("모든 이미지 URLs: " + allImageUrls);
+        log.info("사용되지 않은 이미지 URLs: " + unusedImageUrls);*/
 
-        if (unusedImageUrls != null) {
-            for (String unusedImageUrl : unusedImageUrls) {
+        createImages(savedPost, postRequestDto.getImageInfos());
+
+
+        if (postRequestDto.getUnusedImageUrls() != null) {
+            for (String unusedImageUrl : postRequestDto.getUnusedImageUrls()) {
                 postImgService.deleteImage(unusedImageUrl);
             }
         }
@@ -161,6 +165,12 @@ public class PostService {
                         .anyMatch(image -> image.getPath().equals(imageInfo.getUrl())))
                 .collect(Collectors.toList())
                 : List.of();
+
+        // 이미지 개수 제한
+        int totalImageCount = existingPostImages.size() - unusedImages.size() + newImageInfos.size();
+        if (totalImageCount > 5) {
+            throw new CustomException(ExceptionCode.MAX_IMAGES_COUNT);
+        }
 
         createImages(existingPost, newImageInfos);
 

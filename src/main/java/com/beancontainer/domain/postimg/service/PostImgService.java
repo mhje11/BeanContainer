@@ -86,6 +86,7 @@ public class PostImgService {
     }
 
     public void deleteImage(String imageUrl) {
+        log.info("S3에서 삭제하려는 이미지 경로: " + imageUrl);
         String fileName = fileNameFromUrl(imageUrl);
         s3Client.deleteObject(
                 DeleteObjectRequest.builder()
