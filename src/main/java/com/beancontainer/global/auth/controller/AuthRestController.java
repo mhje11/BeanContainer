@@ -34,7 +34,6 @@ public class AuthRestController {
     @PostMapping("/login")
     public ResponseEntity<LoginRequestDTO> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO,
                                                  BindingResult bindingResult, HttpServletResponse response) {
-        log.debug("Login attempt for user: {}", loginRequestDTO.getUserId());
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -43,13 +42,8 @@ public class AuthRestController {
         String accessToken = tokens[0];
         String refreshToken = tokens[1];
 
-        log.info("Tokens generated for user: {}", loginRequestDTO.getUserId());
-        log.debug("AccessToken: {}", accessToken.substring(0, Math.min(accessToken.length(), 10)) + "...");
-        log.debug("RefreshToken: {}", refreshToken.substring(0, Math.min(refreshToken.length(), 10)) + "...");
-
         cookieService.addCookie(response, "accessToken", accessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
         cookieService.addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
-        log.info("Cookies added for user: {}", loginRequestDTO.getUserId());
 
         Member member = memberService.findByUserId(loginRequestDTO.getUserId());
         LoginRequestDTO loginResponseDto = LoginRequestDTO.builder()
@@ -65,7 +59,6 @@ public class AuthRestController {
     @PostMapping("/refreshToken")
     public ResponseEntity<RefreshToken> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = cookieService.getCookieValue(request, "refreshToken");
-        log.info("기존 리프레쉬 토큰 : " + refreshToken);
 
         String[] tokens = refreshTokenService.refreshToken(refreshToken);
         String newAccessToken = tokens[0];

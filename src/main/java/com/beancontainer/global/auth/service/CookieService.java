@@ -17,22 +17,14 @@ public class CookieService {
 //        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
-//        cookie.setAttribute("SameSite", "None");
-//        cookie.setDomain("http://43.202.33.1:8080/");
-        log.info("addCookie : " + cookie);
         response.addCookie(cookie);
-
-        String setCookieHeader = response.getHeader("Set-Cookie");
-        log.info("Set-Cookie header: {}", setCookieHeader);
     }
 
     //쿠키 삭제
     public void deleteCookie(HttpServletResponse response, String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath("/");
-//        cookie.setHttpOnly(true);
         cookie.setMaxAge(0);
-//        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
