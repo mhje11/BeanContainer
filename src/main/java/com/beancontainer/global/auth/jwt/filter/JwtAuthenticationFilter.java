@@ -106,7 +106,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-        log.info("토큰 없음 !! ");
+        log.info("토큰 없음 !! 토큰 이름: {}, 쿠키 정보: {}", tokenName, Arrays.toString(cookies));
         return null;
     }
 
