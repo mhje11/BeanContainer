@@ -59,6 +59,8 @@ public class JwtTokenizer {
      * Accesstoken 생성
      */
     public String createAccessToken(Long id, String username, String name, String role) {
+        log.debug("Creating access token for user: {}", username);
+        log.debug("Using secret key: {}", new String(accessSecret).substring(0, 10) + "...");
         return createToken(id, username, name, role, ACCESS_TOKEN_EXPIRE_COUNT, accessSecret);
     }
 
