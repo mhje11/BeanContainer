@@ -25,7 +25,7 @@ public class ChatRoomController {
     // 채팅방 목록 페이지를 반환
     @GetMapping("/room")
     public String rooms(Model model) {
-        return "/chat/room";
+        return "chat/room";
     }
 
     // 모든 채팅방의 정보를 JSON 형태로 반환
