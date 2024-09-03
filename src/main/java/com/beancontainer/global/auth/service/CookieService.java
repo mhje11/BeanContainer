@@ -19,6 +19,9 @@ public class CookieService {
         cookie.setMaxAge(maxAge);
         log.info("addCookie : " + cookie);
         response.addCookie(cookie);
+
+        String setCookieHeader = response.getHeader("Set-Cookie");
+        log.info("Set-Cookie header: {}", setCookieHeader);
     }
 
     //쿠키 삭제
