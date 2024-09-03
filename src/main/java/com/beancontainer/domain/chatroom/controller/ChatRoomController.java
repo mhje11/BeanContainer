@@ -48,7 +48,7 @@ public class ChatRoomController {
         String username = chatRoomService.enterRoom(roomId, userDetails.getUsername());
         model.addAttribute("roomId", roomId);
         model.addAttribute("userId", username);
-        return "/chat/roomdetail";
+        return "chat/roomdetail";
     }
 
     // 특정 채팅방 정보를 JSON 형태로 반환
