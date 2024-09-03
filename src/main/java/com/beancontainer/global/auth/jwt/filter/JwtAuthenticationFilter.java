@@ -112,8 +112,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void setAccessTokenCookie(HttpServletResponse response, String accessToken) {
         Cookie cookie = new Cookie("accessToken", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
         log.info("setAccessCookie : " + accessToken);
