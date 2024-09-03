@@ -2,9 +2,9 @@ spring:
   application:
     name: beancontainer
   datasource:
-    url: jdbc:mysql://beancontainer-db.c1i8occuqpud.ap-northeast-2.rds.amazonaws.com:3306/beancontainer
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3308/beancontainer
+    username: minjin
+    password: 1024
     driver-class-name: com.mysql.cj.jdbc.Driver
   mail:
     host: smtp.naver.com
@@ -15,27 +15,27 @@ spring:
         smtp.auth: true
         smtp.timeout: 500000
         smtp.starttls.enable: true
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: manjini00@naver.com #인증 메일을 보낼 게정
+    password: qlalfqjsgh11!
 
   security:
     oauth2:
       client:
         registration:
           naver:
-            client-id: ${OAUTH_NAVER_ID} #서비스에서 발급 받은 아이디
-            client-secret: ${OAUTH_NAVER_SECRET}  #서비스에서 발급 받은 비밀번호
+            client-id: u5eFMVoZLrKjpIGeUCan #서비스에서 발급 받은 아이디
+            client-secret: CFKimiGWYl #서비스에서 발급 받은 비밀번호
             client-name: naver
             authorization-grant-type: authorization_code
-            redirect-uri: http://43.201.45.236:8080/login/oauth2/code/naver
+            redirect-uri: http://localhost:8080/login/oauth2/code/naver
             scope:
               - name
               - email
           kakao:
-            client-id: ${OAUTH_KAKAO_ID} #서비스에서 발급 받은 아이디
+            client-id: 485e03a2605752f219260cd9568e352e #서비스에서 발급 받은 아이디
             client-name: kakao
             authorization-grant-type: authorization_code
-            redirect-uri: http://43.201.45.236:8080/login/oauth2/code/kakao
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             scope:
               - profile_nickname
               - account_email
@@ -68,8 +68,8 @@ spring:
 
 
 jwt:
-  secretKey: ${JWT_SECRET_KEY}
-  refreshKey: ${JWT_REFRESH_KEY}
+  secretKey: 12345678901234567890123456789012
+  refreshKey: 12345678901234567890123456789012
 
 
 default:
@@ -81,14 +81,14 @@ cloud:
   aws:
     credentials:
       instance-profile: false
-      access-key: ${S3_ACCESS_KEY}
-      secret-key: ${S3_SECRET_KEY}
+      access-key: AKIAQLSIVRFS3KKAVD7L
+      secret-key: 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
     region:
       auto: false
       static: ap-northeast-2
     stack:
       auto: false
     s3:
-      bucket: ${S3_BUCKET_NAME}
+      bucket: beancontainer
 
 
