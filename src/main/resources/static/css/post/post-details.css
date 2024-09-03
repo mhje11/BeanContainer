@@ -172,12 +172,6 @@ strong {
     flex: 1;
 }
 
-.comment-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
 .comment-author {
     font-weight: bold;
     margin-right: 0.5rem;
@@ -192,15 +186,56 @@ strong {
     line-height: 1.5;
 }
 
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 댓글 수정 관련 스타일 */
+.comment-body textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
 .comment-actions {
-    margin-top: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
 }
 
 .comment-actions button {
-    background: none;
+    background-color: #7B6155;
+    color: #FFFFFF;
     border: none;
+    padding: 8px 15px;
+    margin-left: 10px;
+    border-radius: 4px;
     cursor: pointer;
-    margin-right: 0.5rem;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.comment-actions button:hover {
+    background-color: #884D33;
+}
+
+.comment-actions button:last-child {
+    background-color: #ccc;
+    color: #333;
+}
+
+.comment-actions button:last-child:hover {
+    background-color: #bbb;
 }
 
 .comment-form {
@@ -241,8 +276,4 @@ strong {
     content: "";
     display: table;
     clear: both;
-}
-
-.comment-body textarea {
-    resize: none;
 }

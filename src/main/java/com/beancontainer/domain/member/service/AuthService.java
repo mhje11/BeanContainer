@@ -48,6 +48,11 @@ public class AuthService {
     @Transactional
     public String[] login(String userId, String password) {
         Member member = memberService.findByUserId(userId);
+
+        if (member.getDeletedAt() != null) {
+            throw new CustomException(ExceptionCode.DELETED_ACCOUNT);
+        } //OAuth2 회원탈퇴 제대로 구현 필요
+
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new CustomException(ExceptionCode.PASSWORD_MISMATCH);
         }

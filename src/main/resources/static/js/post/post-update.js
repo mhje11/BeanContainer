@@ -51,15 +51,16 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         return;
     }
 
-    // const formData = new FormData();
     const editorContent = editorInstance.editor.getData();
-    const uploadedImages = editorInstance.getUploadedImages();
+    const uploadedImages = editorInstance.getUploadedImages() || [];
 
     // 수정된 내용에서 이미지 url 추출
     const updatedImagesUrls = extractImagesFromContent(editorContent);
 
-    // 사용된 이미지 정보
-    const imageInfo = uploadedImages.filter(image => updatedImagesUrls.includes(image.url));
+    // 새로 추가된 이미지 정보
+    const imageInfo = uploadedImages.length > 0
+        ? uploadedImages.filter(image => updatedImagesUrls.includes(image.url))
+        : [];
 
     // 사용되지 않은 이미지 url 찾기
     const unusedImages = initialImageUrls.filter(url => !updatedImagesUrls.includes(url));
@@ -68,7 +69,7 @@ document.getElementById('updateForm').addEventListener('submit', function (event
         title: document.getElementById('title').value,
         content: editorContent,
         imageInfos: imageInfo,
-        unusedImageUrls: unusedImages
+        usedImageUrls: updatedImagesUrls
     };
 
     const postId = window.location.pathname.split('/')[2];   // URL에서 postId 추출
