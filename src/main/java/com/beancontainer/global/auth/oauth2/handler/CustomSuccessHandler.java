@@ -4,6 +4,7 @@ import com.beancontainer.domain.member.entity.Member;
 import com.beancontainer.domain.member.repository.MemberRepository;
 import com.beancontainer.global.auth.jwt.entity.RefreshToken;
 import com.beancontainer.global.auth.jwt.util.JwtTokenizer;
+import com.beancontainer.global.auth.service.CookieService;
 import com.beancontainer.global.exception.CustomException;
 import com.beancontainer.global.exception.ExceptionCode;
 import com.beancontainer.global.auth.oauth2.dto.CustomOAuth2User;
@@ -12,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -20,17 +22,16 @@ import java.io.IOException;
 
 //OAuth2 로그인 성공 시 JWT 발급 해주는 클래스
 @Component
+@RequiredArgsConstructor
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtTokenizer jwtTokenizer;
     private final MemberRepository memberRepository;
     private final RefreshTokenService refreshTokenService;
+    private final CookieService cookieService;
 
 
-    public CustomSuccessHandler(JwtTokenizer jwtTokenizer, MemberRepository memberRepository, RefreshTokenService refreshTokenService) {
-        this.jwtTokenizer = jwtTokenizer;
-        this.memberRepository = memberRepository;
-        this.refreshTokenService = refreshTokenService;
-    }
+
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -47,10 +48,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         //발급받은 토큰을 쿠키에 저장
         // Access Token 쿠키 설정
-        addCookie(response, "accessToken", accessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
+        cookieService.addCookie(response, "accessToken", accessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
 
         // Refresh Token 쿠키 설정
-        addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
+        cookieService.addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
 
         // Refresh Token DB 저장
         RefreshToken refreshTokenEntity = new RefreshToken(String.valueOf(member.getId()), refreshToken);
@@ -61,12 +62,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     }
 
-    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        response.addCookie(cookie);
-    }
+
+
 
 }
