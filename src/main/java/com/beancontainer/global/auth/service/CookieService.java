@@ -13,7 +13,7 @@ public class CookieService {
     //쿠키에 토큰 추가
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
+//        cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
@@ -30,7 +30,7 @@ public class CookieService {
     public void deleteCookie(HttpServletResponse response, String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
+//        cookie.setHttpOnly(true);
         cookie.setMaxAge(0);
         cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
