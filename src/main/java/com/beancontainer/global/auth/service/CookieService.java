@@ -16,6 +16,7 @@ public class CookieService {
 
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
+        log.info("addCookie : " + cookie);
         response.addCookie(cookie);
     }
 
