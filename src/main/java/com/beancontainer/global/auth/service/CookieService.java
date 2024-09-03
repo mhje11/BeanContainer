@@ -18,6 +18,7 @@ public class CookieService {
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         cookie.setAttribute("SameSite", "None");
+        cookie.setDomain("http://43.202.33.1:8080/");
         log.info("addCookie : " + cookie);
         response.addCookie(cookie);
 
