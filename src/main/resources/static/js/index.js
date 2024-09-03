@@ -235,7 +235,7 @@ function displayDbMarker(cafe) {
          ">
        
             <strong>${cafe.name}</strong><br>
-            <button class="infowindow-link" onclick="window.open('/review/${cafe.kakaoId}', '_blank')">리뷰 보기</button>
+            <button class="infowindow-link" onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 보기</button>
         </div>
     `;
         infowindow.setContent(content);
@@ -428,7 +428,7 @@ function openInfoWindow(place) {
     const content = `
         <div style="padding:5px; font-size:12px;">
             <strong>${place.place_name}</strong><br>
-                    <button class="infowindow-link" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 보기</button>
+            <button class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 보기</button>
         </div>
     `;
     infowindow.setContent(content);
