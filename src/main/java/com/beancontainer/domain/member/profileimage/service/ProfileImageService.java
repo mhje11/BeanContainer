@@ -40,6 +40,7 @@ public class ProfileImageService {
                 PutObjectRequest.builder()
                         .bucket(bucketName)
                         .key(name)
+                        .contentType(extractExtension(originalName))
                         .build(),
                 RequestBody.fromInputStream(image.getInputStream(), image.getSize())
         );
@@ -90,10 +91,9 @@ public class ProfileImageService {
         return originalName.substring(index + 1);
     }
 
-
     //파일 이름 UUID 변환
     private String getFileName(String originalName) {
-        return UUID.randomUUID() + "-" + extractExtension(originalName);
+        return UUID.randomUUID() + "." + extractExtension(originalName);
     }
 
 

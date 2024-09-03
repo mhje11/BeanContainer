@@ -23,6 +23,8 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
 
+
+    // 모든 활성화된 채팅방을 조회하여 DTO 리스트로 반환
     @Transactional(readOnly = true)
     public List<ChatRoomDto> findAllRoom() {
 //        return chatRoomRepository.findAll().stream()
@@ -33,6 +35,7 @@ public class ChatRoomService {
         return chatRoomRepository.findAllActiveRooms();
     }
 
+    // 특정 ID의 채팅방 조회 후 DTO로 반환
     @Transactional(readOnly = true)
     public ChatRoomDto findRoomById(Long id) {
         return chatRoomRepository.findById(id)
@@ -41,6 +44,7 @@ public class ChatRoomService {
                 .orElseThrow(() -> new CustomException(ExceptionCode.CHAT_ROOM_NOT_FOUND));
     }
 
+    // 새로운 채팅방을 생성하고 DTO로 반환
     @Transactional
     public ChatRoomDto createChatRoom(String name, int capacity, String userId) {
         Member creator = memberRepository.findByUserId(userId)
@@ -50,6 +54,7 @@ public class ChatRoomService {
         return ChatRoomDto.from(chatRoom);
     }
 
+    // 채팅방 입장할 때 필요한 로직을 처리
     @Transactional
     public String enterRoom(Long roomId, String username) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
@@ -66,6 +71,7 @@ public class ChatRoomService {
         return username;
     }
 
+    // 채팅방 나갈 때 필요한 로직을 처리
     @Transactional
     public void exitRoom(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
