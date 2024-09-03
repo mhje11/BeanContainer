@@ -7,46 +7,73 @@
 </head>
 <body>
 <h1>관리자 페이지</h1>
-<button id="loadPosts">게시글 전체 조회</button>
+<button id="btnGetAllPosts">게시글 전체 조회</button>
 <div id="postList"></div>
 
 <script>
-    $(document).ready(function() {
-        $('#loadPosts').click(function() {
-            $.ajax({
-                url: '/api/admin/posts',
-                type: 'GET',
-                success: function(posts) {
-                    let html = '<ul>';
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnGetAllPosts = document.getElementById('btnGetAllPosts');
+        const postList = document.getElementById('postList');
+
+        btnGetAllPosts.addEventListener('click', function() {
+            fetch('/api/posts/list?page=1&size=10&sortBy=createdAt')
+                .then(function(response) {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('게시글을 불러오는데 실패했습니다.');
+                })
+                .then(function(data) {
+                    const posts = data.content;
+
+                    // 게시글 목록 초기화
+                    postList.innerHTML = '';
+
+                    // 게시글 목록 렌더링
                     posts.forEach(function(post) {
-                        html += '<li>' + post.title +
-                            ' <button onclick="deletePost(' + post.id + ')">삭제</button></li>';
+                        let postElement = `
+            <div class="post">
+              <h3>${post.title}</h3>
+              <p>${post.content}</p>
+          `;
+
+                        // 삭제 권한이 있는 경우에만 삭제 버튼 추가
+                        if (post.deletable) {
+                            postElement += `<button class="btnDeletePost" data-post-id="${post.id}">삭제</button>`;
+                        }
+
+                        postElement += '</div>';
+
+                        postList.innerHTML += postElement;
                     });
-                    html += '</ul>';
-                    $('#postList').html(html);
-                },
-                error: function(xhr, status, error) {
-                    alert('게시글 로딩 실패: ' + error);
-                }
-            });
+                })
+                .catch(function(error) {
+                    alert(error.message);
+                });
+        });
+
+        // 삭제 버튼 클릭 이벤트 핸들러 (동적으로 생성된 버튼에 이벤트 바인딩)
+        postList.addEventListener('click', function(event) {
+            if (event.target.classList.contains('btnDeletePost')) {
+                const postId = event.target.dataset.postId;
+
+                // 서버로 삭제 요청 전송
+                fetch(`/api/posts/${postId}/delete`, { method: 'DELETE' })
+                    .then(function(response) {
+                        if (response.ok) {
+                            alert('게시글이 삭제되었습니다.');
+                            // 삭제 후 게시글 목록 갱신
+                            btnGetAllPosts.click();
+                        } else {
+                            throw new Error('게시글 삭제에 실패했습니다.');
+                        }
+                    })
+                    .catch(function(error) {
+                        alert(error.message);
+                    });
+            }
         });
     });
-
-    function deletePost(postId) {
-        if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-            $.ajax({
-                url: '/api/admin/post/' + postId,
-                type: 'DELETE',
-                success: function(response) {
-                    alert(response);
-                    $('#loadPosts').click();  // 목록 새로고침
-                },
-                error: function(xhr, status, error) {
-                    alert('게시글 삭제 실패: ' + error);
-                }
-            });
-        }
-    }
 </script>
 </body>
 </html>
