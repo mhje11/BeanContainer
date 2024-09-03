@@ -16,6 +16,7 @@ public class CookieService {
 
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
+        cookie.setAttribute("SameSite", "None");
         log.info("addCookie : " + cookie);
         response.addCookie(cookie);
 
@@ -28,6 +29,7 @@ public class CookieService {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath("/");
         cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
