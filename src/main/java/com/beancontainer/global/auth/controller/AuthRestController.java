@@ -43,12 +43,15 @@ public class AuthRestController {
         String accessToken = tokens[0];
         String refreshToken = tokens[1];
 
-        cookieService.addCookie(response, "accessToken", accessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
-        log.info("AccessToken : " + accessToken);
-        cookieService.addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
-        log.info("RefreshToken : " + refreshToken);
-        Member member = memberService.findByUserId(loginRequestDTO.getUserId());
+        log.info("Tokens generated for user: {}", loginRequestDTO.getUserId());
+        log.debug("AccessToken: {}", accessToken.substring(0, Math.min(accessToken.length(), 10)) + "...");
+        log.debug("RefreshToken: {}", refreshToken.substring(0, Math.min(refreshToken.length(), 10)) + "...");
 
+        cookieService.addCookie(response, "accessToken", accessToken, (int) (JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
+        cookieService.addCookie(response, "refreshToken", refreshToken, (int) (JwtTokenizer.REFRESH_TOKEN_EXPIRE_COUNT / 1000));
+        log.info("Cookies added for user: {}", loginRequestDTO.getUserId());
+
+        Member member = memberService.findByUserId(loginRequestDTO.getUserId());
         LoginRequestDTO loginResponseDto = LoginRequestDTO.builder()
                 .userId(String.valueOf(member.getId()))
                 .name(member.getName())
