@@ -13,7 +13,6 @@ public class CookieService {
     //쿠키에 토큰 추가
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
-
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
