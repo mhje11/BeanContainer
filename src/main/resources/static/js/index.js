@@ -429,6 +429,7 @@ function openInfoWindow(place) {
             <button class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">리뷰 보기</button>
         </div>
     `;
+
     infowindow.setContent(content);
     infowindow.open(map, marker);
 }
