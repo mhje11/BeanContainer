@@ -33,15 +33,6 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-//    @Override
-//    public List<Review> findAllByCafeId(Long cafeId) {
-//        return queryFactory
-//                .selectFrom(review)
-//                .join(review.member, member).fetchJoin()
-//                .join(review.reviewCategories, reviewCategory).fetchJoin()
-//                .where(review.cafe.id.eq(cafeId))
-//                .fetch();
-//    }
 
     @Override
     public Page<ReviewResponseDto> findAllByCafeId(Long cafeId, Pageable pageable) {
@@ -95,19 +86,5 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
 
-//    @Override
-//    public Map<String, Long> findCategoryFrequenciesByCafeId(Long cafeId) {
-//        return queryFactory
-//                .select(reviewCategory.category.name, reviewCategory.category.name.count())
-//                .from(reviewCategory)
-//                .where(reviewCategory.review.cafe.id.eq(cafeId))
-//                .groupBy(reviewCategory.category.name)
-//                .orderBy(reviewCategory.category.name.count().desc())
-//                .fetch()
-//                .stream()
-//                .collect(Collectors.toMap(
-//                        tuple -> tuple.get(0, String.class),
-//                        tuple -> tuple.get(1, Long.class)
-//                ));
-//    }
+
 }

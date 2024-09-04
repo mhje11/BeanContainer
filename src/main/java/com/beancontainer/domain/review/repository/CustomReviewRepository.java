@@ -10,6 +10,4 @@ import java.util.Map;
 
 public interface CustomReviewRepository {
     Page<ReviewResponseDto> findAllByCafeId(Long cafeId, Pageable pageable);
-
-//    Map<String, Long> findCategoryFrequenciesByCafeId(Long cafeId);
 }

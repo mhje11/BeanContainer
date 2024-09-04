@@ -11,18 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long>, CustomReviewRepository{
-//    List<Review> findAllByCafeId(Long cafeId);
 
 
     @Query("select AVG (r.score) from Review r where r.cafe.id = :cafeId")
     Double calculateAverageScoreByCafeId(Long cafeId);
-
-//    @Query("select rc.category.name, count(rc.category.name) " +
-//            "from ReviewCategory rc " +
-//            "where rc.review.cafe.id = :cafeId " +
-//            "group by rc.category.name " +
-//            "order by count(rc.category.name) desc " )
-//    List<Object[]> findCategoryFrequenciesByCafeId(@Param("cafeId") Long cafeId);
 
     @Query(value = "SELECT c.name, COUNT(rc.category_id) " +
             "FROM review_category rc " +

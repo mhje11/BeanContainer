@@ -13,7 +13,4 @@ public interface CustomMapRepository {
 
     List<MapListResponseDto> getMapList(Member member);
 
-
-//    List<Map> findAllMember(Member member);
-
 }
