@@ -67,18 +67,6 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
-        // 사용되지 않은 이미지 S3에서 삭제
-        /*List<String> usedImageUrls = postRequestDto.getUsedImageUrls();
-        List<String> allImageUrls = postRequestDto.getImageInfos().stream()
-                .map(PostImgResponseDto::getUrl)
-                .collect(Collectors.toList());
-        List<String> unusedImageUrls = allImageUrls.stream()
-                .filter(url -> !usedImageUrls.contains(url))
-                .collect(Collectors.toList());
-        log.info("사용된 이미지 URLs: " + usedImageUrls);
-        log.info("모든 이미지 URLs: " + allImageUrls);
-        log.info("사용되지 않은 이미지 URLs: " + unusedImageUrls);*/
-
         createImages(savedPost, postRequestDto.getImageInfos());
 
 

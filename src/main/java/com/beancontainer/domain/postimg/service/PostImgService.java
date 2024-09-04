@@ -77,7 +77,6 @@ public class PostImgService {
     // S3 이미지 url
     private String generateImageUrl(String name) {
         return String.format("https://%s.s3.amazonaws.com/%s", bucketname, name);
-        // https://{bucket-name}.s3.{region}.amazonaws.com/{object-key}
     }
 
     @Transactional
