@@ -373,14 +373,10 @@ async function searchCafeByName() {
 
     ps.keywordSearch(keyword, function (data, status, pagination) {
         if (status === kakao.maps.services.Status.OK) {
+            // 검색 결과가 하나일 때도 displaySearchResults 호출
             if (data.length === 1) {
-                const place = data[0];
-                const center = new kakao.maps.LatLng(place.y, place.x);
-                map.setCenter(center);
-                map.setLevel(3);
-                searchPlacesByCenter(center);
-                openInfoWindow(place);
-            } else {
+                displaySearchResults(data); // 결과가 하나라도 result 창에 표시
+            } else if (data.length > 1) {
                 displaySearchResults(data);
             }
         } else {

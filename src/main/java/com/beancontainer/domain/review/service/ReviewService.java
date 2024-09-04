@@ -66,10 +66,7 @@ public class ReviewService {
 
     //해당 카페의 리뷰 조회
     public Page<ReviewResponseDto> findReviewByCafeId(Long cafeId, Pageable pageable) {
-//        List<Review> cafes = reviewRepository.findAllByCafeId(cafeId);
-//        return cafes.stream()
-//                .map(ReviewResponseDto::new)
-//                .collect(Collectors.toList());
+
         return reviewRepository.findAllByCafeId(cafeId, pageable);
     }
 

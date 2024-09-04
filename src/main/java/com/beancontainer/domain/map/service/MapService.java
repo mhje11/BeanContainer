@@ -56,9 +56,6 @@ public class MapService {
     //지도 리스트 조회
     @Transactional(readOnly = true)
     public List<MapListResponseDto> getMapList(Member member) {
-//        return mapRepository.findAllByMember(member).stream()
-//                .map(map -> new MapListResponseDto(map.getMapName(), map.getMember().getNickname(), map.getId()))
-//                .collect(Collectors.toList());
         return mapRepository.getMapList(member);
     }
 
