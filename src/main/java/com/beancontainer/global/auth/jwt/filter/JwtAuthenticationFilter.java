@@ -100,6 +100,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (tokenName.equals(cookie.getName())) {
+                    log.info("쿠키 정보: {}", Arrays.toString(request.getCookies()));
                     return cookie.getValue();
                 }
             }
@@ -112,6 +113,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setPath("/");
         cookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
+        log.info("setAccessCookie : " + accessToken);
         response.addCookie(cookie);
     }
 }
