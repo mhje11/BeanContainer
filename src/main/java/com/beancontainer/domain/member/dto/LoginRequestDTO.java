@@ -11,7 +11,6 @@ import lombok.*;
 public class LoginRequestDTO {
     private String userId;
 
-    //@Pattern(regexp=  "^(?=.[a-zA-Z])(?=.\d)(?=.*\W).{8,20}$")
     private String password;
 
     private String accessToken;

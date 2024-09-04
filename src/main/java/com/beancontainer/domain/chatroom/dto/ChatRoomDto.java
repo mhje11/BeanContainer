@@ -30,8 +30,6 @@ public class ChatRoomDto {
             dto.setCreatorNickname(chatRoom.getCreator().getNickname());
         } else {
             dto.setCreatorNickname("Unknown Creator"); // 기본 값 설정
-            // 또는
-            // throw new IllegalStateException("ChatRoom의 Creator가 설정되지 않았습니다.");
         }
         return dto;
     }
