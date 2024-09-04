@@ -43,7 +43,7 @@ public class SecurityConfig {
     String[] allAllowPage = new String[]{
             "/", "/login", "/signup", //메인, 로그인, 회원가입
             "/js/**", "/css/**", "/images/**", "/static/**", //resources
-            "/api/auth/login", "/api/auth/signup/**", "/api/auth/check-userid", "/api/auth/logout", //로그인, 로그아웃, 회원가입 API 요청
+            "/api/auth/**", //로그인, 로그아웃, 회원가입 API 요청
             "/posts/list", "/api/posts/list", "/api/posts/{postId}", "/posts/{postId}", //게시글 조회, 게시글 상세보기는 모두 가능
             "/api/comments/list/{postId}",  // 댓글 목록
             "/review/{kakaoId}", "/api/cafes/{cafeId}/reviews", "/reviewlist/{cafeId}", //리뷰도 모두 조회 가능
@@ -65,8 +65,8 @@ public class SecurityConfig {
 
     //인증받은 회원만 접근 가능
     String[] authPage = new String[]{
-            "/api/posts", //글 작성은 인증된 회원만
-            "/mypage/{userId}", "/api/profileImage/**", "/api/mypage/{userId}/deleteProfileImage", //마이페이지, 프로필 변경
+            "/api/posts", "/api/posts/{postId}/**", //글 작성/수정/삭제
+            "/mypage/{userId}", "/api/mypage/{userId}", //마이페이지, 프로필 변경
             "/mymap", "/mymap/update/{mapId}",
             "/api/maps/{mapId}/delete", "/api/maps/{mapId}/update", "/api/maps/my", //나만의 지도
             "/chat/**" //모든 채팅
@@ -77,6 +77,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(configurationSource()))
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 //세션 설정 -> 세션정보를 서버에 저장하지 않도록 함
@@ -122,9 +123,10 @@ public class SecurityConfig {
     public CorsConfigurationSource configurationSource(){
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*");
+        config.addAllowedOrigin("http://43.202.33.1:8080/");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.setAllowCredentials(true); // 쿠키 허용을 위해 필요
         config.setAllowedMethods(List.of("GET","POST","DELETE", "PUT"));
         source.registerCorsConfiguration("/**",config);
         return source;

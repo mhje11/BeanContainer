@@ -25,7 +25,7 @@ public class ChatRoomController {
     // 채팅방 목록 페이지를 반환
     @GetMapping("/room")
     public String rooms(Model model) {
-        return "/chat/room";
+        return "chat/room";
     }
 
     // 모든 채팅방의 정보를 JSON 형태로 반환
@@ -48,7 +48,7 @@ public class ChatRoomController {
         String username = chatRoomService.enterRoom(roomId, userDetails.getUsername());
         model.addAttribute("roomId", roomId);
         model.addAttribute("userId", username);
-        return "/chat/roomdetail";
+        return "chat/roomdetail";
     }
 
     // 특정 채팅방 정보를 JSON 형태로 반환

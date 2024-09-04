@@ -289,13 +289,10 @@ async function searchCafeByName() {
 
     ps.keywordSearch(keyword, function (data, status, pagination) {
         if (status === kakao.maps.services.Status.OK) {
+            // 검색 결과가 하나일 때도 displaySearchResults 호출
             if (data.length === 1) {
-                const place = data[0];
-                const center = new kakao.maps.LatLng(place.y, place.x);
-                map.setCenter(center);
-                map.setLevel(3);
-                searchPlacesByCenter(center);
-            } else {
+                displaySearchResults(data); // 결과가 하나라도 result 창에 표시
+            } else if (data.length > 1) {
                 displaySearchResults(data);
             }
         } else {
@@ -339,9 +336,8 @@ function openInfoWindow(place) {
     const marker = markers[place.id];
     const parsedAddress = parseAddress(place.road_address_name || place.address_name);
     const content = `
-        <div style="padding:10px; font-size:14px;">
+        <div style="padding:5px; font-size:12px;">
             <strong>${place.place_name}</strong><br>
-            ${place.road_address_name || place.address_name}<br>
            <button class="infowindow-link" onclick="checkAndSaveCafe('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x}, '${parsedAddress.city}', '${parsedAddress.district}')">지도에 추가</button>
                     <button class="infowindow-link" onclick="openReviewPage('${place.id}', '${place.place_name}', '${place.road_address_name || place.address_name}', ${place.y}, ${place.x})">리뷰 보기</button>
         </div>

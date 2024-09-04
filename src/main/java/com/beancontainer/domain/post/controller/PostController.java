@@ -13,7 +13,7 @@ public class PostController {
     // 게시글 전체 조회
     @GetMapping("/list")
     public String postList() {
-        return "/post/post-list";
+        return "post/post-list";
     }
 
     // 게시글 작성 폼

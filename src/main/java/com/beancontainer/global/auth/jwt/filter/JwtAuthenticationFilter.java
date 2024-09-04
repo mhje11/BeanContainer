@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,18 +101,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (tokenName.equals(cookie.getName())) {
+                    log.info("쿠키 정보: {}", Arrays.toString(request.getCookies()));
                     return cookie.getValue();
                 }
             }
         }
-        log.info("토큰 없음 !! ");
+        log.info("토큰 없음 !! 토큰 이름: {}, 쿠키 정보: {}", tokenName, Arrays.toString(cookies));
         return null;
     }
 
     private void setAccessTokenCookie(HttpServletResponse response, String accessToken) {
         Cookie cookie = new Cookie("accessToken", accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(Math.toIntExact(JwtTokenizer.ACCESS_TOKEN_EXPIRE_COUNT / 1000));
         log.info("setAccessCookie : " + accessToken);
