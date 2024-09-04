@@ -27,11 +27,6 @@ public class ChatRoomService {
     // 모든 활성화된 채팅방을 조회하여 DTO 리스트로 반환
     @Transactional(readOnly = true)
     public List<ChatRoomDto> findAllRoom() {
-//        return chatRoomRepository.findAll().stream()
-//                .filter(ChatRoom::isActive)
-//                .map(ChatRoomDto::from)
-//                .collect(Collectors.toList());
-
         return chatRoomRepository.findAllActiveRooms();
     }
 

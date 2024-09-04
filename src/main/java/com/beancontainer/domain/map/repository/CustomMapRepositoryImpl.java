@@ -72,15 +72,4 @@ public class CustomMapRepositoryImpl implements CustomMapRepository{
 
 
 
-
-    //    @Override
-//    public List<Map> findAllMember(Member member) {
-//        return queryFactory
-//                .selectFrom(map)
-//                .join(map.member, QMember.member)
-//                .where(map.member.eq(member))
-//                .fetch();
-//    }
-
-
 }
