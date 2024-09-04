@@ -168,6 +168,8 @@ function searchCafeByName() {
         } else {
             alert('카페를 찾을 수 없습니다.');
         }
+    }, {
+        category_group_code: "CE7" // 카페 카테고리로 제한
     });
 }
 
