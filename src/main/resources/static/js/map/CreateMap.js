@@ -499,7 +499,7 @@ function displayDbMarker(cafe) {
         <div style="padding:5px; font-size:12px;">
             <strong>${cafe.name}</strong><br>
             <button class="infowindow-link" onclick="checkAndSaveCafe('${cafe.kakaoId}', '${cafe.name}', '${cafe.address}', ${cafe.latitude}, ${cafe.longitude}, '${cafe.city}', '${cafe.district}')">지도에 추가</button>
-            <button class="infowindow-link" onclick="window.open('/review/${cafe.kakaoId}', '_blank')">리뷰 보기</button>
+            <button class="infowindow-link" onclick="window.open('/review/${cafe.id}', '_blank')">리뷰 보기</button>
             
         </div>
     `;
