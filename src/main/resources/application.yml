@@ -65,6 +65,7 @@ spring:
         show_sql: true
         default_batch_fetch_size: 100
 
+
 jwt:
   secretKey: ${JWT_SECRET_KEY}
   refreshKey: ${JWT_REFRESH_KEY}
