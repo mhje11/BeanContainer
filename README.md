@@ -24,10 +24,10 @@
 >html, js, css, thymeleaf
 
 ### 🧑‍💻Back-end
->SpringBoot, Spring Security, JWT, MySQL, Docker
+>SpringBoot, Spring Security, JWT, MySQL
 
 ### :globe_with_meridians:형상 관리 및 배포 도구
->GitHub, AWS
+>GitHub, AWS, Docker
 
 <br>
 
