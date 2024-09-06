@@ -29,7 +29,6 @@ public class ReviewRestController {
 
     @PostMapping("/api/reviews")
     public ResponseEntity<String> createReview(@RequestBody ReviewCreateDto reviewCreateDto, @AuthenticationPrincipal UserDetails userDetails) {
-        Member member = memberService.findByUserId(userDetails.getUsername());
         reviewService.createReview(reviewCreateDto, userDetails);
 
         return ResponseEntity.ok("리뷰 등록 완료");
